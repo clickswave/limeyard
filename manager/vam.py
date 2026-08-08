@@ -174,11 +174,17 @@ def _pad(s, w):
 # ---------------------------------------------------------------- commands ---
 def cmd_list(apps, args):
     print(f"{_pad('APP', 13)}  {_pad('STATE', 10)}  {_pad('URL', 30)}  DESCRIPTION")
+    heavy_stopped = []
     for a in apps.values():
         label, c = state_of(a)
+        if a.get("heavy") and label == "stopped":
+            heavy_stopped.append(a["slug"])
         tag = " [heavy]" if a.get("heavy") else (" [external]" if a.get("external") else "")
         print(f"{_pad(a['slug'], 13)}  {col(_pad(label, 10), c)}  "
               f"{_pad(a.get('url', '-'), 30)}  {a.get('description', '')}{col(tag, 'd')}")
+    if heavy_stopped:
+        print(col(f"note: {', '.join(heavy_stopped)} are [heavy] and not started by --all; "
+                  f"run: ./vam start {heavy_stopped[0]} --heavy", "d"))
 
 
 cmd_status = cmd_list  # same view

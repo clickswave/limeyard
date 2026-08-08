@@ -138,6 +138,10 @@ services:
       - COMMUNITY_SERVICE=crapi-community:8087
       - IDENTITY_SERVICE=crapi-identity:8080
       - WORKSHOP_SERVICE=crapi-workshop:8000
+      # The AI chatbot was trimmed out, but the gateway's nginx template still
+      # declares a /chatbot upstream from CHATBOT_SERVICE. Point it at a live
+      # backend so nginx starts (the /chatbot route is a dead end, which is fine).
+      - CHATBOT_SERVICE=crapi-workshop:8000
       - MAILHOG_WEB_SERVICE=mailhog:8025
       - TLS_ENABLED=false
     depends_on:
