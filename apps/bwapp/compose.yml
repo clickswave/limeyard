@@ -1,0 +1,12 @@
+# All-in-one image (Apache + MySQL inside). Web on 127.0.0.1:7007.
+services:
+  bwapp:
+    image: raesene/bwapp:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7007:80"
+    networks: [default, vuln-net]
+
+networks:
+  vuln-net:
+    external: true

@@ -1,0 +1,12 @@
+# Single-container app, no database. Web on 127.0.0.1:7001 + shared vuln-net.
+services:
+  juiceshop:
+    image: bkimminich/juice-shop:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7001:3000"
+    networks: [default, vuln-net]
+
+networks:
+  vuln-net:
+    external: true

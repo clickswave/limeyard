@@ -1,0 +1,34 @@
+# DVWA + its OWN MariaDB. The db stays on the project-private network and is
+# never published to the host. Web on 127.0.0.1:7002 + shared vuln-net.
+services:
+  dvwa:
+    image: ghcr.io/digininja/dvwa:latest
+    restart: unless-stopped
+    depends_on: [dvwa-db]
+    environment:
+      - DB_SERVER=dvwa-db
+      - DB_DATABASE=dvwa
+      - DB_USERNAME=dvwa
+      - DB_PASSWORD=p@ssw0rd
+    ports:
+      - "127.0.0.1:7002:80"
+    networks: [default, vuln-net]
+
+  dvwa-db:
+    image: docker.io/library/mariadb:10
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=dvwa
+      - MYSQL_DATABASE=dvwa
+      - MYSQL_USER=dvwa
+      - MYSQL_PASSWORD=p@ssw0rd
+    volumes:
+      - dvwa-db:/var/lib/mysql
+    networks: [default]   # private to this app; no host binding
+
+volumes:
+  dvwa-db:
+
+networks:
+  vuln-net:
+    external: true

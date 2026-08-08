@@ -1,0 +1,5 @@
+name: Log4Shell lab
+description: Minimal Spring app vulnerable to Log4Shell (CVE-2021-44228). Best blind-RCE -> OAST target.
+category: cve
+stack: Java / Spring
+url: http://127.0.0.1:7009

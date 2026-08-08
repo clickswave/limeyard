@@ -1,0 +1,19 @@
+# WebGoat (8080) + WebWolf (9090) in one container. Both bound to loopback.
+services:
+  webgoat:
+    image: webgoat/webgoat:latest
+    restart: unless-stopped
+    environment:
+      - TZ=UTC
+      - WEBGOAT_HOST=0.0.0.0
+      - WEBWOLF_HOST=0.0.0.0
+      - WEBGOAT_PORT=8080
+      - WEBWOLF_PORT=9090
+    ports:
+      - "127.0.0.1:7003:8080"   # WebGoat
+      - "127.0.0.1:7004:9090"   # WebWolf
+    networks: [default, vuln-net]
+
+networks:
+  vuln-net:
+    external: true

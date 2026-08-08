@@ -1,0 +1,15 @@
+# Single-container Flask API (uses its own embedded sqlite). Web on 127.0.0.1:7005.
+services:
+  vampi:
+    image: erev0s/vampi:latest
+    restart: unless-stopped
+    environment:
+      - vulnerable=1
+      - tokentimetolive=60
+    ports:
+      - "127.0.0.1:7005:5000"
+    networks: [default, vuln-net]
+
+networks:
+  vuln-net:
+    external: true

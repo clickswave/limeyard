@@ -1,0 +1,42 @@
+# vuln_apps: a fleet of intentionally-vulnerable apps for security testing.
+#
+# This top compose starts ONLY the control plane (vuln_apps_manager). The vuln
+# apps themselves are NOT defined here - each lives under apps/<slug>/ as a
+# skeleton (app.yml + compose.yml) and is run by the manager as its own isolated
+# docker compose project. So every app gets its own network, volumes and DB, and
+# nothing clashes.
+#
+# Usage:
+#   docker compose up -d                                   # start the manager
+#   docker compose run --rm vuln_apps_manager start --all  # start the fleet
+#   docker compose run --rm vuln_apps_manager status
+#   docker compose run --rm vuln_apps_manager stop --all
+# (or use the ./vam wrapper: ./vam start --all)
+
+name: vuln_apps
+
+networks:
+  vuln-net:
+    name: vuln-net        # fixed name so per-app composes can join it as external
+    driver: bridge
+
+services:
+  vuln_apps_manager:
+    build: ./manager
+    image: vuln_apps/manager:latest
+    container_name: vuln_apps_manager
+    entrypoint: ["vam"]
+    command: ["monitor"]        # `up` runs the watch loop; `run` overrides this
+    environment:
+      VULN_APPS_DIR: ${PWD}     # apps are read from ${PWD}/apps
+      VULN_NET: vuln-net
+      MONITOR_INTERVAL: "${MONITOR_INTERVAL:-30}"
+    volumes:
+      # Control the host Docker daemon (to run each app as its own project)...
+      - /var/run/docker.sock:/var/run/docker.sock
+      # ...and see the app definitions at their real host path (so any relative
+      # paths inside an app's compose resolve correctly through the socket).
+      - ${PWD}:${PWD}
+    working_dir: ${PWD}
+    networks: [vuln-net]
+    restart: unless-stopped

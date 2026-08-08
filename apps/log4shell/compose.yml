@@ -1,0 +1,12 @@
+# Single-container blind-RCE target. Web on 127.0.0.1:7009.
+services:
+  log4shell:
+    image: ghcr.io/christophetd/log4shell-vulnerable-app:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7009:8080"
+    networks: [default, vuln-net]
+
+networks:
+  vuln-net:
+    external: true

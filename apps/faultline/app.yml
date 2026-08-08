@@ -1,0 +1,11 @@
+name: FaultLine ISP
+description: Full-stack ISP app (SvelteKit + Rust API + Postgres + Redis). Clickswave's own target.
+category: web
+stack: SvelteKit / Rust / Postgres / Redis
+url: http://127.0.0.1:8088
+project: faultline
+# Not vendored here. The manager clones it from GitHub into ./src on first start.
+repo: https://github.com/clickswave/faultline
+compose: deploy/docker-compose.yml
+heavy: true
+setup: 'First start clones the repo and builds it (Rust; slow). Demo logins: alice@example.com/password, admin@faultline.local/admin.'

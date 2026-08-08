@@ -1,0 +1,7 @@
+name: OWASP crAPI
+description: Purpose-built API target - BOLA/BFLA/BOPLA, mass assignment, JWT, SSRF.
+category: api
+stack: Node / Java / Python + Postgres + Mongo
+url: http://127.0.0.1:7010
+heavy: true
+setup: First boot is slow (DBs + migrations). OTP / reset mails land in mailhog at http://127.0.0.1:7011.

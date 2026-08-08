@@ -1,0 +1,22 @@
+# Sources for repo-backed apps, cloned at runtime by the manager (e.g. faultline)
+apps/*/src/
+
+# Local, machine-specific compose override
+docker-compose.override.yml
+
+# Local env
+.env
+
+# crAPI generates a JWT keypair into apps/crapi/keys on first boot
+apps/crapi/keys/*
+!apps/crapi/keys/.gitkeep
+
+# AI / agent tooling and local machine config (never publish)
+.claude/
+.mcp.json
+.cursor/
+.idea/
+
+# python bytecode (from local checks)
+__pycache__/
+*.pyc

@@ -1,0 +1,15 @@
+# Single-container GraphQL target. Web on 127.0.0.1:7006.
+services:
+  dvga:
+    image: dolevf/dvga:latest
+    restart: unless-stopped
+    environment:
+      - WEB_HOST=0.0.0.0
+      - WEB_PORT=5013
+    ports:
+      - "127.0.0.1:7006:5013"
+    networks: [default, vuln-net]
+
+networks:
+  vuln-net:
+    external: true

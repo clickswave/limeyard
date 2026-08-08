@@ -1,0 +1,5 @@
+name: DVGA
+description: Damn Vulnerable GraphQL Application (introspection, injection, batching DoS).
+category: graphql
+stack: Python / GraphQL
+url: http://127.0.0.1:7006/graphql

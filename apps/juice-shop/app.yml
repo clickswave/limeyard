@@ -1,0 +1,5 @@
+name: OWASP Juice Shop
+description: Modern Angular SPA + REST API; broad OWASP Top 10.
+category: web
+stack: Node / Angular
+url: http://127.0.0.1:7001
