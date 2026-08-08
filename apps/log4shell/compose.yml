@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:7009:8080"
-    networks: [default, vuln-net]
+    networks: [vuln-net]
 
 networks:
   vuln-net:

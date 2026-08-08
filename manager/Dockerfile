@@ -2,7 +2,7 @@
 # isolated `docker compose` project via the host Docker socket. Dev use only.
 FROM docker:27-cli
 
-RUN apk add --no-cache python3 py3-yaml docker-cli-compose git ca-certificates
+RUN apk add --no-cache python3 py3-yaml docker-cli-compose git ca-certificates curl
 
 COPY vam.py /usr/local/bin/vam
 RUN chmod +x /usr/local/bin/vam

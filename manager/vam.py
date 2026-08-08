@@ -98,6 +98,15 @@ def fetched(app):
     return not app.get("repo") or os.path.isdir(os.path.join(app.get("src_dir", ""), ".git"))
 
 
+def run_setup(app):
+    """Run an app's one-time setup.sh (e.g. DVWA create-db) if it has one.
+    Executes inside the manager, which is on vuln-net and has curl."""
+    hook = os.path.join(app["dir"], "setup.sh")
+    if os.path.exists(hook):
+        print(col(f"  setting up {app['slug']} (one-time, may wait for readiness)...", "d"))
+        subprocess.run(["sh", hook])
+
+
 def ensure_src(app):
     """Clone a repo-backed app's source on first use. Returns True if ready."""
     if fetched(app):
@@ -188,6 +197,8 @@ def cmd_start(apps, args):
         print(col(f"==> starting {a['slug']}  ({a['name']})", "b"))
         if dc(a, "up", "-d").returncode != 0:
             print(col(f"  FAILED: {a['slug']}", "r"))
+            continue
+        run_setup(a)
     if args.all:
         skipped = [a["slug"] for a in apps.values() if a.get("heavy") and not args.heavy]
         if skipped:

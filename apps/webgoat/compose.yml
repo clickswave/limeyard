@@ -12,7 +12,11 @@ services:
     ports:
       - "127.0.0.1:7003:8080"   # WebGoat
       - "127.0.0.1:7004:9090"   # WebWolf
-    networks: [default, vuln-net]
+    networks: [vuln-net]
+    # The image ships a healthcheck that calls curl, which isn't in the image,
+    # so it flaps "unhealthy" forever even though WebGoat serves fine. Disable it.
+    healthcheck:
+      disable: true
 
 networks:
   vuln-net:

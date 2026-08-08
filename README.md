@@ -27,12 +27,18 @@ stack, so nothing clashes.
 
 ```sh
 cd vuln_apps
-docker compose up -d          # start the manager
-
-./vam start --all             # start the fleet (light apps)
-./vam status                  # see what is running + URLs
-./vam stop --all              # stop everything
+./vam start --all      # ONE command: builds the manager, starts every light app,
+                       # and runs each app's first-time setup automatically
+./vam status           # what's running + URLs
+./vam stop --all       # stop everything
 ```
+
+That single `./vam start --all` also runs the one-time setup each app needs
+(DVWA's create-database, bWAPP's install, VAmPI's seed), so every app is usable
+the moment it reports `running` - no manual `/setup.php` or `/install.php` clicks.
+
+Want the manager to stay up as a live status monitor? Run `docker compose up -d`
+first, then use `./vam ...` as above.
 
 `./vam <cmd>` is just a wrapper. The exact same thing without it:
 
@@ -64,11 +70,11 @@ All URLs are `http://127.0.0.1:<port>` (loopback only).
 | App | Port | Stack | Notes |
 |---|---|---|---|
 | juice-shop | 7001 | Node / Angular | modern SPA + REST |
-| dvwa | 7002 | PHP / MariaDB | run `/setup.php` once (admin/password) |
+| dvwa | 7002 | PHP / MariaDB | DB auto-created on start; login admin/password |
 | webgoat | 7003 | Java | + WebWolf on 7004 (OOB catcher) |
 | vampi | 7005 | Python / Flask | OWASP API Top 10 |
 | dvga | 7006 | Python / GraphQL | `/graphql` |
-| bwapp | 7007 | PHP | run `/install.php` once (bee/bug) |
+| bwapp | 7007 | PHP | auto-installed on start; login bee/bug |
 | log4shell | 7009 | Java / Spring | blind-RCE -> OAST |
 | crapi | 7010 | Node/Java/Python | **heavy**; mailhog on 7011 |
 | faultline | 8088 | SvelteKit/Rust/PG/Redis | fetched from GitHub (see below) |
@@ -84,14 +90,22 @@ Drop a folder under `apps/`:
 apps/<name>/
   app.yml       # name, description, category, stack, url
   compose.yml   # the container(s): image, ports (127.0.0.1 only), any DB
+  setup.sh      # optional: one-time init run after start (see below)
 ```
 
 Rules that keep the fleet clean:
 
 - Bind only the web/target port, to `127.0.0.1:<free 70xx port>`.
-- Put the primary service on `[default, vuln-net]`; keep databases on `[default]`
-  only (no host binding). Declare `vuln-net` as `external: true`.
-- Give each app its own DB service and volume (do not share).
+- **Single-container apps:** put the service on `[vuln-net]` only. Do NOT add a
+  per-project network - that conserves Docker's address pool (too many networks
+  and Docker fails with "all predefined address pools have been fully subnetted").
+- **Apps with a database:** put the app on `[default, vuln-net]` and the DB on
+  `[default]` only (private, no host binding). Give each app its own DB service
+  and volume (do not share). Declare `vuln-net` as `external: true`.
+- **First-run setup:** if the app needs a one-time init (create DB, install,
+  seed), add an `apps/<name>/setup.sh`. The manager runs it after `start`, from
+  inside the manager container (which is on `vuln-net` and has `curl`), so it can
+  reach the app by service name, e.g. `curl http://<service>/install.php`.
 
 That is it. The manager picks it up automatically (`./vam list`).
 
