@@ -5,19 +5,67 @@
 
 	let { data } = $props();
 
-	let kindFilter = $state('');
+	let q = $state('');
+	let kind = $state('');
+	let state_ = $state('');
+	let sort = $state('kind');
+	let dir = $state(1);
+	let perPage = $state(25);
+	let pageNo = $state(1);
 	let busy = $state({});
 
-	let shown = $derived(
-		kindFilter ? data.targets.filter((t) => t.kind === kindFilter) : data.targets
+	let kinds = $derived([...new Set(data.targets.map((t) => t.kind))].sort());
+	let states = $derived([...new Set(data.targets.map((t) => t.state.split(' ')[0]))].sort());
+
+	let filtered = $derived(
+		data.targets.filter((t) => {
+			if (kind && t.kind !== kind) return false;
+			if (state_ && !t.state.startsWith(state_)) return false;
+			if (q) {
+				const hay = `${t.name} ${t.slug} ${t.description ?? ''} ${t.upstream.author ?? ''} ${
+					t.stack ?? ''
+				}`.toLowerCase();
+				if (!hay.includes(q.toLowerCase())) return false;
+			}
+			return true;
+		})
 	);
-	let grouped = $derived(
-		shown.reduce((acc, t) => {
-			(acc[t.kind] ??= []).push(t);
-			return acc;
-		}, {})
+
+	let sorted = $derived(
+		[...filtered].sort((a, b) => {
+			const key = (t) =>
+				sort === 'name'
+					? t.name.toLowerCase()
+					: sort === 'state'
+						? t.state
+						: sort === 'author'
+							? (t.upstream.author ?? '~').toLowerCase()
+							: `${t.kind}~${t.name.toLowerCase()}`;
+			return key(a) < key(b) ? -dir : key(a) > key(b) ? dir : 0;
+		})
 	);
-	let kindsPresent = $derived([...new Set(data.targets.map((t) => t.kind))].sort());
+
+	let pages = $derived(Math.max(1, Math.ceil(sorted.length / perPage)));
+	let clamped = $derived(Math.min(pageNo, pages));
+	let rows = $derived(sorted.slice((clamped - 1) * perPage, clamped * perPage));
+
+	// Any filter change puts you back on page one, otherwise you land on an
+	// empty page and think the filter matched nothing.
+	$effect(() => {
+		q;
+		kind;
+		state_;
+		perPage;
+		pageNo = 1;
+	});
+
+	function setSort(col) {
+		if (sort === col) dir = -dir;
+		else {
+			sort = col;
+			dir = 1;
+		}
+	}
 
 	async function act(slug, action) {
 		busy = { ...busy, [slug]: action };
@@ -32,8 +80,6 @@
 		}, 1500);
 	}
 
-	// State transitions arrive over SSE, so the dashboard reflects a container
-	// coming up without anyone reaching for refresh.
 	onMount(() => {
 		const es = new EventSource('/api/events');
 		let t;
@@ -47,236 +93,221 @@
 		};
 	});
 
-	const stateClass = (s) =>
-		s === 'running' ? 'ok' : s === 'stopped' ? 'idle' : s === 'unhealthy' ? 'crit' : 'warn';
+	const tone = (s) =>
+		s === 'running' ? 'ok' : s === 'unhealthy' ? 'crit' : s === 'stopped' ? '' : 'warn';
+	const caret = (col) => (sort === col ? (dir === 1 ? ' ↑' : ' ↓') : '');
 </script>
 
-<h1>Targets</h1>
-<p class="sub">
-	{data.targets.length} targets across {kindsPresent.length} kinds. Each runs as its own isolated compose
-	project.
-</p>
-
-<div class="filters">
-	<button class:on={kindFilter === ''} onclick={() => (kindFilter = '')}>all</button>
-	{#each kindsPresent as k}
-		<button class:on={kindFilter === k} onclick={() => (kindFilter = k)}>{k}</button>
-	{/each}
+<div class="head">
+	<h1>Targets</h1>
+	<span class="faint small">{data.targets.length} across {kinds.length} kinds</span>
 </div>
 
-{#each Object.entries(grouped) as [kind, targets]}
-	<h2>{kind}</h2>
-	<div class="grid">
-		{#each targets as t}
-			<article class="card">
-				<div class="head">
-					<a class="name" href="/targets/{t.slug}">{t.name}</a>
-					<span class="pill {stateClass(t.state)}">{t.state}</span>
-				</div>
+<div class="toolbar">
+	<input type="search" placeholder="Search name, author, stack…" bind:value={q} />
+	<select bind:value={kind}>
+		<option value="">All kinds</option>
+		{#each kinds as k}<option value={k}>{k}</option>{/each}
+	</select>
+	<select bind:value={state_}>
+		<option value="">Any state</option>
+		{#each states as s}<option value={s}>{s}</option>{/each}
+	</select>
+	{#if q || kind || state_}
+		<button
+			class="btn sm"
+			onclick={() => {
+				q = '';
+				kind = '';
+				state_ = '';
+			}}>Clear</button
+		>
+	{/if}
+	<span class="spacer"></span>
+	<select bind:value={perPage} title="rows per page">
+		<option value={10}>10</option>
+		<option value={25}>25</option>
+		<option value={50}>50</option>
+	</select>
+</div>
 
-				<!-- Attribution sits directly under the name, on the card itself.
-				     Not a tooltip, not buried in a detail view. -->
-				<div class="by">
-					{#if byline(t.upstream)}
-						by
-						{#if t.upstream.repo}
-							<a href={t.upstream.repo} target="_blank" rel="noreferrer noopener"
-								>{byline(t.upstream)}</a
+<div class="table-wrap">
+	<table>
+		<thead>
+			<tr>
+				<th><button class="sortcol" onclick={() => setSort('name')}>Target{caret('name')}</button></th
+				>
+				<th><button class="sortcol" onclick={() => setSort('kind')}>Kind{caret('kind')}</button></th>
+				<th
+					><button class="sortcol" onclick={() => setSort('state')}>State{caret('state')}</button></th
+				>
+				<th>Endpoint</th>
+				<th
+					><button class="sortcol" onclick={() => setSort('author')}>Author{caret('author')}</button
+					></th
+				>
+				<th>Key</th>
+				<th class="right">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each rows as t (t.slug)}
+				<tr>
+					<td>
+						<a class="tname" href="/targets/{t.slug}">{t.name}</a>
+						{#if t.heavy}<span class="badge">heavy</span>{/if}
+						<div class="faint small desc">{t.description ?? ''}</div>
+					</td>
+					<td><span class="badge">{t.kind}</span></td>
+					<td class="nowrap"
+						><span class="badge {tone(t.state.split(' ')[0])}"><i class="dot"></i>{t.state}</span></td
+					>
+					<td class="mono">
+						{#if t.url}<a class="endpoint" href={t.url} target="_blank" rel="noreferrer noopener" title={t.url}
+								>{t.url}</a
+							>
+						{:else}<span class="faint endpoint">lab network</span>{/if}
+					</td>
+					<!-- Attribution is a column, not a hover. Nearly every target is
+					     someone else's work and several declare no licence. -->
+					<td>
+						{#if t.upstream.author}
+							<div class="author" title={byline(t.upstream)}>
+								{#if t.upstream.repo}
+									<a href={t.upstream.repo} target="_blank" rel="noreferrer noopener"
+										>{byline(t.upstream)}</a
+									>
+								{:else}{byline(t.upstream)}{/if}
+							</div>
+							<span class="badge {licenceRisk(t.upstream.license) ? 'crit' : ''}"
+								>{t.upstream.license}</span
 							>
 						{:else}
-							<span>{byline(t.upstream)}</span>
+							<span class="badge crit">author missing</span>
 						{/if}
-					{:else}
-						<span class="missing">author missing from target.yml</span>
-					{/if}
-					<span class="lic" class:risk={licenceRisk(t.upstream.license)}>
-						{t.upstream.license}
-					</span>
-				</div>
+					</td>
+					<td>
+						{#if t.has_truth}<span class="badge accent">yes</span>{:else}<span class="faint small"
+								>none</span
+							>{/if}
+					</td>
+					<td class="right nowrap">
+						{#if t.kind === 'mobile'}
+							<span class="faint small">fixture</span>
+						{:else if t.state === 'stopped'}
+							<button class="btn sm primary" disabled={!!busy[t.slug]} onclick={() => act(t.slug, 'start')}>
+								{busy[t.slug] === 'start' ? 'Starting…' : 'Start'}
+							</button>
+						{:else}
+							<button class="btn sm" disabled={!!busy[t.slug]} onclick={() => act(t.slug, 'restart')}
+								>Restart</button
+							>
+							<button class="btn sm" disabled={!!busy[t.slug]} onclick={() => act(t.slug, 'stop')}>
+								{busy[t.slug] === 'stop' ? 'Stopping…' : 'Stop'}
+							</button>
+						{/if}
+					</td>
+				</tr>
+			{/each}
+			{#if !rows.length}
+				<tr><td colspan="7" class="empty">No targets match those filters.</td></tr>
+			{/if}
+		</tbody>
+	</table>
+</div>
 
-				<p class="desc">{t.description ?? ''}</p>
-
-				<div class="meta">
-					{#if t.url}<a class="url" href={t.url} target="_blank" rel="noreferrer noopener"
-							>{t.url}</a
-						>{/if}
-					{#if t.heavy}<span class="chip">heavy</span>{/if}
-					{#if t.egress}<span class="chip">egress</span>{/if}
-					<span class="chip" class:muted={!t.has_truth}>
-						{t.has_truth ? 'answer key' : 'no answer key'}
-					</span>
-				</div>
-
-				<div class="actions">
-					{#if t.state === 'stopped'}
-						<button disabled={!!busy[t.slug]} onclick={() => act(t.slug, 'start')}>
-							{busy[t.slug] === 'start' ? 'starting…' : 'start'}
-						</button>
-					{:else}
-						<button disabled={!!busy[t.slug]} onclick={() => act(t.slug, 'stop')}>
-							{busy[t.slug] === 'stop' ? 'stopping…' : 'stop'}
-						</button>
-						<button disabled={!!busy[t.slug]} onclick={() => act(t.slug, 'restart')}>restart</button
-						>
-					{/if}
-					<a class="btn" href="/targets/{t.slug}">detail</a>
-				</div>
-			</article>
-		{/each}
-	</div>
-{/each}
-
-{#if data.targets.length === 0}
-	<p class="empty">No targets found. Is <code>LIMEYARD_DIR</code> pointing at the checkout?</p>
-{/if}
+<div class="pager">
+	<span class="faint small">
+		{#if sorted.length}
+			{(clamped - 1) * perPage + 1}–{Math.min(clamped * perPage, sorted.length)} of {sorted.length}
+		{:else}0 results{/if}
+	</span>
+	<span class="spacer"></span>
+	<button class="btn sm" disabled={clamped <= 1} onclick={() => (pageNo = clamped - 1)}>Prev</button>
+	<span class="small faint">Page {clamped} of {pages}</span>
+	<button class="btn sm" disabled={clamped >= pages} onclick={() => (pageNo = clamped + 1)}
+		>Next</button
+	>
+</div>
 
 <style>
-	.sub {
-		color: var(--dim);
-		margin: 0 0 16px;
-	}
-	.filters {
-		display: flex;
-		gap: 6px;
-		flex-wrap: wrap;
-		margin-bottom: 6px;
-	}
-	.filters button {
-		background: var(--panel);
-		border: 1px solid var(--line);
-		color: var(--dim);
-		padding: 3px 10px;
-		border-radius: 3px;
-		cursor: pointer;
-		font: inherit;
-		font-size: 12px;
-	}
-	.filters button.on {
-		color: var(--bg);
-		background: var(--lime);
-		border-color: var(--lime);
-	}
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-		gap: 12px;
-	}
-	.card {
-		background: var(--panel);
-		border: 1px solid var(--line);
-		border-radius: 5px;
-		padding: 13px 14px;
-	}
 	.head {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		margin-bottom: 16px;
+	}
+	.toolbar {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		margin-bottom: 12px;
+		flex-wrap: wrap;
+	}
+	.toolbar input[type='search'] {
+		width: 260px;
+	}
+	.spacer {
+		flex: 1;
+	}
+	.sortcol {
+		background: none;
+		border: 0;
+		padding: 0;
+		font: inherit;
+		color: inherit;
+		text-transform: inherit;
+		letter-spacing: inherit;
+		cursor: pointer;
+	}
+	.sortcol:hover {
+		color: var(--ink);
+	}
+	.tname {
+		font-weight: 500;
+		color: var(--ink);
+	}
+	.tname:hover {
+		color: var(--accent);
+		text-decoration: none;
+	}
+	.desc {
+		max-width: 300px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		margin-top: 1px;
+	}
+	.author {
+		font-size: 12.5px;
+		color: var(--ink-2);
+		max-width: 200px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	td .badge {
+		margin-top: 3px;
+	}
+	/* Fixed column widths keep every row one height, so the table scans.
+	   Everything but Target and Endpoint is sized to its content. */
+	th:nth-child(1) { width: 27%; }
+	th:nth-child(2),
+	th:nth-child(3),
+	th:nth-child(6),
+	th:nth-child(7) { width: 1%; white-space: nowrap; }
+	th:nth-child(5) { width: 190px; }
+	.endpoint {
+		display: block;
+		max-width: 230px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.pager {
 		display: flex;
 		align-items: center;
 		gap: 10px;
-	}
-	.name {
-		font-weight: 700;
-		text-decoration: none;
-		color: var(--ink);
-	}
-	.name:hover {
-		color: var(--lime);
-	}
-	.pill {
-		margin-left: auto;
-		font-size: 11px;
-		padding: 2px 7px;
-		border-radius: 10px;
-		border: 1px solid var(--line);
-		color: var(--dim);
-	}
-	.pill.ok {
-		color: var(--ok);
-		border-color: var(--ok);
-	}
-	.pill.warn {
-		color: var(--warn);
-		border-color: var(--warn);
-	}
-	.pill.crit {
-		color: var(--crit);
-		border-color: var(--crit);
-	}
-	.by {
-		margin-top: 3px;
-		font-size: 12px;
-		color: var(--dim);
-	}
-	.by a {
-		color: #9fb8c9;
-		text-decoration: none;
-		border-bottom: 1px dotted #56707f;
-	}
-	.by .missing {
-		color: var(--crit);
-	}
-	.lic {
-		margin-left: 7px;
-		font-size: 11px;
-		padding: 1px 6px;
-		border-radius: 3px;
-		border: 1px solid var(--line);
-	}
-	.lic.risk {
-		color: var(--crit);
-		border-color: var(--crit);
-	}
-	.desc {
-		color: var(--dim);
-		font-size: 12.5px;
-		margin: 9px 0 10px;
-		min-height: 32px;
-	}
-	.meta {
-		display: flex;
-		gap: 7px;
-		align-items: center;
-		flex-wrap: wrap;
-		margin-bottom: 11px;
-	}
-	.url {
-		font-size: 12px;
-		text-decoration: none;
-	}
-	.chip {
-		font-size: 11px;
-		color: var(--dim);
-		border: 1px solid var(--line);
-		border-radius: 3px;
-		padding: 1px 6px;
-	}
-	.chip.muted {
-		opacity: 0.5;
-	}
-	.actions {
-		display: flex;
-		gap: 7px;
-	}
-	.actions button,
-	.actions .btn {
-		background: var(--panel2);
-		border: 1px solid var(--line);
-		color: var(--ink);
-		padding: 4px 11px;
-		border-radius: 3px;
-		cursor: pointer;
-		font: inherit;
-		font-size: 12px;
-		text-decoration: none;
-	}
-	.actions button:hover:not(:disabled),
-	.actions .btn:hover {
-		border-color: var(--lime);
-		color: var(--lime);
-	}
-	.actions button:disabled {
-		opacity: 0.5;
-		cursor: default;
-	}
-	.empty {
-		color: var(--dim);
+		margin-top: 12px;
 	}
 </style>

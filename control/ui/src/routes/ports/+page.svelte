@@ -1,58 +1,72 @@
 <script>
 	let { data } = $props();
-	let clashes = $derived(data.ports.ports?.filter((p) => p.clash) ?? []);
+	let clashes = $derived((data.ports.ports ?? []).filter((p) => p.clash));
+	let failed = $derived((data.doctor.checks ?? []).filter((c) => !c.ok));
 </script>
 
-<h1>Ports and health</h1>
+<div class="head">
+	<h1>Ports and health</h1>
+	<span class="badge {data.doctor.ok ? 'ok' : 'crit'}"
+		><i class="dot"></i>doctor {data.doctor.ok ? 'pass' : 'fail'}</span
+	>
+</div>
 
 {#if data.ports.off_loopback?.length}
-	<p class="alert">
-		Targets bound off loopback. This lab is deliberately vulnerable and must never be reachable
-		from another machine.
+	<p class="notice crit">
+		{data.ports.off_loopback.length} target(s) bound off loopback. This lab is deliberately vulnerable
+		and must never be reachable from another machine:
+		{data.ports.off_loopback.map((o) => `${o.target}/${o.service} on ${o.bind}`).join(', ')}
 	</p>
-	<ul>
-		{#each data.ports.off_loopback as o}
-			<li class="bad">{o.target}/{o.service} on {o.bind}</li>
-		{/each}
-	</ul>
+{/if}
+{#if clashes.length}
+	<p class="notice crit">{clashes.length} port clash(es) detected.</p>
 {/if}
 
 <h2>Host port map</h2>
-{#if clashes.length}<p class="alert">{clashes.length} port clash(es) detected.</p>{/if}
-<table>
-	<thead><tr><th>port</th><th>owner</th></tr></thead>
-	<tbody>
-		{#each data.ports.ports ?? [] as p}
-			<tr class:bad={p.clash}>
-				<td class="mono">127.0.0.1:{p.port}</td>
-				<td>{p.owners.join(', ')}{p.clash ? '  CLASH' : ''}</td>
-			</tr>
-		{/each}
-	</tbody>
-</table>
+<div class="table-wrap">
+	<table>
+		<thead><tr><th>Port</th><th>Owner</th><th class="right">Status</th></tr></thead>
+		<tbody>
+			{#each data.ports.ports ?? [] as p}
+				<tr>
+					<td class="mono nowrap">127.0.0.1:{p.port}</td>
+					<td class="mono">{p.owners.join(', ')}</td>
+					<td class="right"
+						>{#if p.clash}<span class="badge crit">clash</span>{:else}<span class="faint small">ok</span
+							>{/if}</td
+					>
+				</tr>
+			{/each}
+			{#if !(data.ports.ports ?? []).length}<tr><td colspan="3" class="empty">No published ports.</td></tr>{/if}
+		</tbody>
+	</table>
+</div>
 
-<h2>Doctor</h2>
-<p class={data.doctor.ok ? 'ok' : 'bad'}>{data.doctor.ok ? 'PASS' : 'FAIL'}</p>
-<table>
-	<tbody>
-		{#each data.doctor.checks ?? [] as c}
-			<tr>
-				<td class={c.ok ? 'ok' : 'bad'}>{c.ok ? 'ok' : '!!'}</td>
-				<td>{c.check}{c.target ? ` (${c.target})` : ''}</td>
-				<td class="dim">{c.detail ?? ''}</td>
-			</tr>
-		{/each}
-	</tbody>
-</table>
+<h2>Checks</h2>
+<div class="table-wrap">
+	<table>
+		<thead><tr><th>Check</th><th>Target</th><th>Detail</th><th class="right">Result</th></tr></thead>
+		<tbody>
+			{#each data.doctor.checks ?? [] as c}
+				<tr>
+					<td>{c.check}</td>
+					<td class="faint">{c.target ?? '—'}</td>
+					<td class="faint small">{c.detail ?? ''}</td>
+					<td class="right"
+						><span class="badge {c.ok ? 'ok' : 'crit'}">{c.ok ? 'pass' : 'fail'}</span></td
+					>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>
+{#if failed.length}
+	<p class="faint small" style="margin-top:10px">
+		{failed.length} failing check(s). <code>./lime doctor</code> prints the same list with fixes.
+	</p>
+{/if}
 
 <style>
-	table { width: 100%; border-collapse: collapse; font-size: 13px; }
-	th { text-align: left; color: var(--dim); font-weight: 400; border-bottom: 1px solid var(--line); padding: 5px 8px; }
-	td { padding: 5px 8px; border-bottom: 1px solid var(--panel2); }
-	.mono { font-size: 12px; }
-	.bad { color: var(--crit); }
-	.ok { color: var(--ok); }
-	.dim { color: var(--dim); }
-	.alert { color: var(--crit); border: 1px solid var(--crit); padding: 8px 11px; border-radius: 4px; font-size: 13px; }
-	ul { margin: 6px 0 0; padding-left: 18px; font-size: 13px; }
+	.head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+	.notice { margin-bottom: 12px; }
 </style>

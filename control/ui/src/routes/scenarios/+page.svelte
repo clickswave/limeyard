@@ -2,6 +2,7 @@
 	import { invalidateAll } from '$app/navigation';
 	let { data } = $props();
 	let busy = $state({});
+	let open = $state({});
 
 	async function act(slug, action) {
 		busy = { ...busy, [slug]: action };
@@ -9,96 +10,131 @@
 		setTimeout(() => {
 			busy = { ...busy, [slug]: null };
 			invalidateAll();
-		}, 2000);
+		}, 2500);
 	}
+	const tone = (s) => (s === 'running' ? 'ok' : s === 'stopped' ? '' : 'warn');
 </script>
 
-<h1>Scenarios</h1>
-<p class="sub">
-	A scenario wires several targets into a network topology with authoritative DNS, so subdomain
-	enumeration, port scanning and service fingerprinting have something real to enumerate. The zone
-	file is the answer key: Docker network aliases are deliberately not used, because they never
-	appear in a zone transfer and would make the topology disagree with the truth.
+<div class="head">
+	<h1>Scenarios</h1>
+	<span class="faint small">{data.scenarios.length}</span>
+</div>
+<p class="lede muted">
+	A scenario wires targets into a network topology with authoritative DNS, so subdomain enumeration,
+	port scanning and service fingerprinting have something real to enumerate. The zone file is the
+	answer key: Docker network aliases are deliberately not used, since they never appear in a zone
+	transfer and would make the topology disagree with the truth.
 </p>
 
 {#each data.scenarios as s}
-	<article class="scn">
-		<div class="head">
+	<section class="scn">
+		<div class="shead">
 			<strong>{s.name}</strong>
-			<span class="pill" class:ok={s.state === 'running'}>{s.state}</span>
-			<div class="actions">
-				{#if s.state === 'stopped'}
-					<button disabled={!!busy[s.slug]} onclick={() => act(s.slug, 'up')}>
-						{busy[s.slug] ? 'starting…' : 'up'}
-					</button>
-				{:else}
-					<button disabled={!!busy[s.slug]} onclick={() => act(s.slug, 'down')}>down</button>
-				{/if}
-			</div>
+			<span class="badge {tone(s.state)}"><i class="dot"></i>{s.state}</span>
+			<span class="spacer"></span>
+			{#if s.state === 'stopped'}
+				<button class="btn sm primary" disabled={!!busy[s.slug]} onclick={() => act(s.slug, 'up')}>
+					{busy[s.slug] ? 'Starting…' : 'Bring up'}
+				</button>
+			{:else}
+				<button class="btn sm" disabled={!!busy[s.slug]} onclick={() => act(s.slug, 'down')}
+					>Tear down</button
+				>
+			{/if}
+			<button class="btn sm" onclick={() => (open = { ...open, [s.slug]: !open[s.slug] })}>
+				{open[s.slug] ? 'Hide' : 'Topology'}
+			</button>
 		</div>
-		<p class="desc">{s.description ?? ''}</p>
+		<p class="muted small sdesc">{s.description ?? ''}</p>
 
-		{#if s.zones?.length}
-			<h3>DNS zones</h3>
-			<table>
-				<tbody>
-					{#each s.zones as z}
-						<tr>
-							<td class="mono">{z.zone}</td>
-							<td class="dim">transfer {z.allow_transfer ? 'open' : 'refused'}</td>
-							<td class="dim">{z.note ?? ''}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{/if}
+		<div class="counts">
+			<span class="badge">{s.hosts?.length ?? 0} hosts</span>
+			<span class="badge">{s.zones?.length ?? 0} zones</span>
+			{#if s.expected_assets?.subdomains_via_axfr}
+				<span class="badge accent"
+					>{s.expected_assets.subdomains_via_axfr.length} expected subdomains</span
+				>
+			{/if}
+		</div>
 
-		{#if s.hosts?.length}
-			<h3>Hosts</h3>
-			<table>
-				<thead><tr><th>ip</th><th>names</th><th>ports</th><th>note</th></tr></thead>
-				<tbody>
-					{#each s.hosts as h}
-						<tr>
-							<td class="mono">{h.ip}</td>
-							<td class="mono">{(h.names ?? []).join(', ')}</td>
-							<td class="dim">{(h.ports ?? []).join(', ')}</td>
-							<td class="dim">{h.note ?? ''}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{/if}
+		{#if open[s.slug]}
+			{#if s.zones?.length}
+				<h3>DNS zones</h3>
+				<div class="table-wrap">
+					<table>
+						<thead><tr><th>Zone</th><th>Transfer</th><th>Note</th></tr></thead>
+						<tbody>
+							{#each s.zones as z}
+								<tr>
+									<td class="mono">{z.zone}</td>
+									<td
+										><span class="badge {z.allow_transfer ? 'warn' : ''}"
+											>{z.allow_transfer ? 'open' : 'refused'}</span
+										></td
+									>
+									<td class="faint small">{z.note ?? ''}</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{/if}
 
-		{#if s.expected_assets && Object.keys(s.expected_assets).length}
-			<h3>Expected assets <span class="dim">what discovery should find</span></h3>
-			<table>
-				<tbody>
-					{#each Object.entries(s.expected_assets) as [k, v]}
-						<tr><td class="k">{k}</td><td class="mono">{Array.isArray(v) ? v.join(', ') : v}</td></tr>
-					{/each}
-				</tbody>
-			</table>
+			{#if s.hosts?.length}
+				<h3>Hosts</h3>
+				<div class="table-wrap">
+					<table>
+						<thead><tr><th>IP</th><th>Names</th><th>Ports</th><th>Note</th></tr></thead>
+						<tbody>
+							{#each s.hosts as h}
+								<tr>
+									<td class="mono nowrap">{h.ip}</td>
+									<td class="mono">{(h.names ?? []).join(', ') || '—'}</td>
+									<td class="mono faint nowrap">{(h.ports ?? []).join(', ')}</td>
+									<td class="faint small">{h.note ?? ''}</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{/if}
+
+			{#if s.expected_assets && Object.keys(s.expected_assets).length}
+				<h3>Expected assets <span class="faint" style="font-weight:400">what discovery should find</span></h3>
+				<div class="table-wrap">
+					<table>
+						<tbody>
+							{#each Object.entries(s.expected_assets) as [k, v]}
+								<tr>
+									<td class="akey">{k.replaceAll('_', ' ')}</td>
+									<td class="mono small">
+										{#if Array.isArray(v)}
+											{v.join(', ')}
+										{:else if v && typeof v === 'object'}
+											{#each Object.entries(v) as [ik, iv]}
+												<div>{ik} <span class="faint">→</span> {Array.isArray(iv) ? iv.join(', ') : iv}</div>
+											{/each}
+										{:else}{v}{/if}
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{/if}
 		{/if}
-	</article>
+	</section>
 {/each}
 
-{#if !data.scenarios.length}<p class="dim">No scenarios defined yet.</p>{/if}
+{#if !data.scenarios.length}<p class="empty">No scenarios defined.</p>{/if}
 
 <style>
-	.sub { color: var(--dim); margin: 0 0 16px; max-width: 76ch; }
-	.scn { background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 13px 15px; margin-bottom: 14px; }
-	.head { display: flex; align-items: center; gap: 11px; }
-	.pill { font-size: 11px; padding: 2px 7px; border-radius: 10px; border: 1px solid var(--line); color: var(--dim); }
-	.pill.ok { color: var(--ok); border-color: var(--ok); }
-	.actions { margin-left: auto; }
-	button { background: var(--panel2); border: 1px solid var(--line); color: var(--ink); padding: 3px 11px; border-radius: 3px; cursor: pointer; font: inherit; font-size: 12px; }
-	.desc { color: var(--dim); font-size: 13px; }
-	h3 { font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: .07em; margin: 15px 0 6px; }
-	table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-	th { text-align: left; color: var(--dim); font-weight: 400; border-bottom: 1px solid var(--line); padding: 4px 8px; }
-	td { padding: 4px 8px; border-bottom: 1px solid var(--panel2); }
-	.mono { font-size: 12px; }
-	.dim { color: var(--dim); }
-	.k { color: var(--dim); width: 190px; }
+	.head { display: flex; align-items: baseline; gap: 10px; }
+	.lede { max-width: 78ch; margin: 6px 0 18px; font-size: 13px; }
+	.scn { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; background: var(--bg); }
+	.shead { display: flex; align-items: center; gap: 9px; }
+	.spacer { flex: 1; }
+	.sdesc { margin: 7px 0 10px; max-width: 84ch; }
+	.counts { display: flex; gap: 6px; }
+	.akey { color: var(--ink-2); width: 210px; font-size: 12.5px; }
 </style>
