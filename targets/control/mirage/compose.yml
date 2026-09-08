@@ -1,11 +1,26 @@
+# Hardened by limeyard. These containers are deliberately vulnerable and we
+# achieve RCE inside them on purpose, so the container is the security boundary:
+#   no-new-privileges  a setuid binary inside cannot escalate
+#   cap_drop ALL       capabilities added back one at a time, per image
+#   pids_limit         a fork bomb stays inside its own container
+#   mem_limit          a DoS target cannot take the host down with it
+# Run `./lime audit` to check these invariants still hold.
+
 networks:
   lime-web:
     external: true
-
 services:
   mirage:
     build: .
     image: limeyard/mirage:latest
-    ports: ["127.0.0.1:7301:8080"]
-    networks: [lime-web]
+    ports:
+    - 127.0.0.1:7301:8080
+    networks:
+    - lime-web
     restart: unless-stopped
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 512
+    mem_limit: 768m

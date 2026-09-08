@@ -1,12 +1,27 @@
 # Single-container blind-RCE target. Web on 127.0.0.1:7009.
+
+# Hardened by limeyard. These containers are deliberately vulnerable and we
+# achieve RCE inside them on purpose, so the container is the security boundary:
+#   no-new-privileges  a setuid binary inside cannot escalate
+#   cap_drop ALL       capabilities added back one at a time, per image
+#   pids_limit         a fork bomb stays inside its own container
+#   mem_limit          a DoS target cannot take the host down with it
+# Run `./lime audit` to check these invariants still hold.
+
 services:
   log4shell:
-    image: ghcr.io/christophetd/log4shell-vulnerable-app:latest
+    image: ghcr.io/christophetd/log4shell-vulnerable-app:latest@sha256:6f88430688108e512f7405ac3c73d47f5c370780b94182854ea2cddc6bd59929
     restart: unless-stopped
     ports:
-      - "127.0.0.1:7009:8080"
-    networks: [vuln-net]
-
+    - 127.0.0.1:7009:8080
+    networks:
+    - lime-web
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 512
+    mem_limit: 1500m
 networks:
-  vuln-net:
+  lime-web:
     external: true

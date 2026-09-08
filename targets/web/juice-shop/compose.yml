@@ -1,12 +1,27 @@
-# Single-container app, no database. Web on 127.0.0.1:7001 + shared vuln-net.
+# Single-container app, no database. Web on 127.0.0.1:7001 + shared lime-web.
+
+# Hardened by limeyard. These containers are deliberately vulnerable and we
+# achieve RCE inside them on purpose, so the container is the security boundary:
+#   no-new-privileges  a setuid binary inside cannot escalate
+#   cap_drop ALL       capabilities added back one at a time, per image
+#   pids_limit         a fork bomb stays inside its own container
+#   mem_limit          a DoS target cannot take the host down with it
+# Run `./lime audit` to check these invariants still hold.
+
 services:
   juiceshop:
-    image: bkimminich/juice-shop:latest
+    image: bkimminich/juice-shop:latest@sha256:e68144772ebaaca0ec117b38d44903af92416793230288ef7c5437fc4f26850a
     restart: unless-stopped
     ports:
-      - "127.0.0.1:7001:3000"
-    networks: [vuln-net]
-
+    - 127.0.0.1:7001:3000
+    networks:
+    - lime-web
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 512
+    mem_limit: 768m
 networks:
-  vuln-net:
+  lime-web:
     external: true

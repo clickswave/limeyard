@@ -1,15 +1,30 @@
 # Single-container Flask API (uses its own embedded sqlite). Web on 127.0.0.1:7005.
+
+# Hardened by limeyard. These containers are deliberately vulnerable and we
+# achieve RCE inside them on purpose, so the container is the security boundary:
+#   no-new-privileges  a setuid binary inside cannot escalate
+#   cap_drop ALL       capabilities added back one at a time, per image
+#   pids_limit         a fork bomb stays inside its own container
+#   mem_limit          a DoS target cannot take the host down with it
+# Run `./lime audit` to check these invariants still hold.
+
 services:
   vampi:
-    image: erev0s/vampi:latest
+    image: erev0s/vampi:latest@sha256:0a5a224b6e14ae7da6a6ea265178ff71286ff903aec74adee98f660bb0e4ca12
     restart: unless-stopped
     environment:
-      - vulnerable=1
-      - tokentimetolive=60
+    - vulnerable=1
+    - tokentimetolive=60
     ports:
-      - "127.0.0.1:7005:5000"
-    networks: [vuln-net]
-
+    - 127.0.0.1:7005:5000
+    networks:
+    - lime-web
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 512
+    mem_limit: 768m
 networks:
-  vuln-net:
+  lime-web:
     external: true

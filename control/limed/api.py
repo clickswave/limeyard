@@ -20,6 +20,14 @@ import scorer
 
 BIND = os.environ.get("LIMED_BIND", "0.0.0.0")
 
+# limed holds the Docker socket, which is root-equivalent on the host, and it
+# has to sit on the same network as the targets so setup hooks can curl them.
+# Docker bridges are bidirectional, so "limed can reach targets but targets
+# cannot reach limed" is not expressible in compose. A shared secret is: a
+# target that gets popped can open a socket to limed and learn nothing.
+TOKEN = os.environ.get("LIME_TOKEN", "").strip()
+OPEN_PATHS = {"/api/health"}
+
 
 def target_view(t, with_truth=False):
     label, _ = lime.state_of(t)
@@ -122,6 +130,15 @@ class Handler(BaseHTTPRequestHandler):
         except Exception:
             return {}
 
+    def _authed(self, path):
+        if not TOKEN or path in OPEN_PATHS:
+            return True
+        sent = self.headers.get("X-Lime-Token", "")
+        # constant-time compare; the token is short and an attacker on the lab
+        # network could otherwise time their way to it.
+        import hmac
+        return hmac.compare_digest(sent, TOKEN)
+
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -142,6 +159,10 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(500, {"error": str(e)})
 
     def _get(self, p, q):
+        if p == "/api/health":
+            return self._send(200, {"ok": True, "auth": bool(TOKEN)})
+        if not self._authed(p):
+            return self._send(401, {"error": "missing or bad X-Lime-Token"})
         if p in ("/", "/api"):
             return self._send(200, {"service": "limed", "endpoints": [
                 "/api/targets", "/api/targets/<slug>", "/api/scenarios",
@@ -322,6 +343,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(500, {"error": str(e)})
 
     def _post(self, p):
+        if not self._authed(p):
+            return self._send(401, {"error": "missing or bad X-Lime-Token"})
         if p == "/api/score":
             body = self._body()
             findings = body.get("findings") or []
@@ -399,6 +422,11 @@ def serve(port=7099):
     srv = ThreadingHTTPServer((BIND, port), Handler)
     srv.daemon_threads = True
     print(f"limed listening on {BIND}:{port}")
+    if TOKEN:
+        print("auth: X-Lime-Token required")
+    else:
+        print("auth: DISABLED (set LIME_TOKEN). Any container on lime-web can "
+              "drive this daemon, and it holds the Docker socket.")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

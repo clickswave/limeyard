@@ -7,6 +7,12 @@ machine-readable answer key per target, and a control panel to drive it all.
 > **Everything here is deliberately vulnerable. Local testing only.** Do not
 > expose it to the internet or an untrusted network. Published ports bind to
 > `127.0.0.1`; lab targets bind to nothing at all.
+>
+> Our own scanner gets RCE inside these containers on purpose, so the container
+> is treated as a security boundary: every image is pinned by digest, every
+> service drops all capabilities and adds back a minimum, and `./lime audit`
+> enforces it. Read [SECURITY.md](SECURITY.md) before first run, including the
+> part about what container isolation does not cover.
 
 limeyard was `vuln_apps`. It was renamed because it stopped being a folder of
 applications: it now holds bare services, a DNS zone, a WAF pair, a precision
@@ -28,12 +34,16 @@ cannot fail cannot detect a regression. Three things were wrong structurally:
 ## Quick start
 
 ```sh
-cp .env.example .env && echo "LIMEYARD_DIR=$PWD" >> .env
+cp .env.example .env
+echo "LIMEYARD_DIR=$PWD"                 >> .env
+echo "LIME_TOKEN=$(openssl rand -hex 24)" >> .env   # required, see SECURITY.md
 docker compose up -d          # control plane + UI on http://127.0.0.1:7000
 ./lime start --all            # every light target
 ./lime scenario-up estate     # the network estate: DNS, vhosts, services
 ./lime credits                # who wrote each target, and under what licence
 ./lime doctor                 # environment, attribution and disk checks
+./lime audit                  # container hardening + supply chain invariants
+./lime pin                    # report image drift against the registry
 ```
 
 ## Concepts
@@ -125,6 +135,30 @@ Rules that keep the lab clean:
   manager refuses to register one. See below.
 - limeyard vendors no third-party source. Put `repo:` and `compose:` in the
   manifest and the source is fetched at runtime into `<target>/src` instead.
+
+## Trust and isolation
+
+Targets are other people's deliberately vulnerable software, so provenance is
+recorded rather than assumed, and the runtime is constrained rather than
+trusted. [SECURITY.md](SECURITY.md) has the full picture; the short version:
+
+- Every image is **pinned by digest**, not a floating tag, to the digest that
+  was pulled and tested here. `./lime pin` reports drift.
+- Publishers are documented per image: Docker Official Images, project
+  organisation accounts (OWASP, ISC, Traefik, Prometheus), or the author's own
+  namespace. The two weakest links, `raesene/bwapp` (archived, last rebuilt
+  2022, no licence) and `delfer/alpine-ftp-server` (one individual), are named
+  as such.
+- Every service runs with `no-new-privileges`, `cap_drop: ALL` plus a minimum
+  per-image `cap_add`, a pid ceiling and a memory ceiling. Database tiers sit on
+  `internal: true` networks with no route out.
+- `limed` holds the Docker socket, which is root on the host, so it requires a
+  shared secret on every call. A popped target can reach it and learn nothing.
+- `./lime audit` fails on `privileged`, host networking, a socket mount in a
+  target, an off-loopback bind, an unpinned image or a missing token.
+
+Nothing here defends against a kernel-level container escape. For that, use a
+disposable VM.
 
 ## Attribution
 

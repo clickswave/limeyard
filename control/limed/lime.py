@@ -515,6 +515,111 @@ def cmd_doctor(targets, args):
     return 0 if ok else 1
 
 
+# ------------------------------------------------------------------- audit ---
+# The lab runs deliberately vulnerable software and we get RCE inside it on
+# purpose. These invariants are what keeps that inside the container, so they
+# are checked mechanically rather than trusted to review.
+
+REQUIRED = ["security_opt", "cap_drop", "pids_limit", "mem_limit"]
+BANNED_CAPS = {"SYS_ADMIN", "SYS_PTRACE", "SYS_MODULE", "NET_ADMIN", "NET_RAW", "ALL"}
+
+
+def _compose_docs(paths):
+    for p in paths:
+        if not os.path.exists(p):
+            continue
+        try:
+            with open(p) as f:
+                doc = yaml.safe_load(f) or {}
+        except Exception as e:
+            yield p, None, str(e)
+            continue
+        yield p, doc, None
+
+
+def audit_compose(path, doc):
+    """Returns a list of (level, message). level is 'fail' or 'warn'."""
+    out = []
+    for name, svc in (doc.get("services") or {}).items():
+        where = f"{os.path.relpath(path, BASE)}::{name}"
+
+        if svc.get("privileged"):
+            out.append(("fail", f"{where}: privileged"))
+        if str(svc.get("network_mode", "")).startswith("host"):
+            out.append(("fail", f"{where}: network_mode host shares the host network stack"))
+        for key in ("pid", "ipc", "userns_mode"):
+            if str(svc.get(key, "")).startswith("host"):
+                out.append(("fail", f"{where}: {key} host"))
+
+        for v in (svc.get("volumes") or []):
+            src = v.get("source") if isinstance(v, dict) else str(v).split(":")[0]
+            if "docker.sock" in str(src):
+                out.append(("fail", f"{where}: mounts the Docker socket, which is root on the host"))
+            elif str(src).startswith("/") and not str(src).startswith(BASE):
+                out.append(("warn", f"{where}: bind-mounts a host path outside the checkout ({src})"))
+
+        bad = BANNED_CAPS & {str(c).upper().replace("CAP_", "") for c in (svc.get("cap_add") or [])}
+        if bad:
+            out.append(("fail", f"{where}: cap_add {', '.join(sorted(bad))}"))
+
+        for key in REQUIRED:
+            if key not in svc:
+                out.append(("fail", f"{where}: missing {key}"))
+        if "ALL" not in [str(c).upper() for c in (svc.get("cap_drop") or [])]:
+            out.append(("fail", f"{where}: cap_drop must include ALL"))
+        if "no-new-privileges:true" not in [str(o) for o in (svc.get("security_opt") or [])]:
+            out.append(("fail", f"{where}: security_opt must set no-new-privileges:true"))
+
+        for prt in (svc.get("ports") or []):
+            spec = f"{prt.get('host_ip','')}:{prt.get('published','')}" if isinstance(prt, dict) else str(prt)
+            parts = spec.split(":")
+            if len(parts) < 3 or parts[0] not in ("127.0.0.1", "localhost"):
+                out.append(("fail", f"{where}: port {spec} is not bound to 127.0.0.1"))
+
+        img = str(svc.get("image") or "")
+        if img and "@sha256:" not in img and not img.startswith("limeyard/"):
+            out.append(("warn", f"{where}: {img} is not pinned by digest"))
+    return out
+
+
+def cmd_audit(targets, args):
+    fails, warns = [], []
+
+    paths = [t["compose_path"] for t in targets.values() if not is_fixture(t)]
+    paths += [s["compose_path"] for s in load_scenarios().values()]
+    for path, doc, err in _compose_docs(paths):
+        if err:
+            fails.append(f"{path}: unparseable ({err})")
+            continue
+        for level, msg in audit_compose(path, doc):
+            (fails if level == "fail" else warns).append(msg)
+
+    # The control plane is the one thing that legitimately holds the socket, so
+    # it is judged by a different rule: is it authenticated.
+    if not os.environ.get("LIME_TOKEN", "").strip():
+        fails.append("LIME_TOKEN is unset. limed holds the Docker socket and shares a "
+                     "network with the targets; without a token any popped target can "
+                     "drive it. See .env.example")
+
+    for t in targets.values():
+        up = t.get("upstream") or {}
+        if not up.get("author"):
+            fails.append(f"{t['slug']}: no upstream.author (attribution is required)")
+        if not up.get("license"):
+            warns.append(f"{t['slug']}: no upstream.license recorded")
+
+    for m in warns:
+        print(col("[warn] ", "y") + m)
+    for m in fails:
+        print(col("[FAIL] ", "r") + m)
+    print()
+    if fails:
+        print(col(f"audit: FAIL  ({len(fails)} failures, {len(warns)} warnings)", "r"))
+        return 1
+    print(col(f"audit: PASS  ({len(warns)} warnings)", "g"))
+    return 0
+
+
 def cmd_truth(targets, args):
     """Dump the merged answer key. This is what a scan harness should read."""
     merged = {}
@@ -549,6 +654,11 @@ def cmd_scn_down(scenarios, args):
         die(f"unknown scenario '{args.name}'")
     print(col(f"==> tearing down scenario {args.name}", "b"))
     dc(scenarios[args.name], "down")
+
+
+def cmd_pin(targets, args):
+    import pin
+    return pin.run(args.apply)
 
 
 def cmd_serve(targets, args):
@@ -597,6 +707,9 @@ def build_parser():
     cr.add_argument("--markdown", action="store_true", help="emit the README Credits section")
     sub.add_parser("ports", help="host-port map + clash check")
     sub.add_parser("doctor", help="environment, attribution and disk checks")
+    sub.add_parser("audit", help="container-hardening and supply-chain invariants")
+    pn = sub.add_parser("pin", help="pin images to the digest we verified")
+    pn.add_argument("--apply", action="store_true", help="rewrite the compose files")
     sub.add_parser("truth", help="dump the merged answer key as JSON")
     lp = sub.add_parser("logs", help="tail a target's logs")
     lp.add_argument("name")
@@ -619,7 +732,7 @@ SCENARIO_CMDS = {"scenarios": cmd_scenarios, "scenario-up": cmd_scn_up,
 DISPATCH = {
     "start": cmd_start, "stop": cmd_stop, "restart": cmd_restart, "pull": cmd_pull,
     "list": cmd_list, "status": cmd_status, "credits": cmd_credits,
-    "ports": cmd_ports, "doctor": cmd_doctor, "truth": cmd_truth,
+    "ports": cmd_ports, "doctor": cmd_doctor, "audit": cmd_audit, "truth": cmd_truth, "pin": cmd_pin,
     "logs": cmd_logs, "serve": cmd_serve, "monitor": cmd_monitor,
 }
 

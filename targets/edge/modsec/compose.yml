@@ -4,41 +4,83 @@
 #
 # The backend is a reflector rather than a real app, so the measurement isolates
 # WAF behaviour from application behaviour.
+
+# Hardened by limeyard. These containers are deliberately vulnerable and we
+# achieve RCE inside them on purpose, so the container is the security boundary:
+#   no-new-privileges  a setuid binary inside cannot escalate
+#   cap_drop ALL       capabilities added back one at a time, per image
+#   pids_limit         a fork bomb stays inside its own container
+#   mem_limit          a DoS target cannot take the host down with it
+# Run `./lime audit` to check these invariants still hold.
+
 networks:
   lime-web:
     external: true
-
 services:
   origin:
-    image: traefik/whoami:latest
-    networks: [lime-web]
+    image: traefik/whoami:latest@sha256:c4717a8d1f0134a7444e24f881160e033991f23027c6c5a9a3f8fd22e70d1d44
+    networks:
+    - lime-web
     restart: unless-stopped
-
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add:
+    - NET_BIND_SERVICE
+    pids_limit: 512
+    mem_limit: 768m
   blocking:
-    image: owasp/modsecurity-crs:nginx-alpine
+    image: owasp/modsecurity-crs:nginx-alpine@sha256:dbd60caffb3360c64f022d7a6289a7bbfe083b45eaf124042e8daabcb3e14f4e
     environment:
       BACKEND: http://origin:80
       SERVER_NAME: blocking.lab.test
-      MODSEC_RULE_ENGINE: "On"
-      BLOCKING_PARANOIA: "2"
-      ANOMALY_INBOUND: "5"
-      PROXY_HOST_HEADER: "$$host"
-      PORT: "8080"
-    ports: ["127.0.0.1:7302:8080"]
-    networks: [lime-web]
-    depends_on: [origin]
+      MODSEC_RULE_ENGINE: 'On'
+      BLOCKING_PARANOIA: '2'
+      ANOMALY_INBOUND: '5'
+      PROXY_HOST_HEADER: $$host
+      PORT: '8080'
+    ports:
+    - 127.0.0.1:7302:8080
+    networks:
+    - lime-web
+    depends_on:
+    - origin
     restart: unless-stopped
-
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: &id001
+    - CHOWN
+    - DAC_OVERRIDE
+    - FOWNER
+    - SETGID
+    - SETUID
+    - NET_BIND_SERVICE
+    - KILL
+    pids_limit: 512
+    mem_limit: 768m
   detectonly:
-    image: owasp/modsecurity-crs:nginx-alpine
+    image: owasp/modsecurity-crs:nginx-alpine@sha256:dbd60caffb3360c64f022d7a6289a7bbfe083b45eaf124042e8daabcb3e14f4e
     environment:
       BACKEND: http://origin:80
       SERVER_NAME: detectonly.lab.test
       MODSEC_RULE_ENGINE: DetectionOnly
-      DETECTION_PARANOIA: "2"
-      PROXY_HOST_HEADER: "$$host"
-      PORT: "8080"
-    ports: ["127.0.0.1:7303:8080"]
-    networks: [lime-web]
-    depends_on: [origin]
+      DETECTION_PARANOIA: '2'
+      PROXY_HOST_HEADER: $$host
+      PORT: '8080'
+    ports:
+    - 127.0.0.1:7303:8080
+    networks:
+    - lime-web
+    depends_on:
+    - origin
     restart: unless-stopped
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: *id001
+    pids_limit: 512
+    mem_limit: 768m

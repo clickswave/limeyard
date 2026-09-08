@@ -8,36 +8,43 @@
 # Heavy (~2 GB): Postgres + Mongo + 3 app tiers. Not started by `start --all`
 # unless you add --heavy.
 
-services:
+# Hardened by limeyard. These containers are deliberately vulnerable and we
+# achieve RCE inside them on purpose, so the container is the security boundary:
+#   no-new-privileges  a setuid binary inside cannot escalate
+#   cap_drop ALL       capabilities added back one at a time, per image
+#   pids_limit         a fork bomb stays inside its own container
+#   mem_limit          a DoS target cannot take the host down with it
+# Run `./lime audit` to check these invariants still hold.
 
+services:
   crapi-identity:
-    image: crapi/crapi-identity:${VERSION:-latest}
+    image: crapi/crapi-identity:latest@sha256:2311f12f2a4d0e8459ae34958b3aae4364e16a69ce7f68fc5701a2606103e499
     volumes:
-      - ./keys:/app/keys
+    - ./keys:/app/keys
     environment:
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - DB_NAME=crapi
-      - DB_USER=admin
-      - DB_PASSWORD=crapisecretpassword
-      - DB_HOST=postgresdb
-      - DB_PORT=5432
-      - SERVER_PORT=8080
-      - ENABLE_SHELL_INJECTION=false
-      - JWT_SECRET=crapi
-      - MAILHOG_HOST=mailhog
-      - MAILHOG_PORT=1025
-      - MAILHOG_DOMAIN=example.com
-      - SMTP_HOST=smtp.example.com
-      - SMTP_PORT=587
-      - SMTP_EMAIL=user@example.com
-      - SMTP_PASS=xxxxxxxxxxxxxx
-      - SMTP_FROM=no-reply@example.com
-      - SMTP_AUTH=true
-      - SMTP_STARTTLS=true
-      - JWT_EXPIRATION=604800000
-      - ENABLE_LOG4J=false
-      - API_GATEWAY_URL=https://api.mypremiumdealership.com
-      - TLS_ENABLED=false
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - DB_NAME=crapi
+    - DB_USER=admin
+    - DB_PASSWORD=crapisecretpassword
+    - DB_HOST=postgresdb
+    - DB_PORT=5432
+    - SERVER_PORT=8080
+    - ENABLE_SHELL_INJECTION=false
+    - JWT_SECRET=crapi
+    - MAILHOG_HOST=mailhog
+    - MAILHOG_PORT=1025
+    - MAILHOG_DOMAIN=example.com
+    - SMTP_HOST=smtp.example.com
+    - SMTP_PORT=587
+    - SMTP_EMAIL=user@example.com
+    - SMTP_PASS=xxxxxxxxxxxxxx
+    - SMTP_FROM=no-reply@example.com
+    - SMTP_AUTH=true
+    - SMTP_STARTTLS=true
+    - JWT_EXPIRATION=604800000
+    - ENABLE_LOG4J=false
+    - API_GATEWAY_URL=https://api.mypremiumdealership.com
+    - TLS_ENABLED=false
     depends_on:
       postgresdb:
         condition: service_healthy
@@ -52,25 +59,32 @@ services:
       retries: 15
     deploy:
       resources:
-        limits: { cpus: '0.8', memory: 384M }
-
+        limits:
+          cpus: '0.8'
+          memory: 384M
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 512
+    mem_limit: 1500m
   crapi-community:
-    image: crapi/crapi-community:${VERSION:-latest}
+    image: crapi/crapi-community:latest@sha256:e5defa174e410bb615c14f257d52066d0534b87c4f4e25a93e4a12a0aea99323
     environment:
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - IDENTITY_SERVICE=crapi-identity:8080
-      - DB_NAME=crapi
-      - DB_USER=admin
-      - DB_PASSWORD=crapisecretpassword
-      - DB_HOST=postgresdb
-      - DB_PORT=5432
-      - SERVER_PORT=8087
-      - MONGO_DB_HOST=mongodb
-      - MONGO_DB_PORT=27017
-      - MONGO_DB_USER=admin
-      - MONGO_DB_PASSWORD=crapisecretpassword
-      - MONGO_DB_NAME=crapi
-      - TLS_ENABLED=false
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - IDENTITY_SERVICE=crapi-identity:8080
+    - DB_NAME=crapi
+    - DB_USER=admin
+    - DB_PASSWORD=crapisecretpassword
+    - DB_HOST=postgresdb
+    - DB_PORT=5432
+    - SERVER_PORT=8087
+    - MONGO_DB_HOST=mongodb
+    - MONGO_DB_PORT=27017
+    - MONGO_DB_USER=admin
+    - MONGO_DB_PASSWORD=crapisecretpassword
+    - MONGO_DB_NAME=crapi
+    - TLS_ENABLED=false
     depends_on:
       postgresdb:
         condition: service_healthy
@@ -85,33 +99,40 @@ services:
       retries: 15
     deploy:
       resources:
-        limits: { cpus: '0.3', memory: 192M }
-
+        limits:
+          cpus: '0.3'
+          memory: 192M
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 512
+    mem_limit: 1500m
   crapi-workshop:
-    image: crapi/crapi-workshop:${VERSION:-latest}
+    image: crapi/crapi-workshop:latest@sha256:ab904182110a1ab11cef43cfd86c898c1139ebb08181ba7775dbcff8db2ea8cf
     environment:
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - IDENTITY_SERVICE=crapi-identity:8080
-      - DB_NAME=crapi
-      - DB_USER=admin
-      - DB_PASSWORD=crapisecretpassword
-      - DB_HOST=postgresdb
-      - DB_PORT=5432
-      - SERVER_PORT=8000
-      - MONGO_DB_HOST=mongodb
-      - MONGO_DB_PORT=27017
-      - MONGO_DB_USER=admin
-      - MONGO_DB_PASSWORD=crapisecretpassword
-      - MONGO_DB_NAME=crapi
-      - SECRET_KEY=crapi
-      - API_GATEWAY_URL=https://api.mypremiumdealership.com
-      - TLS_ENABLED=false
-      - FILES_LIMIT=1000
-      - GUNICORN_WORKERS=4
-      - GUNICORN_TIMEOUT=120
-      - GUNICORN_MAX_REQUESTS=1000
-      - GUNICORN_MAX_REQUESTS_JITTER=50
-      - DB_CONN_MAX_AGE=600
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - IDENTITY_SERVICE=crapi-identity:8080
+    - DB_NAME=crapi
+    - DB_USER=admin
+    - DB_PASSWORD=crapisecretpassword
+    - DB_HOST=postgresdb
+    - DB_PORT=5432
+    - SERVER_PORT=8000
+    - MONGO_DB_HOST=mongodb
+    - MONGO_DB_PORT=27017
+    - MONGO_DB_USER=admin
+    - MONGO_DB_PASSWORD=crapisecretpassword
+    - MONGO_DB_NAME=crapi
+    - SECRET_KEY=crapi
+    - API_GATEWAY_URL=https://api.mypremiumdealership.com
+    - TLS_ENABLED=false
+    - FILES_LIMIT=1000
+    - GUNICORN_WORKERS=4
+    - GUNICORN_TIMEOUT=120
+    - GUNICORN_MAX_REQUESTS=1000
+    - GUNICORN_MAX_REQUESTS_JITTER=50
+    - DB_CONN_MAX_AGE=600
     depends_on:
       postgresdb:
         condition: service_healthy
@@ -128,22 +149,26 @@ services:
       retries: 15
     deploy:
       resources:
-        limits: { cpus: '1.0', memory: 512M }
-
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 512
+    mem_limit: 1500m
   crapi-web:
-    image: crapi/crapi-web:${VERSION:-latest}
+    image: crapi/crapi-web:latest@sha256:b14b5964af336d200449e28ffac9371e8929d4450f1e53e2787b4401adc31695
     ports:
-      - "127.0.0.1:7010:80"
+    - 127.0.0.1:7010:80
     environment:
-      - COMMUNITY_SERVICE=crapi-community:8087
-      - IDENTITY_SERVICE=crapi-identity:8080
-      - WORKSHOP_SERVICE=crapi-workshop:8000
-      # The AI chatbot was trimmed out, but the gateway's nginx template still
-      # declares a /chatbot upstream from CHATBOT_SERVICE. Point it at a live
-      # backend so nginx starts (the /chatbot route is a dead end, which is fine).
-      - CHATBOT_SERVICE=crapi-workshop:8000
-      - MAILHOG_WEB_SERVICE=mailhog:8025
-      - TLS_ENABLED=false
+    - COMMUNITY_SERVICE=crapi-community:8087
+    - IDENTITY_SERVICE=crapi-identity:8080
+    - WORKSHOP_SERVICE=crapi-workshop:8000
+    - CHATBOT_SERVICE=crapi-workshop:8000
+    - MAILHOG_WEB_SERVICE=mailhog:8025
+    - TLS_ENABLED=false
     depends_on:
       crapi-community:
         condition: service_healthy
@@ -156,31 +181,66 @@ services:
       interval: 15s
       timeout: 15s
       retries: 15
-    networks: [default, vuln-net]
+    networks:
+    - default
+    - lime-web
     deploy:
       resources:
-        limits: { cpus: '0.3', memory: 128M }
-
+        limits:
+          cpus: '0.3'
+          memory: 128M
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add:
+    - CHOWN
+    - DAC_OVERRIDE
+    - FOWNER
+    - SETGID
+    - SETUID
+    - NET_BIND_SERVICE
+    - KILL
+    pids_limit: 512
+    mem_limit: 1500m
   postgresdb:
-    image: 'postgres:14'
-    command: ["postgres", "-c", "max_connections=500"]
+    image: postgres:14@sha256:d462928b1898dd74b749ef486797968828c1e7fc9befb5e5ca03a33bfbc32d64
+    command:
+    - postgres
+    - -c
+    - max_connections=500
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: crapisecretpassword
       POSTGRES_DB: crapi
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
+      test:
+      - CMD-SHELL
+      - pg_isready
       interval: 15s
       timeout: 15s
       retries: 15
     volumes:
-      - postgresql-data:/var/lib/postgresql/data/
+    - postgresql-data:/var/lib/postgresql/data/
     deploy:
       resources:
-        limits: { cpus: '0.5', memory: 256M }
-
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: &id001
+    - CHOWN
+    - DAC_OVERRIDE
+    - FOWNER
+    - SETGID
+    - SETUID
+    pids_limit: 512
+    mem_limit: 1g
   mongodb:
-    image: 'mongo:4.4'
+    image: mongo:4.4@sha256:4be76f674fc4b27859816811b8baa3c51830eb1dbf4ca81a51e26b79edd662ef
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: crapisecretpassword
@@ -191,33 +251,56 @@ services:
       retries: 15
       start_period: 20s
     volumes:
-      - mongodb-data:/data/db
+    - mongodb-data:/data/db
     deploy:
       resources:
-        limits: { cpus: '0.3', memory: 128M }
-
+        limits:
+          cpus: '0.3'
+          memory: 128M
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: *id001
+    pids_limit: 512
+    mem_limit: 1g
   mailhog:
     user: root
-    image: crapi/mailhog:${VERSION:-latest}
+    image: crapi/mailhog:latest@sha256:48054e74c771688f167d648d6d2e8c8f5f2244720ea0ab5e4e2ae37056e67e6c
     environment:
       MH_MONGO_URI: admin:crapisecretpassword@mongodb:27017
       MH_STORAGE: mongodb
     ports:
-      - "127.0.0.1:7011:8025"   # mail UI
+    - 127.0.0.1:7011:8025
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "8025" ]
+      test:
+      - CMD
+      - nc
+      - -z
+      - localhost
+      - '8025'
       interval: 15s
       timeout: 15s
       retries: 15
-    networks: [default, vuln-net]
+    networks:
+    - default
+    - lime-web
     deploy:
       resources:
-        limits: { cpus: '0.3', memory: 128M }
-
+        limits:
+          cpus: '0.3'
+          memory: 128M
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 512
+    mem_limit: 1500m
 volumes:
-  mongodb-data:
-  postgresql-data:
-
+  mongodb-data: null
+  postgresql-data: null
 networks:
-  vuln-net:
+  lime-web:
     external: true
+  default:
+    internal: true

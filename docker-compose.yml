@@ -39,6 +39,10 @@ services:
       LIME_WEB_NET: lime-web
       LIME_LAB_NET: lime-lab
       LIMED_PORT: "7099"
+      # Required on every limed call. limed holds the Docker socket and shares a
+      # network with the targets, so this is what stops a popped target from
+      # driving it. Generate one: openssl rand -hex 24
+      LIME_TOKEN: ${LIME_TOKEN:?set LIME_TOKEN in .env, see .env.example}
       MONITOR_INTERVAL: "${MONITOR_INTERVAL:-30}"
     volumes:
       # Control the host Docker daemon (to run each target as its own project)...
@@ -58,6 +62,7 @@ services:
     container_name: limeyard_ui
     environment:
       LIMED_URL: http://limeyard_control:7099
+      LIME_TOKEN: ${LIME_TOKEN:?set LIME_TOKEN in .env, see .env.example}
       PORT: "7000"
     ports:
       - "127.0.0.1:7000:7000"

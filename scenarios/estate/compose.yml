@@ -13,102 +13,210 @@
 # No host ports are published at all except the resolver, which is bound to
 # loopback so you can dig it from the host.
 
-name: lime-scn-estate
+# Hardened by limeyard. These containers are deliberately vulnerable and we
+# achieve RCE inside them on purpose, so the container is the security boundary:
+#   no-new-privileges  a setuid binary inside cannot escalate
+#   cap_drop ALL       capabilities added back one at a time, per image
+#   pids_limit         a fork bomb stays inside its own container
+#   mem_limit          a DoS target cannot take the host down with it
+# Run `./lime audit` to check these invariants still hold.
 
+name: lime-scn-estate
 networks:
   lime-lab:
     external: true
-
 services:
   ns1:
-    image: internetsystemsconsortium/bind9:9.20
+    image: internetsystemsconsortium/bind9:9.20@sha256:a5c5fc5227be83dca0001ad72e2398be2aeb183c6ddf7e2ed41dba63c84e0021
     container_name: lime-estate-ns1
     volumes:
-      - ./zones/named.conf:/etc/bind/named.conf:ro
-      - ./zones/lab.test.db:/etc/bind/lab.test.db:ro
-      - ./zones/closed.test.db:/etc/bind/closed.test.db:ro
-      - ./zones/reverse.db:/etc/bind/reverse.db:ro
+    - ./zones/named.conf:/etc/bind/named.conf:ro
+    - ./zones/lab.test.db:/etc/bind/lab.test.db:ro
+    - ./zones/closed.test.db:/etc/bind/closed.test.db:ro
+    - ./zones/reverse.db:/etc/bind/reverse.db:ro
     ports:
-      - "127.0.0.1:5353:53/tcp"
-      - "127.0.0.1:5353:53/udp"
+    - 127.0.0.1:5353:53/tcp
+    - 127.0.0.1:5353:53/udp
     networks:
-      lime-lab: {ipv4_address: 10.66.10.2}
+      lime-lab:
+        ipv4_address: 10.66.10.2
     restart: unless-stopped
-
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: &id002
+    - CHOWN
+    - DAC_OVERRIDE
+    - FOWNER
+    - SETGID
+    - SETUID
+    - NET_BIND_SERVICE
+    - KILL
+    pids_limit: 512
+    mem_limit: 1500m
   www:
-    image: traefik/whoami:latest
+    image: traefik/whoami:latest@sha256:c4717a8d1f0134a7444e24f881160e033991f23027c6c5a9a3f8fd22e70d1d44
     container_name: lime-estate-www
-    networks: {lime-lab: {ipv4_address: 10.66.10.10}}
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.10
     restart: unless-stopped
-
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: &id001
+    - NET_BIND_SERVICE
+    pids_limit: 512
+    mem_limit: 768m
   api:
-    image: traefik/whoami:latest
+    image: traefik/whoami:latest@sha256:c4717a8d1f0134a7444e24f881160e033991f23027c6c5a9a3f8fd22e70d1d44
     container_name: lime-estate-api
-    networks: {lime-lab: {ipv4_address: 10.66.10.11}}
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.11
     restart: unless-stopped
-
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: *id001
+    pids_limit: 512
+    mem_limit: 768m
   admin:
-    image: traefik/whoami:latest
+    image: traefik/whoami:latest@sha256:c4717a8d1f0134a7444e24f881160e033991f23027c6c5a9a3f8fd22e70d1d44
     container_name: lime-estate-admin
-    networks: {lime-lab: {ipv4_address: 10.66.10.12}}
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.12
     restart: unless-stopped
-
-  # Stale: in DNS, still answering, nobody remembers it. The classic finding.
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: *id001
+    pids_limit: 512
+    mem_limit: 768m
   staging:
-    image: traefik/whoami:latest
+    image: traefik/whoami:latest@sha256:c4717a8d1f0134a7444e24f881160e033991f23027c6c5a9a3f8fd22e70d1d44
     container_name: lime-estate-staging
-    networks: {lime-lab: {ipv4_address: 10.66.10.13}}
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.13
     restart: unless-stopped
-
-  # One host, eight names.
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: *id001
+    pids_limit: 512
+    mem_limit: 768m
   vhosts:
-    image: nginx:alpine
+    image: nginx:alpine@sha256:72ba65eb42c10344912a84ff42408db7d34f2feb642204570ab8fc5ffd29f1d3
     container_name: lime-estate-vhosts
     volumes:
-      - ./vhosts/default.conf:/etc/nginx/conf.d/default.conf:ro
-    networks: {lime-lab: {ipv4_address: 10.66.10.20}}
+    - ./vhosts/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.20
     restart: unless-stopped
-
-  # Answers under the wildcard, so every brute-force guess resolves.
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: *id002
+    pids_limit: 512
+    mem_limit: 768m
   wildcard:
-    image: traefik/whoami:latest
+    image: traefik/whoami:latest@sha256:c4717a8d1f0134a7444e24f881160e033991f23027c6c5a9a3f8fd22e70d1d44
     container_name: lime-estate-wildcard
-    networks: {lime-lab: {ipv4_address: 10.66.10.99}}
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.99
     restart: unless-stopped
-
-  # A REAL host living under the wildcard. Naive wildcard filtering drops it.
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: *id001
+    pids_limit: 512
+    mem_limit: 768m
   wildreal:
-    image: traefik/whoami:latest
+    image: traefik/whoami:latest@sha256:c4717a8d1f0134a7444e24f881160e033991f23027c6c5a9a3f8fd22e70d1d44
     container_name: lime-estate-wildreal
-    networks: {lime-lab: {ipv4_address: 10.66.10.23}}
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.23
     restart: unless-stopped
-
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: *id001
+    pids_limit: 512
+    mem_limit: 768m
   takeover:
-    image: nginx:alpine
+    image: nginx:alpine@sha256:72ba65eb42c10344912a84ff42408db7d34f2feb642204570ab8fc5ffd29f1d3
     container_name: lime-estate-takeover
     volumes:
-      - ./impostor/default.conf:/etc/nginx/conf.d/default.conf:ro
-    networks: {lime-lab: {ipv4_address: 10.66.10.30}}
+    - ./impostor/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.30
     restart: unless-stopped
-
-  # Non-HTTP services: the first thing scout has ever had to fingerprint, and
-  # a real port spread for pulse to sweep rather than a handed-over list.
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: *id002
+    pids_limit: 512
+    mem_limit: 768m
   db-internal:
-    image: postgres:16-alpine
+    image: postgres:16-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
     container_name: lime-estate-db
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
-    networks: {lime-lab: {ipv4_address: 10.66.10.41}}
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.41
     restart: unless-stopped
-
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: &id003
+    - CHOWN
+    - DAC_OVERRIDE
+    - FOWNER
+    - SETGID
+    - SETUID
+    pids_limit: 512
+    mem_limit: 1g
   cache:
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
     container_name: lime-estate-cache
-    networks: {lime-lab: {ipv4_address: 10.66.10.42}}
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.42
     restart: unless-stopped
-
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add: *id003
+    pids_limit: 512
+    mem_limit: 768m
   mail:
-    image: axllent/mailpit:latest
+    image: axllent/mailpit:latest@sha256:98b916bd3c8d61f7633a52d3ea2f58d00620cb01ca57ab59edde68c347a95365
     container_name: lime-estate-mail
-    networks: {lime-lab: {ipv4_address: 10.66.10.43}}
+    networks:
+      lime-lab:
+        ipv4_address: 10.66.10.43
     restart: unless-stopped
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 512
+    mem_limit: 768m

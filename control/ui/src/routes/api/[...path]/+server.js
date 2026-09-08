@@ -1,11 +1,11 @@
-import { LIMED } from '$lib/limed.server.js';
+import { LIMED, authHeaders } from '$lib/limed.server.js';
 
 /** Thin proxy so the browser never needs to reach limed directly, and so SSE
  *  streams (logs, events) pass through unbuffered. */
 async function pipe(event, method) {
 	const { path } = event.params;
 	const qs = event.url.search || '';
-	const init = { method, headers: {}, signal: event.request.signal };
+	const init = { method, headers: authHeaders(), signal: event.request.signal };
 	if (method === 'POST') {
 		init.headers['Content-Type'] = 'application/json';
 		init.body = await event.request.text();
