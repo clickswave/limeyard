@@ -1,0 +1,31 @@
+target: vampi
+scoring: findings
+
+expected:
+  - id: VP1
+    class: excessive-exposure
+    severity: critical
+    scope: black-box
+    confirm: plaintext passwords in response
+    where: {method: GET, path: /users/v1/_debug}
+  - id: VP2
+    class: bola
+    severity: high
+    scope: authed
+    confirm: cross-identity replay
+    where: {method: GET, path: "/users/v1/{username}", in: path}
+    note: 3 distinct findings
+  - id: VP3
+    class: sqli
+    severity: high
+    scope: black-box
+    confirm: error-based
+    where: {method: GET, path: "/books/v1/{id}", in: path}
+  - id: VP4
+    class: exposure
+    severity: info
+    scope: black-box
+    confirm: OpenAPI document served
+    where: {method: GET, path: /openapi.json}
+
+negative: []

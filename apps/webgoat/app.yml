@@ -1,6 +1,0 @@
-name: OWASP WebGoat + WebWolf
-description: Guided Java lessons; WebWolf is the out-of-band / OAST catcher.
-category: web
-stack: Java
-url: http://127.0.0.1:7003/WebGoat
-setup: Register a local account. WebWolf (OOB catcher) is at http://127.0.0.1:7004/WebWolf.

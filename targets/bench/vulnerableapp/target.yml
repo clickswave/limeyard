@@ -1,0 +1,23 @@
+name: OWASP VulnerableApp
+slug: vulnerableapp
+kind: bench
+description: >-
+  Built to benchmark scanners, not to train humans. Serves its own ground truth
+  and grades your findings back at you.
+stack: Java / Spring Boot
+url: http://127.0.0.1:7101/VulnerableApp
+expose:
+  http: 7101
+weight: light
+egress: false
+disk: 167MB
+upstream:
+  author: SasanLabs (OWASP VulnerableApp project)
+  repo: https://github.com/SasanLabs/VulnerableApp
+  homepage: https://sasanlabs.github.io/VulnerableApp/
+  license: Apache-2.0
+  verified: 2026-09-08
+  note: >-
+    Do not use upstream's docker-compose.yml as-is; it pulls ollama plus
+    phi3:mini for the LLMForge module. This target runs the app image directly.
+truth: truth.yml

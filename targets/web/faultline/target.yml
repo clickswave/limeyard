@@ -1,0 +1,23 @@
+name: FaultLine ISP
+slug: faultline
+kind: web
+description: Full-stack ISP app (SvelteKit + Rust API + Postgres + Redis). Our own target.
+stack: SvelteKit / Rust / Postgres / Redis
+url: http://127.0.0.1:8088
+expose:
+  http: 8088
+weight: heavy
+egress: false
+project: faultline
+repo: https://github.com/clickswave/faultline
+compose: deploy/docker-compose.yml
+upstream:
+  author: Clickswave
+  repo: https://github.com/clickswave/faultline
+  license: proprietary
+  verified: 2026-09-08
+credentials:
+  - {user: alice@example.com, pass: password, role: user}
+  - {user: admin@faultline.local, pass: admin, role: admin}
+setup: 'First start clones the repo and builds it (Rust; slow).'
+truth: truth.yml

@@ -1,0 +1,28 @@
+target: vulnerableapp
+scoring: findings
+
+note: >-
+  This target serves its own answer key, so we do not restate it. `GET
+  /scanner/dast` returns 154 rows of (url, vulnerability type, variant), where
+  variant SECURE marks the 38 deliberately-safe endpoints. Those are the
+  false-positive controls, and they are why this target matters more than its
+  vulnerability count suggests.
+
+  It also grades: POST /scanner/benchmark with findings as
+  {tool, scanType: "DAST", findings: [{url, type|cwe|wascId, method}]} returns
+  coverage, missedItems and unmatchedItems. Intersect unmatchedItems with the
+  SECURE url set and you have a measured false-positive count.
+
+  Calibration: upstream commits ZAP's own results, which sit at 3.9% coverage
+  on the legacy UI and 0.0% on the React one. A low score here is normal and is
+  not by itself evidence of an engine bug; check URL normalisation and seed the
+  endpoint list from /scanner/dast before concluding anything.
+
+external:
+  type: http
+  url: http://vulnerableapp:9090/scanner/dast
+  format: vulnerableapp-dast
+  grader: http://vulnerableapp:9090/scanner/benchmark
+
+expected: []
+negative: []

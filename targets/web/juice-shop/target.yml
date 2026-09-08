@@ -1,0 +1,18 @@
+name: OWASP Juice Shop
+slug: juice-shop
+kind: web
+description: Modern Angular SPA + REST API; broad OWASP Top 10.
+stack: Node / Angular
+url: http://127.0.0.1:7001
+expose:
+  http: 7001
+weight: light
+egress: false
+upstream:
+  author: Bjoern Kimminich (OWASP Juice Shop project)
+  repo: https://github.com/juice-shop/juice-shop
+  homepage: https://owasp-juice.shop
+  license: MIT
+  verified: 2026-09-08
+  note: Repo moved from bkimminich/juice-shop to juice-shop/juice-shop; image name unchanged.
+truth: truth.yml

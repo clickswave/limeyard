@@ -1,0 +1,43 @@
+target: bwapp
+scoring: findings
+
+expected:
+  - id: BW1
+    class: sqli
+    severity: high
+    scope: black-box
+    confirm: error-based
+    where: {method: GET, path: /sqli_1.php, param: title, in: query}
+  - id: BW2
+    class: xss-reflected
+    severity: medium
+    scope: black-box
+    confirm: unencoded reflection
+    where: {method: GET, path: /xss_get.php, param: firstname, in: query}
+  - id: BW3
+    class: cmdi
+    severity: critical
+    scope: authed
+    confirm: reflected shell arithmetic marker
+    where: {method: POST, path: /commandi.php, param: target, in: body}
+    note: needs a seeded bWAPP login. Closed 2026-08-23.
+  - id: BW4
+    class: lfi
+    severity: high
+    scope: black-box
+    confirm: file read
+    where: {method: GET, path: /rlfi.php, param: language, in: query}
+  - id: BW5
+    class: info-disclosure
+    severity: low
+    scope: black-box
+    confirm: phpinfo page served
+    where: {method: GET, path: /phpinfo.php}
+  - id: BW6
+    class: xss-stored
+    severity: medium
+    scope: out-of-scope
+    where: {path: /xss_stored_1.php}
+    note: behind login
+
+negative: []

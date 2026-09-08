@@ -1,0 +1,9 @@
+$TTL 60
+@       IN SOA  ns1.lab.test. admin.lab.test. ( 2026090801 3600 600 86400 60 )
+@       IN NS   ns1.lab.test.
+10.10   IN PTR  www.lab.test.
+11.10   IN PTR  api.lab.test.
+12.10   IN PTR  admin.lab.test.
+13.10   IN PTR  staging.lab.test.
+20.10   IN PTR  shop.lab.test.
+41.10   IN PTR  db.internal.lab.test.

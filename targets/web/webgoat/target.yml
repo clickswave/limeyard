@@ -1,0 +1,19 @@
+name: OWASP WebGoat + WebWolf
+slug: webgoat
+kind: web
+description: Guided Java lessons; WebWolf is the out-of-band / OAST catcher.
+stack: Java
+url: http://127.0.0.1:7003/WebGoat
+expose:
+  http: 7003
+weight: light
+egress: false
+upstream:
+  author: OWASP WebGoat project
+  repo: https://github.com/WebGoat/WebGoat
+  homepage: https://owasp.org/www-project-webgoat/
+  license: GPL-2.0
+  verified: 2026-09-08
+  note: GitHub reports NOASSERTION; the repo LICENSE is GPL-2.0 with a linking exception.
+setup: Register a local account. WebWolf (OOB catcher) is at http://127.0.0.1:7004/WebWolf.
+truth: truth.yml

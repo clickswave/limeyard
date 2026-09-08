@@ -1,0 +1,38 @@
+target: juice-shop
+scoring: findings
+
+expected:
+  - id: JS1
+    class: sqli
+    severity: high
+    scope: black-box
+    confirm: error-based
+    where: {method: GET, path: /rest/products/search, param: q, in: query}
+    note: the same injection yields the login bypass documented upstream
+  - id: JS2
+    class: bola
+    severity: high
+    scope: authed
+    confirm: cross-identity replay
+    where: {method: GET, path: "/rest/basket/{id}", in: path}
+    note: the 2026-08-23 run recorded 4 distinct basket BOLA findings
+  - id: JS3
+    class: exposure
+    severity: low
+    scope: black-box
+    confirm: prometheus metrics served
+    where: {method: GET, path: /metrics}
+  - id: JS4
+    class: jwt
+    severity: high
+    scope: out-of-scope
+    where: {path: /rest/user/whoami}
+    note: forgery needs a leaked key, a multi-step chain
+  - id: JS5
+    class: race
+    severity: medium
+    scope: out-of-scope
+    where: {path: "/api/Products/{id}/like"}
+    note: the upstream Multiple Likes challenge; needs a concurrency oracle
+
+negative: []

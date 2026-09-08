@@ -1,0 +1,43 @@
+# Unauthenticated by default is the stock behaviour of most official images, so
+# this is configuration rather than engineering. No host ports: these live on
+# the lab network with static IPs so pulse sweeps a subnet and scout fingerprints
+# real daemons rather than being handed a loopback port list.
+networks:
+  lime-lab:
+    external: true
+
+services:
+  redis:
+    image: redis:7-alpine
+    networks: {lime-lab: {ipv4_address: 10.66.20.10}}
+    restart: unless-stopped
+  mongo:
+    image: mongo:7
+    networks: {lime-lab: {ipv4_address: 10.66.20.11}}
+    restart: unless-stopped
+  memcached:
+    image: memcached:1.6-alpine
+    networks: {lime-lab: {ipv4_address: 10.66.20.12}}
+    restart: unless-stopped
+  registry:
+    image: registry:3
+    networks: {lime-lab: {ipv4_address: 10.66.20.13}}
+    restart: unless-stopped
+  postgres:
+    image: postgres:16-alpine
+    environment: {POSTGRES_HOST_AUTH_METHOD: trust}
+    networks: {lime-lab: {ipv4_address: 10.66.20.14}}
+    restart: unless-stopped
+  mysql:
+    image: mysql:8.0
+    environment: {MYSQL_ALLOW_EMPTY_PASSWORD: "yes"}
+    networks: {lime-lab: {ipv4_address: 10.66.20.15}}
+    restart: unless-stopped
+  ftp:
+    image: delfer/alpine-ftp-server:latest
+    networks: {lime-lab: {ipv4_address: 10.66.20.16}}
+    restart: unless-stopped
+  prometheus:
+    image: prom/prometheus:latest
+    networks: {lime-lab: {ipv4_address: 10.66.20.17}}
+    restart: unless-stopped

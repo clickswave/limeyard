@@ -1,0 +1,23 @@
+name: ModSecurity CRS pair
+slug: modsec
+kind: edge
+description: >-
+  OWASP Core Rule Set in front of one backend, twice: blocking on 7302 and
+  detection-only on 7303, so the same payload can be scored both ways.
+stack: nginx + ModSecurity + CRS
+url: http://127.0.0.1:7302
+expose:
+  http: 7302
+weight: light
+egress: false
+disk: ~90MB
+upstream:
+  author: OWASP Core Rule Set project (coreruleset)
+  repo: https://github.com/coreruleset/modsecurity-crs-docker
+  homepage: https://coreruleset.org
+  license: Apache-2.0
+  verified: 2026-09-08
+  note: >-
+    The nginx template declares exactly one server block, so one CRS container
+    serves one vhost. Multi-vhost needs N containers or your own template.
+truth: truth.yml

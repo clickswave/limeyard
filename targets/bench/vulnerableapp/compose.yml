@@ -1,0 +1,12 @@
+# NOTE: upstream's own docker-compose.yml now pulls ollama + phi3:mini for its
+# LLMForge module, several GB you do not need. This runs the app directly.
+networks:
+  lime-web:
+    external: true
+
+services:
+  vulnerableapp:
+    image: sasanlabs/owasp-vulnerableapp:latest
+    ports: ["127.0.0.1:7101:9090"]
+    networks: [lime-web]
+    restart: unless-stopped

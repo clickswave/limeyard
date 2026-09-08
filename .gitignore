@@ -1,5 +1,6 @@
-# Sources for repo-backed apps, cloned at runtime by the manager (e.g. faultline)
-apps/*/src/
+# Sources for repo-backed targets, cloned at runtime (e.g. faultline).
+# limeyard vendors no third-party source: targets are fetched, never checked in.
+targets/*/*/src/
 
 # Local, machine-specific compose override
 docker-compose.override.yml
@@ -7,9 +8,15 @@ docker-compose.override.yml
 # Local env
 .env
 
-# crAPI generates a JWT keypair into apps/crapi/keys on first boot
-apps/crapi/keys/*
-!apps/crapi/keys/.gitkeep
+# crAPI generates a JWT keypair into its keys dir on first boot
+targets/api/crapi/keys/*
+!targets/api/crapi/keys/.gitkeep
+
+# UI build output
+control/ui/node_modules/
+control/ui/build/
+control/ui/.svelte-kit/
+control/ui/package-lock.json
 
 # AI / agent tooling and local machine config (never publish)
 .claude/

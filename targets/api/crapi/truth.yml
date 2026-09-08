@@ -1,0 +1,41 @@
+target: crapi
+scoring: findings
+
+expected:
+  - id: CR1
+    class: bola
+    severity: critical
+    scope: authed
+    confirm: cross-identity replay
+    where: {method: GET, path: "/identity/api/v2/vehicle/{vehicleId}/location", in: path}
+    note: >-
+      Leaks GPS and owner email to a non-owner. The 2026-08-23 run recorded 8
+      BOLA findings across vehicle location, mechanic_report, dashboard and the
+      community feed.
+  - id: CR2
+    class: excessive-exposure
+    severity: high
+    scope: authed
+    confirm: response carries other users' fields
+    where: {method: GET, path: /community/api/v2/community/posts/recent}
+    note: seeds the vehicle UUIDs that make CR1 reachable
+  - id: CR3
+    class: exposure
+    severity: medium
+    scope: black-box
+    confirm: dotenv served
+    where: {method: GET, path: /.env}
+  - id: CR4
+    class: auth-bypass
+    severity: high
+    scope: out-of-scope
+    where: {path: /identity/api/auth/v3/check-otp}
+    note: OTP brute force; rate and logic
+  - id: CR5
+    class: mass-assignment
+    severity: high
+    scope: out-of-scope
+    where: {path: /workshop/api/mechanic/}
+    note: needs a multi-step chain
+
+negative: []

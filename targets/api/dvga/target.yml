@@ -1,0 +1,19 @@
+name: DVGA
+slug: dvga
+kind: api
+surface: graphql
+description: Damn Vulnerable GraphQL Application (introspection, injection, batching DoS).
+stack: Python / GraphQL
+url: http://127.0.0.1:7006/graphql
+# Seed the crawl at the site root; /graphql is the surface, not the entry point.
+web_seed: http://127.0.0.1:7006/
+expose:
+  http: 7006
+weight: light
+egress: false
+upstream:
+  author: Dolev Farhi
+  repo: https://github.com/dolevf/Damn-Vulnerable-GraphQL-Application
+  license: MIT
+  verified: 2026-09-08
+truth: truth.yml

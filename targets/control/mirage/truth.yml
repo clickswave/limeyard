@@ -1,0 +1,69 @@
+target: mirage
+scoring: findings
+
+note: >-
+  Inverted target. `expected` is deliberately empty: there is nothing to find.
+  Every entry below is a negative control, so any finding that matches one is a
+  false positive, and any finding that matches none still lands in `unmatched`
+  and should be investigated. A perfect score here is silence.
+
+expected: []
+
+negative:
+  - id: MI-N1
+    class: sqli
+    where: {method: GET, path: /search, param: q}
+    note: emits authentic-looking MySQL/Postgres/Oracle/MSSQL errors for any quote-ish input, identically every time. No database exists.
+  - id: MI-N2
+    class: sqli
+    where: {method: POST, path: /login, param: username}
+    note: always fails, and emits a SQL error while failing. Not bypassable.
+  - id: MI-N3
+    class: xss-reflected
+    where: {method: GET, path: /echo, param: v}
+    note: reflects into body, attribute, textarea and a JS string, all correctly escaped.
+  - id: MI-N4
+    class: ssti
+    where: {method: GET, path: /render, param: tpl}
+    note: returns a template-looking stack trace but never evaluates. {{7*7}} comes back as {{7*7}}.
+  - id: MI-N5
+    class: ssrf
+    where: {method: GET, path: /fetch, param: url}
+    note: accepts a URL, never fetches it, echoes a plausible connection failure.
+  - id: MI-N6
+    class: traversal
+    where: {method: GET, path: /download, param: file}
+    note: echoes the path inside an fopen error. No file is ever opened.
+  - id: MI-N7
+    class: open-redirect
+    where: {method: GET, path: /redirect, param: to}
+    note: answers 200 with the target in the body and in X-Redirect-Target. Never sets Location.
+  - id: MI-N8
+    class: cmdi
+    where: {method: GET, path: /ping, param: host}
+    note: echoes a ping transcript. A shell arithmetic marker is never evaluated.
+  - id: MI-N9
+    class: xxe
+    where: {method: POST, path: /xml}
+    note: accepts XML, entity expansion disabled.
+  - id: MI-N10
+    class: panel
+    where: {method: GET, path: /admin}
+    note: public by design and empty. Finding it is not a finding.
+  - id: MI-N11
+    class: info-disclosure
+    where: {method: GET, path: /api/config}
+    note: config-shaped JSON with fictional values, to bait secret scanners.
+  - id: MI-N12
+    class: sqli
+    where: {method: GET, path: /slow}
+    note: >-
+      Always takes two seconds, for every input. A time-based blind oracle that
+      does not compare against a control request sees a delay here that has
+      nothing to do with its payload.
+  - id: MI-N13
+    class: exposure
+    where: {method: GET, path: /nonexistent-path-any}
+    note: >-
+      Soft 404. Every unknown path answers 200 with a plausible page, so content
+      discovery that does not calibrate reports the entire wordlist as found.

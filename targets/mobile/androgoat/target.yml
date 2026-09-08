@@ -1,0 +1,24 @@
+name: AndroGoat
+slug: androgoat
+kind: mobile
+description: >-
+  The OkHttp pinning fixture for Tracer. One screen exercises both Android
+  pinning mechanisms plus an unpinned control.
+stack: Android / Kotlin
+weight: light
+egress: true
+artifact:
+  type: apk
+  release: https://github.com/satishpatnayak/AndroGoat/releases/latest
+  file: AndroGoat.apk
+  sha256: null
+upstream:
+  author: Satish Patnayak
+  repo: https://github.com/satishpatnayak/AndroGoat
+  license: none declared
+  verified: 2026-09-08
+  note: >-
+    The README shows an MIT badge but the repo contains no LICENSE file. Run it
+    internally; do not vendor or redistribute the APK. Catalogued by OWASP as
+    MASTG-APP-0001.
+truth: truth.yml

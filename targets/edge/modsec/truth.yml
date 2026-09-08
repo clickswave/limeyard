@@ -1,0 +1,35 @@
+target: modsec
+scoring: findings
+
+note: >-
+  Not a vulnerability target. It measures what the edge does to a scan, which is
+  a different question from what the scanner detects.
+
+  Run the same payload set against 7302 (blocking) and 7303 (detection-only).
+  The delta is the evasion score: a request that reaches the origin on 7303 but
+  is refused on 7302 was caught by CRS, and one that reaches the origin on both
+  evaded it. The backend is a reflector, so any difference is the WAF and not
+  the app.
+
+expected:
+  - id: WAF1
+    class: misconfig
+    scope: black-box
+    confirm: 403 from the edge on a CRS-triggering payload
+    where: {method: GET, path: /, param: q, in: query}
+    note: baseline. A scanner that cannot tell an edge block from an app response will mis-attribute everything behind a WAF.
+  - id: WAF2
+    class: tech
+    scope: black-box
+    confirm: WAF fingerprinted
+    where: {method: GET, path: /}
+    note: identifying that a WAF is present at all, before attributing anything to the app.
+
+negative:
+  - id: WAF-N1
+    class: sqli
+    where: {method: GET, path: /, param: q}
+    note: >-
+      The backend is traefik/whoami: it has no database and no injection sink.
+      A SQLi finding here means the scanner interpreted a 403 block page as
+      evidence of a vulnerability, which is a specific and common failure.

@@ -1,6 +1,0 @@
-name: DVWA
-description: Classic PHP target with adjustable security levels (SQLi/XSS/LFI/RCE).
-category: web
-stack: PHP / MariaDB
-url: http://127.0.0.1:7002
-setup: Browse /setup.php and click "Create / Reset Database" once. Login admin/password.

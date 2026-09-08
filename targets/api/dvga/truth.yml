@@ -1,0 +1,54 @@
+target: dvga
+scoring: findings
+
+note: >-
+  The 2026-08-23 batched fleet run recorded 0 here. That was a transient: the
+  stage polled while the container was still cold. Re-run in isolation it
+  returns all 7. If a run reports 0 for dvga, check container readiness before
+  filing an engine regression.
+
+expected:
+  - id: DG1
+    class: misconfig
+    severity: medium
+    scope: black-box
+    confirm: introspection query answered
+    where: {method: POST, path: /graphql}
+  - id: DG2
+    class: dos
+    severity: medium
+    scope: black-box
+    confirm: query cost and alias amplification accepted
+    where: {method: POST, path: /graphql}
+  - id: DG3
+    class: dos
+    severity: low
+    scope: black-box
+    confirm: array batching accepted
+    where: {method: POST, path: /graphql}
+  - id: DG4
+    class: excessive-exposure
+    severity: medium
+    scope: black-box
+    confirm: sensitive fields present in schema
+    where: {method: POST, path: /graphql}
+  - id: DG5
+    class: bfla
+    severity: high
+    scope: black-box
+    confirm: privileged operation callable
+    where: {method: POST, path: /graphql}
+  - id: DG6
+    class: sqli
+    severity: high
+    scope: black-box
+    confirm: error-based via argument
+    where: {method: POST, path: /graphql}
+  - id: DG7
+    class: cmdi
+    severity: critical
+    scope: black-box
+    confirm: blind, OAST-confirmed
+    where: {method: POST, path: /graphql}
+
+negative: []

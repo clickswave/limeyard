@@ -1,0 +1,47 @@
+$TTL 60
+@       IN SOA  ns1.lab.test. admin.lab.test. ( 2026090801 3600 600 86400 60 )
+@       IN NS   ns1.lab.test.
+
+ns1     IN A    10.66.10.2
+
+; --- plain hosts, the baseline enumeration set ---
+www     IN A    10.66.10.10
+api     IN A    10.66.10.11
+admin   IN A    10.66.10.12
+staging IN A    10.66.10.13
+
+; --- one host carrying many names: the many-names-few-hosts dedup problem ---
+shop        IN A 10.66.10.20
+blog        IN A 10.66.10.20
+docs        IN A 10.66.10.20
+status      IN A 10.66.10.20
+support     IN A 10.66.10.20
+careers     IN A 10.66.10.20
+partners    IN A 10.66.10.20
+legacy-www  IN A 10.66.10.20
+
+; --- CNAME chain, and a chain that loops back to a real host ---
+legacy      IN CNAME www.lab.test.
+old         IN CNAME legacy.lab.test.
+
+; --- dangling CNAMEs: the takeover cases ---
+; body-match class. The impostor at .30 answers with the exact vendor bodies,
+; and these names are what a scanner must probe. Probing the impostor name
+; directly is suppressed by the upstream templates' own exclusions.
+cdn         IN CNAME lab-victim.s3.amazonaws.com.
+pages       IN CNAME lab-victim.github.io.
+app         IN CNAME lab-victim.herokudns.com.
+; NXDOMAIN class: a different code path, and commonly missed.
+gone        IN CNAME does-not-exist.nowhere.test.
+
+; --- multi-level labels: recursion depth ---
+eu.api      IN A    10.66.10.11
+db.internal IN A    10.66.10.41
+
+; --- the wildcard, and a REAL record living under it. An engine with no
+;     wildcard detection reports infinite phantoms; a naive one over-corrects
+;     and drops `real`, which is the failure nobody notices. ---
+*.wild      IN A    10.66.10.99
+real.wild   IN A    10.66.10.23
+
+_dmarc      IN TXT  "v=DMARC1; p=none"

@@ -1,0 +1,34 @@
+target: webgoat
+scoring: findings
+
+note: >-
+  Every WebGoat vulnerability is lesson-gated behind account registration, a
+  per-lesson session, CSRF tokens and staged progression. An unauthenticated
+  black-box crawl cannot reach any lesson endpoint, so the whole target is
+  out-of-scope by construction. It stays in the lab as a crawl barrier and as
+  the WebWolf OAST catcher, not as a detection target. Reaching any entry below
+  would need a WebGoat-aware authenticated driver.
+
+expected:
+  - id: WG1
+    class: sqli
+    severity: high
+    scope: out-of-scope
+    where: {path: /WebGoat/SqlInjection/attack}
+  - id: WG2
+    class: xss-reflected
+    severity: medium
+    scope: out-of-scope
+    where: {path: /WebGoat/CrossSiteScripting/attack}
+  - id: WG3
+    class: deserialization
+    severity: critical
+    scope: out-of-scope
+    where: {path: /WebGoat/InsecureDeserialization/task}
+  - id: WG4
+    class: xxe
+    severity: high
+    scope: out-of-scope
+    where: {path: /WebGoat/xxe/simple}
+
+negative: []

@@ -1,0 +1,114 @@
+# limeyard scenario: estate
+#
+# The thing the old vuln_apps fleet could not do. Every app there was
+# 127.0.0.1:70xx, one host and one HTTP port, so subdomain enumeration had
+# nothing to enumerate, port scanning was handed its answer, and service
+# fingerprinting never saw a non-HTTP daemon.
+#
+# This is a small routable estate on lime-lab with authoritative DNS. The zone
+# file is the answer key. Docker network aliases are deliberately NOT used as
+# the source of truth, because they never appear in a zone transfer and would
+# make the topology disagree with scenario.yml.
+#
+# No host ports are published at all except the resolver, which is bound to
+# loopback so you can dig it from the host.
+
+name: lime-scn-estate
+
+networks:
+  lime-lab:
+    external: true
+
+services:
+  ns1:
+    image: internetsystemsconsortium/bind9:9.20
+    container_name: lime-estate-ns1
+    volumes:
+      - ./zones/named.conf:/etc/bind/named.conf:ro
+      - ./zones/lab.test.db:/etc/bind/lab.test.db:ro
+      - ./zones/closed.test.db:/etc/bind/closed.test.db:ro
+      - ./zones/reverse.db:/etc/bind/reverse.db:ro
+    ports:
+      - "127.0.0.1:5353:53/tcp"
+      - "127.0.0.1:5353:53/udp"
+    networks:
+      lime-lab: {ipv4_address: 10.66.10.2}
+    restart: unless-stopped
+
+  www:
+    image: traefik/whoami:latest
+    container_name: lime-estate-www
+    networks: {lime-lab: {ipv4_address: 10.66.10.10}}
+    restart: unless-stopped
+
+  api:
+    image: traefik/whoami:latest
+    container_name: lime-estate-api
+    networks: {lime-lab: {ipv4_address: 10.66.10.11}}
+    restart: unless-stopped
+
+  admin:
+    image: traefik/whoami:latest
+    container_name: lime-estate-admin
+    networks: {lime-lab: {ipv4_address: 10.66.10.12}}
+    restart: unless-stopped
+
+  # Stale: in DNS, still answering, nobody remembers it. The classic finding.
+  staging:
+    image: traefik/whoami:latest
+    container_name: lime-estate-staging
+    networks: {lime-lab: {ipv4_address: 10.66.10.13}}
+    restart: unless-stopped
+
+  # One host, eight names.
+  vhosts:
+    image: nginx:alpine
+    container_name: lime-estate-vhosts
+    volumes:
+      - ./vhosts/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: {lime-lab: {ipv4_address: 10.66.10.20}}
+    restart: unless-stopped
+
+  # Answers under the wildcard, so every brute-force guess resolves.
+  wildcard:
+    image: traefik/whoami:latest
+    container_name: lime-estate-wildcard
+    networks: {lime-lab: {ipv4_address: 10.66.10.99}}
+    restart: unless-stopped
+
+  # A REAL host living under the wildcard. Naive wildcard filtering drops it.
+  wildreal:
+    image: traefik/whoami:latest
+    container_name: lime-estate-wildreal
+    networks: {lime-lab: {ipv4_address: 10.66.10.23}}
+    restart: unless-stopped
+
+  takeover:
+    image: nginx:alpine
+    container_name: lime-estate-takeover
+    volumes:
+      - ./impostor/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: {lime-lab: {ipv4_address: 10.66.10.30}}
+    restart: unless-stopped
+
+  # Non-HTTP services: the first thing scout has ever had to fingerprint, and
+  # a real port spread for pulse to sweep rather than a handed-over list.
+  db-internal:
+    image: postgres:16-alpine
+    container_name: lime-estate-db
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    networks: {lime-lab: {ipv4_address: 10.66.10.41}}
+    restart: unless-stopped
+
+  cache:
+    image: redis:7-alpine
+    container_name: lime-estate-cache
+    networks: {lime-lab: {ipv4_address: 10.66.10.42}}
+    restart: unless-stopped
+
+  mail:
+    image: axllent/mailpit:latest
+    container_name: lime-estate-mail
+    networks: {lime-lab: {ipv4_address: 10.66.10.43}}
+    restart: unless-stopped

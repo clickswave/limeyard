@@ -1,42 +1,66 @@
-# vuln_apps: a fleet of intentionally-vulnerable apps for security testing.
+# limeyard: a security testing lab.
 #
-# This top compose starts ONLY the control plane (vuln_apps_manager). The vuln
-# apps themselves are NOT defined here - each lives under apps/<slug>/ as a
-# skeleton (app.yml + compose.yml) and is run by the manager as its own isolated
-# docker compose project. So every app gets its own network, volumes and DB, and
-# nothing clashes.
+# This top compose starts ONLY the control plane: the limed daemon and the UI.
+# The targets themselves are NOT defined here. Each lives under
+# targets/<kind>/<slug>/ as a skeleton (target.yml + compose.yml) and is run by
+# limed as its own isolated docker compose project, so every target gets its own
+# network, volumes and database, and nothing clashes.
 #
-# Usage:
-#   docker compose up -d                                   # start the manager
-#   docker compose run --rm vuln_apps_manager start --all  # start the fleet
-#   docker compose run --rm vuln_apps_manager status
-#   docker compose run --rm vuln_apps_manager stop --all
-# (or use the ./vam wrapper: ./vam start --all)
+#   docker compose up -d          # control plane + UI at http://127.0.0.1:7000
+#   ./lime start --all            # start the light targets
+#   ./lime credits                # who wrote each target, and under what licence
+#   ./lime doctor                 # environment, attribution and disk checks
+#
+# EVERYTHING IN THIS LAB IS DELIBERATELY VULNERABLE. Local testing only. All
+# published ports bind to 127.0.0.1.
 
-name: vuln_apps
+name: limeyard
 
 networks:
-  vuln-net:
-    name: vuln-net        # fixed name so per-app composes can join it as external
+  lime-web:
+    name: lime-web              # fixed name so per-target composes join it as external
     driver: bridge
+  lime-lab:
+    name: lime-lab              # routable lab subnet: real hosts for pulse/scout/voyage
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.66.0.0/16
 
 services:
-  vuln_apps_manager:
-    build: ./manager
-    image: vuln_apps/manager:latest
-    container_name: vuln_apps_manager
-    entrypoint: ["vam"]
-    command: ["monitor"]        # `up` runs the watch loop; `run` overrides this
+  limeyard_control:
+    build: ./control/limed
+    image: limeyard/control:latest
+    container_name: limeyard_control
+    entrypoint: ["lime"]
+    command: ["serve"]
     environment:
-      VULN_APPS_DIR: ${PWD}     # apps are read from ${PWD}/apps
-      VULN_NET: vuln-net
+      LIMEYARD_DIR: ${LIMEYARD_DIR:-/work}
+      LIME_WEB_NET: lime-web
+      LIME_LAB_NET: lime-lab
+      LIMED_PORT: "7099"
       MONITOR_INTERVAL: "${MONITOR_INTERVAL:-30}"
     volumes:
-      # Control the host Docker daemon (to run each app as its own project)...
+      # Control the host Docker daemon (to run each target as its own project)...
       - /var/run/docker.sock:/var/run/docker.sock
-      # ...and see the app definitions at their real host path (so any relative
-      # paths inside an app's compose resolve correctly through the socket).
-      - ${PWD}:${PWD}
-    working_dir: ${PWD}
-    networks: [vuln-net]
+      # ...and see the definitions at their real host path, so relative paths
+      # inside a target's compose resolve correctly through the socket.
+      - ${LIMEYARD_DIR:-.}:${LIMEYARD_DIR:-/work}
+    working_dir: ${LIMEYARD_DIR:-/work}
+    ports:
+      - "127.0.0.1:7099:7099"
+    networks: [lime-web]
+    restart: unless-stopped
+
+  limeyard_ui:
+    build: ./control/ui
+    image: limeyard/ui:latest
+    container_name: limeyard_ui
+    environment:
+      LIMED_URL: http://limeyard_control:7099
+      PORT: "7000"
+    ports:
+      - "127.0.0.1:7000:7000"
+    networks: [lime-web]
+    depends_on: [limeyard_control]
     restart: unless-stopped

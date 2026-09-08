@@ -1,0 +1,51 @@
+target: dvwa
+scoring: findings
+
+expected:
+  - id: DV1
+    class: sqli
+    severity: high
+    scope: black-box
+    confirm: error-based and time-based blind
+    where: {method: GET, path: /vulnerabilities/sqli/, param: id, in: query}
+  - id: DV2
+    class: xss-reflected
+    severity: medium
+    scope: black-box
+    confirm: unencoded reflection
+    where: {method: GET, path: /vulnerabilities/xss_r/, param: name, in: query}
+  - id: DV3
+    class: lfi
+    severity: high
+    scope: black-box
+    confirm: file read
+    where: {method: GET, path: /vulnerabilities/fi/, param: page, in: query}
+  - id: DV4
+    class: cmdi
+    severity: critical
+    scope: authed
+    confirm: reflected shell arithmetic marker
+    where: {method: POST, path: /vulnerabilities/exec/, param: ip, in: body}
+    note: >-
+      Needs a seeded login and security level low. Closed 2026-08-23 by the
+      reflected-cmdi oracle in cortex/src/inject.rs.
+  - id: DV5
+    class: csrf
+    severity: medium
+    scope: out-of-scope
+    where: {path: /vulnerabilities/csrf/}
+    note: requires a victim session
+  - id: DV6
+    class: auth-bypass
+    severity: medium
+    scope: out-of-scope
+    where: {path: /vulnerabilities/brute/}
+    note: brute force is a rate and logic step, not a scanner oracle
+  - id: DV7
+    class: xss-stored
+    severity: medium
+    scope: out-of-scope
+    where: {path: /vulnerabilities/xss_s/}
+    note: behind auth plus a CSRF token
+
+negative: []

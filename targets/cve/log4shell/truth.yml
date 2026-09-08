@@ -1,0 +1,23 @@
+target: log4shell
+scoring: findings
+
+expected:
+  - id: LS1
+    class: cve
+    cve: CVE-2021-44228
+    severity: critical
+    scope: black-box
+    confirm: OAST out-of-band callback
+    where: {method: GET, path: /, param: X-Api-Version, in: header}
+    note: >-
+      JNDI lookup in a logged header. The header injection point is the whole
+      test: a scanner that only fuzzes query and body parameters scores zero
+      here for reasons unrelated to its oracle.
+  - id: LS2
+    class: tech
+    severity: info
+    scope: black-box
+    confirm: spring-boot fingerprint
+    where: {method: GET, path: /}
+
+negative: []

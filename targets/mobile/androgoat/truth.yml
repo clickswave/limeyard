@@ -1,0 +1,45 @@
+target: androgoat
+scoring: findings
+
+note: >-
+  A fixture, not a service: there is nothing to start. It is scored by running
+  Tracer against the installed app and checking which of the four traffic
+  buttons become visible after patching.
+
+  Why this app specifically: TrafficActivity gives four buttons that together
+  form a differential oracle, covering both Android pinning mechanisms with a
+  built-in negative control. Verified 2026-09-08 that the hardcoded pins still
+  match the live chains (owasp.org matches on the GTS WE1 and Root R4 pins;
+  cve.org matches on all three), and that okhttp3/CertificatePinner survives R8
+  in the shipped APK, so the dex patcher has a real symbol to locate.
+
+expected:
+  - id: AG1
+    class: info-disclosure
+    scope: black-box
+    confirm: plaintext HTTP visible with no patching
+    where: {path: /traffic/http}
+    note: control. If this is not visible, the proxy itself is broken.
+  - id: AG2
+    class: info-disclosure
+    scope: black-box
+    confirm: HTTPS visible without patching
+    where: {path: /traffic/https}
+    note: >-
+      Negative control for the patcher. base-config trusts certificates
+      src="user", so our CA alone is enough. If this needs patching, we are
+      patching something that did not need it.
+  - id: AG3
+    class: info-disclosure
+    scope: authed
+    confirm: visible only after neutering the OkHttp pinner
+    where: {path: /traffic/pinned-okhttp}
+    note: OkHttp CertificatePinner with three hardcoded SPKI pins against owasp.org.
+  - id: AG4
+    class: info-disclosure
+    scope: authed
+    confirm: visible only after stripping the network_security_config pin-set
+    where: {path: /traffic/pinned-native}
+    note: platform pinning against cve.org. A different code path from AG3.
+
+negative: []

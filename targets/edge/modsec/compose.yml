@@ -1,0 +1,44 @@
+# The same backend behind CRS twice: once blocking, once detection-only. That
+# pairing is the point. It makes "blocked" versus "would have been blocked"
+# measurable on the same payload, which is what the evasion work actually needs.
+#
+# The backend is a reflector rather than a real app, so the measurement isolates
+# WAF behaviour from application behaviour.
+networks:
+  lime-web:
+    external: true
+
+services:
+  origin:
+    image: traefik/whoami:latest
+    networks: [lime-web]
+    restart: unless-stopped
+
+  blocking:
+    image: owasp/modsecurity-crs:nginx-alpine
+    environment:
+      BACKEND: http://origin:80
+      SERVER_NAME: blocking.lab.test
+      MODSEC_RULE_ENGINE: "On"
+      BLOCKING_PARANOIA: "2"
+      ANOMALY_INBOUND: "5"
+      PROXY_HOST_HEADER: "$$host"
+      PORT: "8080"
+    ports: ["127.0.0.1:7302:8080"]
+    networks: [lime-web]
+    depends_on: [origin]
+    restart: unless-stopped
+
+  detectonly:
+    image: owasp/modsecurity-crs:nginx-alpine
+    environment:
+      BACKEND: http://origin:80
+      SERVER_NAME: detectonly.lab.test
+      MODSEC_RULE_ENGINE: DetectionOnly
+      DETECTION_PARANOIA: "2"
+      PROXY_HOST_HEADER: "$$host"
+      PORT: "8080"
+    ports: ["127.0.0.1:7303:8080"]
+    networks: [lime-web]
+    depends_on: [origin]
+    restart: unless-stopped

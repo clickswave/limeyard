@@ -1,6 +1,0 @@
-name: bWAPP
-description: '"Buggy web app": 100+ bugs across every class. Good scanner breadth.'
-category: web
-stack: PHP / MySQL (embedded)
-url: http://127.0.0.1:7007
-setup: Browse /install.php and click "install" once. Login bee/bug.

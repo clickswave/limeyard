@@ -1,0 +1,17 @@
+name: mirage
+slug: mirage
+kind: control
+description: >-
+  A precision target. Nothing here is vulnerable; everything looks like it is.
+  Every finding reported against mirage is a false positive by construction.
+stack: Python (stdlib only)
+url: http://127.0.0.1:7301
+expose:
+  http: 7301
+weight: light
+egress: false
+upstream:
+  author: Clickswave
+  license: proprietary
+  verified: 2026-09-08
+truth: truth.yml

@@ -1,0 +1,11 @@
+networks:
+  lime-web:
+    external: true
+
+services:
+  mirage:
+    build: .
+    image: limeyard/mirage:latest
+    ports: ["127.0.0.1:7301:8080"]
+    networks: [lime-web]
+    restart: unless-stopped

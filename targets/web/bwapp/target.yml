@@ -1,0 +1,24 @@
+name: bWAPP
+slug: bwapp
+kind: web
+description: '"Buggy web app": 100+ bugs across every class. Good scanner breadth.'
+stack: PHP / MySQL (embedded)
+url: http://127.0.0.1:7007
+expose:
+  http: 7007
+weight: light
+egress: false
+upstream:
+  author: Malik Mesellem
+  homepage: http://www.itsecgames.com/
+  packager: Rory McCune (raesene)
+  repo: https://github.com/raesene/bWAPP
+  license: none declared
+  verified: 2026-09-08
+  note: >-
+    The container packaging is archived upstream (last push 2021-12-01) and
+    declares no licence. Run internally only; never redistribute the image.
+credentials:
+  - {user: bee, pass: bug, role: user}
+setup: Browse /install.php and click "install" once. Login bee/bug.
+truth: truth.yml

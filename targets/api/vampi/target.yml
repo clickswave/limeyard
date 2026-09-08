@@ -1,0 +1,17 @@
+name: VAmPI
+slug: vampi
+kind: api
+description: Flask REST API demonstrating the OWASP API Top 10 (BOLA/BFLA). Ships vulnerable.
+stack: Python / Flask
+url: http://127.0.0.1:7005
+expose:
+  http: 7005
+weight: light
+egress: false
+upstream:
+  author: erev0s
+  repo: https://github.com/erev0s/VAmPI
+  license: MIT
+  verified: 2026-09-08
+setup: POST /createdb seeds demo data. Set env vulnerable=0 for the secured baseline.
+truth: truth.yml

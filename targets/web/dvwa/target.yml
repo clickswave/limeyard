@@ -1,0 +1,19 @@
+name: DVWA
+slug: dvwa
+kind: web
+description: Classic PHP target with adjustable security levels (SQLi/XSS/LFI/RCE).
+stack: PHP / MariaDB
+url: http://127.0.0.1:7002
+expose:
+  http: 7002
+weight: light
+egress: false
+upstream:
+  author: Robin Wood (digininja)
+  repo: https://github.com/digininja/DVWA
+  license: GPL-3.0
+  verified: 2026-09-08
+credentials:
+  - {user: admin, pass: password, role: admin}
+setup: Browse /setup.php and click "Create / Reset Database" once. Login admin/password.
+truth: truth.yml

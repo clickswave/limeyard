@@ -1,0 +1,20 @@
+name: Open services
+slug: openservices
+kind: service
+description: >-
+  Eight unauthenticated daemons on the lab subnet. The first thing scout has
+  ever had to fingerprint and the first real port spread for pulse to sweep.
+stack: assorted official images
+weight: light
+egress: false
+disk: ~1.2GB
+upstream:
+  author: Clickswave (composition of upstream official images)
+  license: mixed, per-image
+  verified: 2026-09-08
+  note: >-
+    Every image here is an unmodified official upstream build. Do not swap in
+    dperson/samba (2021), osixia/openldap (2021) or polinux/snmpd (2018), all of
+    which are long stale, and note bitnami/* images are no longer free on Docker
+    Hub, so composes found online that use them will break.
+truth: truth.yml

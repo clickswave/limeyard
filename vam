@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Convenience wrapper around the manager. These are equivalent:
-#   ./vam start --all
-#   docker compose run --rm vuln_apps_manager start --all
+# Deprecated. vuln_apps became limeyard; `vam` became `lime`.
+# Kept for one release so existing muscle memory and scripts keep working.
 set -euo pipefail
+echo "vam is deprecated: vuln_apps is now limeyard, and vam is now lime." >&2
+echo "  use: ./lime $*" >&2
 cd "$(dirname "$0")"
-exec docker compose run --rm vuln_apps_manager "$@"
+exec ./lime "$@"

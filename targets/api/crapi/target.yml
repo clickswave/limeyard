@@ -1,0 +1,17 @@
+name: OWASP crAPI
+slug: crapi
+kind: api
+description: Purpose-built API target - BOLA/BFLA/BOPLA, mass assignment, JWT, SSRF.
+stack: Node / Java / Python + Postgres + Mongo
+url: http://127.0.0.1:7010
+expose:
+  http: 7010
+weight: heavy
+egress: false
+upstream:
+  author: OWASP crAPI project
+  repo: https://github.com/OWASP/crAPI
+  license: Apache-2.0
+  verified: 2026-09-08
+setup: First boot is slow (DBs + migrations). OTP / reset mails land in mailhog at http://127.0.0.1:7011.
+truth: truth.yml

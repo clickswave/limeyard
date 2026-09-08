@@ -1,0 +1,81 @@
+name: estate
+description: >-
+  A small routable estate with authoritative DNS: wildcard, CNAME chains, two
+  dangling-CNAME takeover classes, a stale staging host, eight vhosts on one
+  IP, an open zone transfer and a refused one, plus non-HTTP services. This is
+  the ground truth voyage, pulse and scout have never had.
+
+upstream:
+  author: Clickswave
+  license: proprietary
+  verified: 2026-09-08
+
+resolver: 10.66.10.2
+resolver_host: 127.0.0.1:5353
+
+zones:
+  - zone: lab.test
+    allow_transfer: true
+    note: AXFR succeeds. The full record set below is the expected answer.
+  - zone: closed.test
+    allow_transfer: false
+    note: >-
+      AXFR must be reported as REFUSED, never as zero subdomains. BIND 9.20
+      changed this default, so an engine that conflates the two looks correct
+      against modern servers and is silently wrong.
+  - zone: 66.10.in-addr.arpa
+    allow_transfer: true
+    note: PTR sweep target.
+
+hosts:
+  - {ip: 10.66.10.2,  names: [ns1.lab.test], ports: [53], note: authoritative resolver}
+  - {ip: 10.66.10.10, names: [www.lab.test, legacy.lab.test, old.lab.test], ports: [80], note: CNAME chain terminates here}
+  - {ip: 10.66.10.11, names: [api.lab.test, eu.api.lab.test], ports: [80], note: multi-level label}
+  - {ip: 10.66.10.12, names: [admin.lab.test], ports: [80]}
+  - {ip: 10.66.10.13, names: [staging.lab.test], ports: [80], note: stale host nobody remembers}
+  - {ip: 10.66.10.20, names: [shop.lab.test, blog.lab.test, docs.lab.test, status.lab.test, support.lab.test, careers.lab.test, partners.lab.test, legacy-www.lab.test], ports: [80], note: eight names, one host. Reporting eight hosts is a dedup bug.}
+  - {ip: 10.66.10.23, names: [real.wild.lab.test], ports: [80], note: a real record under the wildcard. Naive filtering drops it.}
+  - {ip: 10.66.10.30, names: [], ports: [80], note: takeover impostor, answers for the vendor hostnames}
+  - {ip: 10.66.10.41, names: [db.internal.lab.test], ports: [5432], note: postgres, trust auth}
+  - {ip: 10.66.10.42, names: [secret.closed.test], ports: [6379], note: redis, unauthenticated}
+  - {ip: 10.66.10.43, names: [], ports: [1025, 8025], note: smtp + http}
+  - {ip: 10.66.10.99, names: ["*.wild.lab.test"], ports: [80], note: the wildcard sink}
+
+expected_assets:
+  subdomains_via_axfr:
+    - ns1.lab.test
+    - www.lab.test
+    - api.lab.test
+    - admin.lab.test
+    - staging.lab.test
+    - shop.lab.test
+    - blog.lab.test
+    - docs.lab.test
+    - status.lab.test
+    - support.lab.test
+    - careers.lab.test
+    - partners.lab.test
+    - legacy-www.lab.test
+    - legacy.lab.test
+    - old.lab.test
+    - cdn.lab.test
+    - pages.lab.test
+    - app.lab.test
+    - gone.lab.test
+    - eu.api.lab.test
+    - db.internal.lab.test
+    - real.wild.lab.test
+  distinct_hosts: 12
+  wildcard_detected: "*.wild.lab.test"
+  wildcard_survivor: real.wild.lab.test
+  transfer_refused: closed.test
+  takeover_body_match: [cdn.lab.test, pages.lab.test, app.lab.test]
+  takeover_nxdomain: [gone.lab.test]
+  open_ports:
+    "10.66.10.41": [5432]
+    "10.66.10.42": [6379]
+    "10.66.10.43": [1025, 8025]
+  services:
+    "10.66.10.41:5432": postgresql
+    "10.66.10.42:6379": redis
+    "10.66.10.43:1025": smtp

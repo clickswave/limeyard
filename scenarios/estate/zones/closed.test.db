@@ -1,0 +1,7 @@
+$TTL 60
+@       IN SOA  ns1.lab.test. admin.lab.test. ( 2026090801 3600 600 86400 60 )
+@       IN NS   ns1.lab.test.
+; Transfers are refused for this zone. A scanner must report REFUSED, not
+; "no subdomains found": treating a refusal as an empty result is a real bug.
+www     IN A    10.66.10.10
+secret  IN A    10.66.10.42
