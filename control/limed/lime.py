@@ -573,8 +573,17 @@ def audit_compose(path, doc):
             out.append(("fail", f"{where}: cap_add {', '.join(sorted(bad))}"))
 
         for key in REQUIRED:
-            if key not in svc:
-                out.append(("fail", f"{where}: missing {key}"))
+            if key in svc:
+                continue
+            # A memory cap can legitimately arrive as deploy.resources.limits.memory,
+            # which is what several upstream composes use. Compose refuses to carry
+            # both with different values, so accept either.
+            dep = ((svc.get("deploy") or {}).get("resources") or {}).get("limits") or {}
+            if key == "mem_limit" and dep.get("memory"):
+                continue
+            if key == "pids_limit" and dep.get("pids"):
+                continue
+            out.append(("fail", f"{where}: missing {key}"))
         if "ALL" not in [str(c).upper() for c in (svc.get("cap_drop") or [])]:
             out.append(("fail", f"{where}: cap_drop must include ALL"))
         if "no-new-privileges:true" not in [str(o) for o in (svc.get("security_opt") or [])]:

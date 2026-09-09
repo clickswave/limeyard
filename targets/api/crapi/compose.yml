@@ -7,7 +7,6 @@
 #
 # Heavy (~2 GB): Postgres + Mongo + 3 app tiers. Not started by `start --all`
 # unless you add --heavy.
-
 # Hardened by limeyard. These containers are deliberately vulnerable and we
 # achieve RCE inside them on purpose, so the container is the security boundary:
 #   no-new-privileges  a setuid binary inside cannot escalate
@@ -57,17 +56,13 @@ services:
       interval: 15s
       timeout: 15s
       retries: 15
-    deploy:
-      resources:
-        limits:
-          cpus: '0.8'
-          memory: 384M
     security_opt:
     - no-new-privileges:true
     cap_drop:
     - ALL
     pids_limit: 512
-    mem_limit: 1500m
+    mem_limit: 384M
+    cpus: 0.8
   crapi-community:
     image: crapi/crapi-community:latest@sha256:e5defa174e410bb615c14f257d52066d0534b87c4f4e25a93e4a12a0aea99323
     environment:
@@ -97,17 +92,13 @@ services:
       interval: 15s
       timeout: 15s
       retries: 15
-    deploy:
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 192M
     security_opt:
     - no-new-privileges:true
     cap_drop:
     - ALL
     pids_limit: 512
-    mem_limit: 1500m
+    mem_limit: 192M
+    cpus: 0.3
   crapi-workshop:
     image: crapi/crapi-workshop:latest@sha256:ab904182110a1ab11cef43cfd86c898c1139ebb08181ba7775dbcff8db2ea8cf
     environment:
@@ -147,17 +138,13 @@ services:
       interval: 15s
       timeout: 15s
       retries: 15
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 512M
     security_opt:
     - no-new-privileges:true
     cap_drop:
     - ALL
     pids_limit: 512
-    mem_limit: 1500m
+    mem_limit: 512M
+    cpus: 1.0
   crapi-web:
     image: crapi/crapi-web:latest@sha256:b14b5964af336d200449e28ffac9371e8929d4450f1e53e2787b4401adc31695
     ports:
@@ -184,11 +171,6 @@ services:
     networks:
     - default
     - lime-web
-    deploy:
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 128M
     security_opt:
     - no-new-privileges:true
     cap_drop:
@@ -202,7 +184,8 @@ services:
     - NET_BIND_SERVICE
     - KILL
     pids_limit: 512
-    mem_limit: 1500m
+    mem_limit: 128M
+    cpus: 0.3
   postgresdb:
     image: postgres:14@sha256:d462928b1898dd74b749ef486797968828c1e7fc9befb5e5ca03a33bfbc32d64
     command:
@@ -222,11 +205,6 @@ services:
       retries: 15
     volumes:
     - postgresql-data:/var/lib/postgresql/data/
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
     security_opt:
     - no-new-privileges:true
     cap_drop:
@@ -238,7 +216,8 @@ services:
     - SETGID
     - SETUID
     pids_limit: 512
-    mem_limit: 1g
+    mem_limit: 256M
+    cpus: 0.5
   mongodb:
     image: mongo:4.4@sha256:4be76f674fc4b27859816811b8baa3c51830eb1dbf4ca81a51e26b79edd662ef
     environment:
@@ -252,18 +231,14 @@ services:
       start_period: 20s
     volumes:
     - mongodb-data:/data/db
-    deploy:
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 128M
     security_opt:
     - no-new-privileges:true
     cap_drop:
     - ALL
     cap_add: *id001
     pids_limit: 512
-    mem_limit: 1g
+    mem_limit: 128M
+    cpus: 0.3
   mailhog:
     user: root
     image: crapi/mailhog:latest@sha256:48054e74c771688f167d648d6d2e8c8f5f2244720ea0ab5e4e2ae37056e67e6c
@@ -285,17 +260,13 @@ services:
     networks:
     - default
     - lime-web
-    deploy:
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 128M
     security_opt:
     - no-new-privileges:true
     cap_drop:
     - ALL
     pids_limit: 512
-    mem_limit: 1500m
+    mem_limit: 128M
+    cpus: 0.3
 volumes:
   mongodb-data: null
   postgresql-data: null

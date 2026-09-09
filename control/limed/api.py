@@ -46,6 +46,7 @@ def target_view(t, with_truth=False):
         "disk": t.get("disk"),
         "setup": t.get("setup"),
         "credentials": t.get("credentials") or [],
+        "session_cookies": t.get("session_cookies") or {},
         "ports": [{"port": p, "service": s} for p, s, _ in lime.host_ports(t)],
         # Attribution travels with every representation of a target. The UI is
         # required to render it; nothing here is optional or lazily loaded.

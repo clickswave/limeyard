@@ -15,5 +15,10 @@ upstream:
   verified: 2026-09-08
 credentials:
   - {user: admin, pass: password, role: admin}
+# DVWA hands out security=impossible on login. Its answer key documents
+# every entry at level low, so the scan session pins it there. This is
+# target configuration, not a detection hint.
+session_cookies:
+  security: low
 setup: Browse /setup.php and click "Create / Reset Database" once. Login admin/password.
 truth: truth.yml
