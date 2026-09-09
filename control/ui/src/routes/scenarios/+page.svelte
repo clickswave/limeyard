@@ -20,10 +20,7 @@
 	<span class="faint small">{data.scenarios.length}</span>
 </div>
 <p class="lede muted">
-	A scenario wires targets into a network topology with authoritative DNS, so subdomain enumeration,
-	port scanning and service fingerprinting have something real to enumerate. The zone file is the
-	answer key: Docker network aliases are deliberately not used, since they never appear in a zone
-	transfer and would make the topology disagree with the truth.
+	Targets wired into a network topology with authoritative DNS. The zone file is the answer key.
 </p>
 
 {#each data.scenarios as s}

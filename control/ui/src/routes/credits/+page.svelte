@@ -23,9 +23,7 @@
 	<span class="faint small">{data.credits.length} targets</span>
 </div>
 <p class="lede muted">
-	limeyard runs other people's work. Every target was built by someone else unless it says
-	Clickswave. Generated from each <code>target.yml</code>, never hand maintained;
-	<code>./lime credits</code> prints the same list.
+	Generated from each <code>target.yml</code>. <code>./lime credits</code> prints the same list.
 </p>
 
 {#if missing.length}

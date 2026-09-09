@@ -13,9 +13,7 @@
 
 <div class="head"><h1>Scorecard</h1></div>
 <p class="lede muted">
-	Recall is what we found. Precision is what we did not wrongly report. A lab where every target is
-	vulnerable can only measure the first, which is how a scanner ends up shipping noisy heuristics,
-	so the negative controls in each answer key matter as much as the expected entries.
+	Recall is what we found. Precision is what we did not wrongly report.
 </p>
 
 {#if !c}

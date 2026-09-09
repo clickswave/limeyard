@@ -1,6 +1,6 @@
 <script>
 	import '$lib/app.css';
-	import { page } from '$app/state';
+	import { page, navigating } from '$app/state';
 	let { data, children } = $props();
 
 	const nav = [
@@ -17,6 +17,8 @@
 	);
 </script>
 
+{#if navigating.to}<div class="progress"><span></span></div>{/if}
+
 <header>
 	<div class="inner">
 		<a class="brand" href="/">
@@ -30,11 +32,11 @@
 		</nav>
 		<div class="right">
 			{#if disk?.free_pct != null}
-				<span class="badge {diskTone}" title="host disk free">
+				<span class="meter {diskTone}" title="host disk free">
 					{disk.free_pct}% disk{disk.heavy_blocked ? ' · heavy blocked' : ''}
 				</span>
 			{/if}
-			<span class="badge {data.limedUp ? 'ok' : 'crit'}"
+			<span class="status {data.limedUp ? 'run' : 'stop'}"
 				><i class="dot"></i>{data.limedUp ? 'connected' : 'offline'}</span
 			>
 		</div>
@@ -65,9 +67,9 @@
 		z-index: 10;
 	}
 	.inner {
-		max-width: 1240px;
+		max-width: 1560px;
 		margin: 0 auto;
-		padding: 0 24px;
+		padding: 0 32px;
 		height: 52px;
 		display: flex;
 		align-items: center;
@@ -86,9 +88,8 @@
 		text-decoration: none;
 	}
 	.logo {
-		width: 9px;
-		height: 9px;
-		border-radius: 2px;
+		width: 7px;
+		height: 7px;
 		background: var(--accent);
 	}
 	nav {
@@ -118,17 +119,17 @@
 		align-items: center;
 	}
 	main {
-		max-width: 1240px;
+		max-width: 1560px;
 		margin: 0 auto;
-		padding: 26px 24px 64px;
+		padding: 22px 32px 56px;
 	}
 	main :global(> .notice) {
 		margin-bottom: 18px;
 	}
 	footer {
-		max-width: 1240px;
+		max-width: 1560px;
 		margin: 0 auto;
-		padding: 16px 24px 40px;
+		padding: 14px 32px 32px;
 		display: flex;
 		justify-content: space-between;
 		gap: 16px;
@@ -137,4 +138,7 @@
 		color: var(--ink-3);
 		font-size: 12px;
 	}
+	.meter { font-size: 12px; color: var(--ink-3); }
+	.meter.warn { color: var(--wait); }
+	.meter.crit { color: var(--stop); }
 </style>
