@@ -51,6 +51,35 @@ def page(title, body):
             "</body></html>").encode()
 
 
+# Per-(ip, endpoint) request times, for the throttle below.
+RATE = {}
+RATE_WINDOW = 60.0
+RATE_MAX = 10
+
+def js_string(v):
+    """A JS string literal that cannot end the script element.
+
+    json.dumps escapes quotes and backslashes but not `<`, so a value
+    containing `</script>` closes the block and everything after it is markup.
+    That is a real cross-site scripting bug, and mirage had it: the scanner
+    found it, which is the lab working, but a control target with a live bug
+    scores every honest detection as a false positive. Escaping the angle
+    brackets keeps the reflection (the bait) and removes the breakout.
+    """
+    return json.dumps(v).replace("<", "\\u003c").replace(">", "\\u003e")
+
+
+def header_safe(v):
+    """A value safe to put in a response header.
+
+    Copying request input into a header verbatim is response splitting: a CR/LF
+    in the value starts a header of the attacker's choosing. mirage did exactly
+    that on /redirect, so a CRLF finding against it was true. The bait is that
+    the value comes back in a header at all, not that the header can be split.
+    """
+    return "".join(c for c in v if c.isprintable() and c not in "\r\n")
+
+
 class H(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
     server_version = "nginx"          # bait: a plausible, wrong server banner
@@ -58,6 +87,26 @@ class H(BaseHTTPRequestHandler):
 
     def log_message(self, *a):
         pass
+
+    def throttled(self, bucket):
+        """Refuse a burst on a sensitive endpoint, and say so properly.
+
+        A login with no throttling is a real finding, so a control target that
+        claims to have nothing must actually rate-limit. Answers 429 with
+        Retry-After once the window is exceeded, which is what a rate-limit
+        oracle looks for.
+        """
+        now = time.time()
+        ip = self.client_address[0]
+        hits = RATE.setdefault((ip, bucket), [])
+        hits[:] = [t for t in hits if now - t < RATE_WINDOW]
+        hits.append(now)
+        if len(hits) > RATE_MAX:
+            self._send(429, page("Too many requests",
+                                 "<p>Rate limited. Try again shortly.</p>"),
+                       extra={"Retry-After": "30"})
+            return True
+        return False
 
     def _send(self, code, body, ctype="text/html; charset=utf-8", extra=None):
         if isinstance(body, str):
@@ -122,7 +171,7 @@ class H(BaseHTTPRequestHandler):
                 <p>body: {e}</p>
                 <div title="{html.escape(v, quote=True)}">attribute</div>
                 <textarea>{e}</textarea>
-                <script>var t = {json.dumps(v)};</script>"""))
+                <script>var t = {js_string(v)};</script>"""))
 
         # ---- Reflection into what looks like a template, with a template-ish
         # error. `{{7*7}}` comes back as `{{7*7}}`, never 49.
@@ -156,7 +205,7 @@ class H(BaseHTTPRequestHandler):
             to = q.get("to", "/")
             return self._send(200, page("Redirect", f"<p>Would send you to "
                                                     f"{html.escape(to)}.</p>"),
-                              extra={"X-Redirect-Target": to[:200]})
+                              extra={"X-Redirect-Target": header_safe(to)[:200]})
 
         # ---- Command-injection bait. Echoes a plausible ping transcript. The
         # shell arithmetic marker is never evaluated, so a reflected-cmdi oracle
@@ -177,6 +226,8 @@ class H(BaseHTTPRequestHandler):
         # ---- Login that is not bypassable. Always fails, and emits a SQL-ish
         # error on quote input while doing so.
         if p == "/login":
+            if self.throttled("/login"):
+                return
             u_ = q.get("username", "")
             if "'" in u_ or '"' in u_:
                 return self._send(200, page("Login failed",

@@ -3,6 +3,11 @@ scoring: findings
 
 note: >-
   Inverted target. `expected` is deliberately empty: there is nothing to find.
+  That claim is only worth something if it is true, and twice it has not been:
+  on 2026-09-09 cortex reported a JS-context XSS on /echo and a CRLF header
+  injection on /redirect, and both were real bugs in mirage rather than false
+  positives. Both are fixed (see MI-N3 and MI-N14). If a finding lands here,
+  check the target before you blame the scanner.
   Every entry below is a negative control, so any finding that matches one is a
   false positive, and any finding that matches none still lands in `unmatched`
   and should be investigated. A perfect score here is silence.
@@ -67,3 +72,20 @@ negative:
     note: >-
       Soft 404. Every unknown path answers 200 with a plausible page, so content
       discovery that does not calibrate reports the entire wordlist as found.
+  - id: MI-N14
+    class: crlf
+    where: {method: GET, path: /redirect, param: to}
+    note: >-
+      The `to` value comes back in an X-Redirect-Target header, which is the
+      bait, but CR/LF and other control characters are stripped before it goes
+      in, so no header can be split. Added 2026-09-09 after cortex proved the
+      opposite: mirage was copying the value verbatim and the finding against it
+      was true. See the note at the top of this file.
+  - id: MI-N15
+    class: no-rate-limit
+    where: {method: POST, path: /login}
+    note: >-
+      /login answers 429 with Retry-After after ten attempts in a minute, so a
+      rate-limit oracle has nothing to report. Added at the same time and for
+      the same reason: an unthrottled login is a real finding, and a control
+      target cannot claim to be clean while having one.
