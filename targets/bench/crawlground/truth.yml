@@ -1,0 +1,28 @@
+target: crawlground
+scoring: crawl
+
+note: >-
+  Self-scoring, which is better than an answer key. Each of the 59 tests has a
+  page at /test/<category>/<id> and a marker at /score/<category>/<id> linked
+  from nowhere else, so the only way to score is to operate the control and
+  follow where it leads.
+
+  Read results from /results.json or /website-results.yaml, which give passes,
+  fails and a percentage. POST /set-tool names the run and clears that tool's
+  scores, so variants can be compared back to back; POST /reset clears all.
+
+  Categories: buttons, dynamic-content, forms, frames, js-events, links,
+  navigation, other. The interesting ones are the cases a link extractor cannot
+  reach at all: javascript: hrefs, image maps, SVG anchors, noscript blocks,
+  meta refresh, history.pushState and replaceState, window.open, CSS hover
+  dropdowns, keydown, long-press, image inputs, a fetch POST with no form
+  element, and an Akamai-style bot-detection globals check.
+
+external:
+  type: http
+  url: http://crawlground:3456/results.json
+  format: crawlground
+  set_tool: http://crawlground:3456/set-tool
+
+expected: []
+negative: []

@@ -1,0 +1,15 @@
+# XSSMaze. Single static Crystal binary, already runs as uid 2, binds 3000.
+networks:
+  lime-web:
+    external: true
+
+services:
+  xssmaze:
+    image: ghcr.io/hahwul/xssmaze:main@sha256:cf0b894287cb09ab2de38eed42ee616515bcb888a77894f4e43502caccb509e4
+    ports: ["127.0.0.1:7102:3000"]
+    networks: [lime-web]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    pids_limit: 256
+    mem_limit: 512m

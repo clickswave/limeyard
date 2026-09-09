@@ -1,0 +1,26 @@
+target: crawlmaze
+scoring: crawl
+
+note: >-
+  Scored on reach, not findings. There is nothing vulnerable here: the question
+  is only whether mach discovers a URL, and every findable resource ends in
+  .found so a miss is trivially identifiable.
+
+  Ground truth ships two ways: the committed
+  blueprints/utils/resources/expected-results.json, and a live endpoint,
+  GET /fetch-expected-results?path=/html/body/form, which returns the expected
+  URLs for a subtree.
+
+  91 expected URLs: 38 under html/body, 16 javascript/interactive, 9 html/head,
+  8 html/misc, 4 javascript/misc, plus Angular, AngularJS, Polymer and React
+  cases and four header-driven ones (Link, Location, Refresh, Content-Location).
+  Header-driven link discovery is the part scanners most often skip.
+
+external:
+  type: http
+  url: http://crawlmaze:8080/fetch-expected-results
+  format: crawl-maze
+  file: blueprints/utils/resources/expected-results.json
+
+expected: []
+negative: []

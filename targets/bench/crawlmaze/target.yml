@@ -1,0 +1,27 @@
+name: Security Crawl Maze
+slug: crawlmaze
+kind: bench
+description: >-
+  91 links a crawler should find, across HTML, JS frameworks and HTTP headers,
+  with a machine-readable list of what it should have found.
+stack: Python / Flask
+url: http://127.0.0.1:7103
+expose:
+  http: 7103
+weight: light
+egress: false
+repo: https://github.com/google/security-crawl-maze
+upstream:
+  author: Google
+  repo: https://github.com/google/security-crawl-maze
+  homepage: https://security-crawl-maze.app
+  license: Apache-2.0
+  verified: 2026-09-09
+  note: >-
+    No published image, so we build from the fetched source. Apache-2.0 and
+    Google-published, but the build itself pulls EOL bases (node:14-alpine for
+    the Angular/Polymer/React bundles, alpine:3.9 for the runtime), so the
+    resulting image carries old layers. It serves static test pages with no
+    database and no user input, and runs with every capability dropped, so the
+    exposure is small; snapshot the built image rather than rebuilding blindly.
+truth: truth.yml

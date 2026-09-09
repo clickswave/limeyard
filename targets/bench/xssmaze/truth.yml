@@ -1,0 +1,27 @@
+target: xssmaze
+scoring: findings
+
+note: >-
+  Serves its own ground truth, so we do not restate 1031 entries. /map/json
+  describes every endpoint with its class, delivery channel, sources, sinks and
+  an `exploitable` flag; /solutions.json is the answer key with the expected
+  payload and a working exploit URL per maze.
+
+  Two properties make it unusually fair to score against. It has a beacon at
+  /beacon/<token>: a payload that merely reflects cannot reach it, so a finding
+  is execution rather than appearance. And each endpoint declares a `reach` of
+  server or client, so DOM-only flows that never touch an HTTP response can be
+  excluded from a request-only denominator instead of counting as misses.
+
+  27 endpoints are marked exploitable:false. Those are the precision controls,
+  and reporting one is a false positive.
+
+external:
+  type: http
+  url: http://xssmaze:3000/map/json
+  format: xssmaze-map
+  solutions: http://xssmaze:3000/solutions.json
+  scorer: scripts/benchmark.py --custom-scanner
+
+expected: []
+negative: []

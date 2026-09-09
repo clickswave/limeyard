@@ -1,0 +1,19 @@
+name: XSSMaze
+slug: xssmaze
+kind: bench
+description: >-
+  1031 XSS mazes with a machine-readable answer key, deliberate non-exploitable
+  controls, and a beacon that proves a payload actually executed.
+stack: Crystal
+url: http://127.0.0.1:7102
+expose:
+  http: 7102
+weight: light
+egress: false
+disk: 80MB
+upstream:
+  author: hahwul (author of dalfox)
+  repo: https://github.com/hahwul/xssmaze
+  license: MIT
+  verified: 2026-09-09
+truth: truth.yml

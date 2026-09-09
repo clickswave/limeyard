@@ -1,0 +1,25 @@
+name: OWASP RailsGoat
+slug: railsgoat
+kind: web
+description: >-
+  Ruby on Rails target. CSRF token on every form, signed session cookies, nested
+  user resources, and an unauthenticated Marshal.load sink.
+stack: Ruby on Rails 8 / SQLite
+url: http://127.0.0.1:7008
+expose:
+  http: 7008
+weight: light
+egress: false
+disk: 535MB
+credentials:
+  - {user: admin@metacorp.com, pass: admin, role: admin}
+upstream:
+  author: OWASP RailsGoat project
+  repo: https://github.com/OWASP/railsgoat
+  license: MIT
+  verified: 2026-09-09
+  note: >-
+    Upstream's own compose builds from source and bind-mounts the working tree.
+    We run the published image with an explicit command instead, so nothing is
+    vendored and nothing from the host is mounted in.
+truth: truth.yml

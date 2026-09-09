@@ -53,15 +53,15 @@
 			{#each rows as c}
 				<tr>
 					<td><a href="/targets/{c.slug}">{c.name}</a></td>
-					<td><span class="badge">{c.kind}</span></td>
+					<td class="muted small">{c.kind}</td>
 					<td>
 						{#if c.author}
 							{#if c.repo}
 								<a href={c.repo} target="_blank" rel="noreferrer noopener">{byline(c)}</a>
 							{:else}{byline(c)}{/if}
-						{:else}<span class="badge crit">missing</span>{/if}
+						{:else}<span class="tag alert">missing</span>{/if}
 					</td>
-					<td><span class="badge {licenceRisk(c.license) ? 'crit' : ''}">{c.license}</span></td>
+					<td><span class="tag" class:alert={licenceRisk(c.license)}>{c.license}</span></td>
 					<td class="faint small nowrap">{c.verified || '—'}</td>
 				</tr>
 			{/each}

@@ -1,0 +1,51 @@
+target: railsgoat
+scoring: findings
+
+note: >-
+  Added for three properties nothing else in the lab has: a Ruby stack, a
+  session and CSRF model that defeats naive crawlers, and a real deserialization
+  sink reachable without authentication.
+
+expected:
+  - id: RG1
+    class: deserialization
+    severity: critical
+    scope: black-box
+    confirm: Marshal.load of a base64 parameter
+    where: {method: GET, path: /password_resets/edit, param: user, in: query}
+    note: >-
+      app/controllers/password_resets_controller.rb calls
+      Marshal.load(Base64.decode64(params[:user])) behind skip_before_action
+      :authenticated. Ruby has no URLDNS-equivalent universal gadget, so a
+      scanner with only a Java gadget chain scores zero here. That is the test.
+  - id: RG2
+    class: bola
+    severity: high
+    scope: authed
+    confirm: cross-identity replay on a nested resource
+    where: {method: GET, path: "/users/{user_id}/work_info", in: path}
+    note: routes.rb nests retirement, paid_time_off, work_info and performance under users.
+  - id: RG3
+    class: sqli
+    severity: high
+    scope: authed
+    confirm: error-based
+    where: {method: GET, path: /users, param: q, in: query}
+  - id: RG4
+    class: session
+    severity: medium
+    scope: black-box
+    confirm: anti-CSRF token present on every form
+    where: {method: GET, path: /sessions/new}
+    note: >-
+      Not a vulnerability. It is the reason this target is here: a crawler that
+      cannot carry the token plus the signed session cookie reaches almost
+      nothing behind the login.
+  - id: RG5
+    class: xss-stored
+    severity: medium
+    scope: out-of-scope
+    where: {path: /benefit_forms}
+    note: behind auth plus CSRF
+
+negative: []

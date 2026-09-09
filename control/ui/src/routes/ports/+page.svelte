@@ -6,7 +6,7 @@
 
 <div class="head">
 	<h1>Ports and health</h1>
-	<span class="badge {data.doctor.ok ? 'ok' : 'crit'}"
+	<span class="status {data.doctor.ok ? 'run' : 'stop'}"
 		><i class="dot"></i>doctor {data.doctor.ok ? 'pass' : 'fail'}</span
 	>
 </div>
@@ -32,7 +32,7 @@
 					<td class="mono nowrap">127.0.0.1:{p.port}</td>
 					<td class="mono">{p.owners.join(', ')}</td>
 					<td class="right"
-						>{#if p.clash}<span class="badge crit">clash</span>{:else}<span class="faint small">ok</span
+						>{#if p.clash}<span class="tag alert">clash</span>{:else}<span class="faint small">ok</span
 							>{/if}</td
 					>
 				</tr>
@@ -53,7 +53,7 @@
 					<td class="faint">{c.target ?? '—'}</td>
 					<td class="faint small">{c.detail ?? ''}</td>
 					<td class="right"
-						><span class="badge {c.ok ? 'ok' : 'crit'}">{c.ok ? 'pass' : 'fail'}</span></td
+						><span class="tag" class:alert={!c.ok}>{c.ok ? 'pass' : 'fail'}</span></td
 					>
 				</tr>
 			{/each}

@@ -1,0 +1,19 @@
+# ZAP's Crawlground. Built from the source limeyard fetches into ./src.
+# It scores itself: each test has a marker page linked from nowhere else, and
+# reaching it through the control under test is the only way to score.
+networks:
+  lime-web:
+    external: true
+
+services:
+  crawlground:
+    build:
+      context: ./src
+    image: limeyard/crawlground:local
+    ports: ["127.0.0.1:7104:3456"]
+    networks: [lime-web]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    pids_limit: 256
+    mem_limit: 512m

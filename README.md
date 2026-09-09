@@ -195,7 +195,10 @@ someone else unless it says Clickswave.
 
 | target | author | licence | source |
 |---|---|---|---|
+| Crawlground | ZAP project (zaproxy) | Apache-2.0 | [repo](https://github.com/zaproxy/crawlground) |
+| Security Crawl Maze | Google | Apache-2.0 | [repo](https://github.com/google/security-crawl-maze) |
 | OWASP VulnerableApp | SasanLabs (OWASP VulnerableApp project) | Apache-2.0 | [repo](https://github.com/SasanLabs/VulnerableApp) |
+| XSSMaze | hahwul (author of dalfox) | MIT | [repo](https://github.com/hahwul/xssmaze) |
 
 ### control
 
@@ -235,5 +238,7 @@ someone else unless it says Clickswave.
 | DVWA | Robin Wood (digininja) | GPL-3.0 | [repo](https://github.com/digininja/DVWA) |
 | FaultLine ISP | Clickswave | proprietary | [repo](https://github.com/clickswave/faultline) |
 | OWASP Juice Shop | Bjoern Kimminich (OWASP Juice Shop project) | MIT | [repo](https://github.com/juice-shop/juice-shop) |
+| OWASP Mutillidae II | Jeremy Druin (webpwnized), OWASP Mutillidae II | GPL-3.0 | [repo](https://github.com/webpwnized/mutillidae) |
+| OWASP RailsGoat | OWASP RailsGoat project | MIT | [repo](https://github.com/OWASP/railsgoat) |
 | OWASP WebGoat + WebWolf | OWASP WebGoat project | GPL-2.0 | [repo](https://github.com/WebGoat/WebGoat) |
 

@@ -28,7 +28,7 @@
 				<span class="mk">{m.k}</span>
 				<span class="mv">{pct(m.v)}</span>
 				<span class="ms faint small">{m.s}</span>
-				{#if m.d}<span class="md badge {m.d.startsWith('+') ? 'ok' : 'crit'}">{m.d}</span>{/if}
+				{#if m.d}<span class="md" class:up={m.d.startsWith('+')}>{m.d}</span>{/if}
 			</div>
 		{/each}
 		<div class="metric">
@@ -71,9 +71,8 @@
 						<td class="mono nowrap">{r.detected.length}/{r.expected_in_scope}</td>
 						<td class="mono small">{r.missed.join(', ') || '—'}</td>
 						<td
-							>{#if r.false_positives.length}<span class="badge crit"
-									>{r.false_positives.length}</span
-								>{:else}<span class="faint">—</span>{/if}</td
+							>{#if r.false_positives.length}<span class="tag alert">{r.false_positives.length}</span
+							>{:else}<span class="faint">—</span>{/if}</td
 						>
 						<td class="faint small"
 							>{#each r.location_flags ?? [] as f}<div>{f.id}: {f.flags.join('; ')}</div>{/each}</td
@@ -110,7 +109,8 @@
 	.metric { position: relative; border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; display: flex; flex-direction: column; gap: 1px; background: var(--bg); }
 	.mk { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); }
 	.mv { font-size: 25px; font-weight: 600; letter-spacing: -0.02em; }
-	.md { position: absolute; top: 11px; right: 12px; }
+	.md { position: absolute; top: 11px; right: 12px; font-size: 12px; color: var(--stop); }
+	.md.up { color: var(--run); }
 	.bar { width: 34%; }
 	.track { display: block; height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
 	.track span { display: block; height: 100%; background: var(--accent); }

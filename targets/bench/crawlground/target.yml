@@ -1,0 +1,22 @@
+name: Crawlground
+slug: crawlground
+kind: bench
+description: >-
+  59 interactive controls a crawler has to actually operate: JS events, dynamic
+  content, frames, forms without a form element, bot-detection globals.
+stack: Node / Express
+url: http://127.0.0.1:7104
+expose:
+  http: 7104
+weight: light
+egress: false
+repo: https://github.com/zaproxy/crawlground
+upstream:
+  author: ZAP project (zaproxy)
+  repo: https://github.com/zaproxy/crawlground
+  license: Apache-2.0
+  verified: 2026-09-09
+  note: >-
+    Built by the ZAP maintainers as a successor to WIVET, for exactly this
+    purpose. New (created 2026-05) and actively growing.
+truth: truth.yml

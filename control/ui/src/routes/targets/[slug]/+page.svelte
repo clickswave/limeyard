@@ -49,15 +49,15 @@
 					.filter(Boolean)
 					.join(' ');
 	const tone = (s) =>
-		s === 'running' ? 'ok' : s === 'unhealthy' ? 'crit' : s === 'stopped' ? '' : 'warn';
+		s === 'running' ? 'run' : s === 'unhealthy' ? 'stop' : s === 'stopped' ? 'idle' : 'wait';
 </script>
 
 <a class="back faint small" href="/">← Targets</a>
 
 <div class="head">
 	<h1>{t.name}</h1>
-	<span class="badge">{t.kind}</span>
-	<span class="badge {tone(t.state.split(' ')[0])}"><i class="dot"></i>{t.state}</span>
+	<span class="tag">{t.kind}</span>
+	<span class="status {tone(t.state.split(' ')[0])}"><i class="dot"></i>{t.state}</span>
 	<span class="spacer"></span>
 	{#if t.kind !== 'mobile'}
 		{#if t.state === 'stopped'}
@@ -85,13 +85,13 @@
 						>{byline(t.upstream)}</a
 					>
 				{:else}{byline(t.upstream)}{/if}
-			{:else}<span class="badge crit">missing from target.yml</span>{/if}
+			{:else}<span class="tag alert">missing from target.yml</span>{/if}
 		</span>
 	</div>
 	<div class="ct">
 		<span class="ck">Licence</span>
 		<span>
-			<span class="badge {licenceRisk(t.upstream?.license) ? 'crit' : ''}"
+			<span class="tag" class:alert={licenceRisk(t.upstream?.license)}
 				>{t.upstream?.license}</span
 			>
 			{#if licenceRisk(t.upstream?.license)}
@@ -126,13 +126,11 @@
 </section>
 
 <div class="facts">
-	{#if t.url}<a class="badge accent" href={t.url} target="_blank" rel="noreferrer noopener"
-			>{t.url}</a
-		>{/if}
-	{#if t.stack}<span class="badge">{t.stack}</span>{/if}
-	{#if t.heavy}<span class="badge warn">heavy</span>{/if}
-	{#if t.egress}<span class="badge">needs egress</span>{/if}
-	{#if t.disk}<span class="badge">{t.disk}</span>{/if}
+	{#if t.url}<a class="fact link" href={t.url} target="_blank" rel="noreferrer noopener">{t.url}</a>{/if}
+	{#if t.stack}<span class="fact">{t.stack}</span>{/if}
+	{#if t.heavy}<span class="fact">heavy</span>{/if}
+	{#if t.egress}<span class="fact">needs egress</span>{/if}
+	{#if t.disk}<span class="fact">{t.disk}</span>{/if}
 </div>
 
 {#if t.setup}<p class="notice">{t.setup}</p>{/if}
@@ -190,10 +188,10 @@
 				{#each shown as e}
 					<tr class:dimmed={e.scope === 'out-of-scope'}>
 						<td class="mono">{e.id}</td>
-						<td><span class="badge">{e.class}</span></td>
+						<td class="muted small">{e.class}</td>
 						<td class="mono">{where(e.where)}</td>
 						<td
-							><span class="badge {e.scope === 'authed' ? 'warn' : ''}"
+							><span class="tag" class:auth={e.scope === 'authed'}
 								>{e.scope ?? 'black-box'}</span
 							></td
 						>
@@ -214,7 +212,7 @@
 					{#each negative as n}
 						<tr>
 							<td class="mono">{n.id}</td>
-							<td><span class="badge">{n.class}</span></td>
+							<td class="muted small">{n.class}</td>
 							<td class="mono">{where(n.where)}</td>
 							<td class="faint small">{n.note ?? ''}</td>
 						</tr>

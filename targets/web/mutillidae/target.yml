@@ -1,0 +1,34 @@
+name: OWASP Mutillidae II
+slug: mutillidae
+kind: web
+description: >-
+  Parameter-routed content discovery. Roughly 120 pages behind ?page=, so a path
+  fuzzer finds nothing. Ships a real OpenLDAP directory and a SOAP tree.
+stack: PHP / MySQL / OpenLDAP
+url: http://127.0.0.1:7012
+expose:
+  http: 7012
+weight: light
+egress: false
+disk: 542MB
+setup: >-
+  The schema is rebuilt on every start (the database container keeps no volume).
+  Most pages sit behind a login; the seeded accounts are below.
+credentials:
+  - {user: admin, pass: adminpass, role: admin}
+  - {user: jeremy, pass: password, role: user}
+  - {user: adrian, pass: somepassword, role: user}
+credentials:
+  - {user: admin, pass: adminpass, role: admin}
+  - {user: jeremy, pass: password, role: user}
+  - {user: adrian, pass: somepassword, role: user}
+upstream:
+  author: Jeremy Druin (webpwnized), OWASP Mutillidae II
+  repo: https://github.com/webpwnized/mutillidae
+  homepage: https://github.com/webpwnized/mutillidae-docker
+  license: GPL-3.0
+  verified: 2026-09-09
+  note: >-
+    Upstream's compose also publishes phpMyAdmin and phpLDAPadmin on host ports.
+    We do not: neither is a scan target and both are extra host exposure.
+truth: truth.yml

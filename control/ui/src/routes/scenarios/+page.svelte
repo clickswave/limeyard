@@ -12,7 +12,7 @@
 			invalidateAll();
 		}, 2500);
 	}
-	const tone = (s) => (s === 'running' ? 'ok' : s === 'stopped' ? '' : 'warn');
+	const tone = (s) => (s === 'running' ? 'run' : s === 'stopped' ? 'idle' : 'wait');
 </script>
 
 <div class="head">
@@ -27,7 +27,7 @@
 	<section class="scn">
 		<div class="shead">
 			<strong>{s.name}</strong>
-			<span class="badge {tone(s.state)}"><i class="dot"></i>{s.state}</span>
+			<span class="status {tone(s.state)}"><i class="dot"></i>{s.state}</span>
 			<span class="spacer"></span>
 			{#if s.state === 'stopped'}
 				<button class="btn sm primary" disabled={!!busy[s.slug]} onclick={() => act(s.slug, 'up')}>
@@ -45,12 +45,10 @@
 		<p class="muted small sdesc">{s.description ?? ''}</p>
 
 		<div class="counts">
-			<span class="badge">{s.hosts?.length ?? 0} hosts</span>
-			<span class="badge">{s.zones?.length ?? 0} zones</span>
+			<span class="tag">{s.hosts?.length ?? 0} hosts</span>
+			<span class="tag">{s.zones?.length ?? 0} zones</span>
 			{#if s.expected_assets?.subdomains_via_axfr}
-				<span class="badge accent"
-					>{s.expected_assets.subdomains_via_axfr.length} expected subdomains</span
-				>
+				<span class="tag">{s.expected_assets.subdomains_via_axfr.length} expected subdomains</span>
 			{/if}
 		</div>
 
@@ -65,9 +63,7 @@
 								<tr>
 									<td class="mono">{z.zone}</td>
 									<td
-										><span class="badge {z.allow_transfer ? 'warn' : ''}"
-											>{z.allow_transfer ? 'open' : 'refused'}</span
-										></td
+										><span class="tag">{z.allow_transfer ? 'open' : 'refused'}</span></td
 									>
 									<td class="faint small">{z.note ?? ''}</td>
 								</tr>

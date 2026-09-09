@@ -1,0 +1,47 @@
+# Mutillidae II. Three tiers: the app, its database, and a real OpenLDAP
+# directory. The app resolves its backends by the service names `database` and
+# `directory`, so those names are load-bearing. Neither backend is published.
+networks:
+  lime-web:
+    external: true
+  data:
+    internal: true      # database and directory have no route out
+  ldap:
+    internal: true
+
+services:
+  mutillidae:
+    image: webpwnized/mutillidae:www@sha256:de4ca75cbd27163848c230600d217f6d60c757706f37f0f6b65f780b73685c9b
+    depends_on: [database, directory]
+    ports: ["127.0.0.1:7012:80"]
+    networks: [lime-web, data, ldap]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID, NET_BIND_SERVICE, KILL]
+    pids_limit: 512
+    mem_limit: 768m
+
+  database:
+    image: webpwnized/mutillidae:database@sha256:bd660f2b6a054a8d8b9aaefaf911de5a53feec26e748bcc9fa7351df6d80f9ef
+    networks: [data]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+    pids_limit: 512
+    mem_limit: 1g
+
+  directory:
+    image: webpwnized/mutillidae:ldap@sha256:8f55e7827ae9aaf986c3051d6d105d5802055fd3f8e1ad3dfc438de20b4c9164
+    networks: [ldap]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    # KILL matters here: the OpenLDAP entrypoint starts slapd as the openldap
+    # user, then as root kills it to restart with the final config. Without
+    # CAP_KILL that kill fails, the entrypoint aborts, and the container stays
+    # "running" with port 389 closed.
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID, NET_BIND_SERVICE, KILL]
+    pids_limit: 512
+    mem_limit: 512m

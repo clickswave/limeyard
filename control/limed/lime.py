@@ -92,9 +92,19 @@ def load_targets():
             comp = meta.get("compose")
             if meta.get("repo"):
                 # Repo-backed: source is fetched at runtime into <target>/src and
-                # never vendored here. `compose` is the path WITHIN that repo.
+                # never vendored here.
                 meta["src_dir"] = os.path.join(d, "src")
-                meta["compose_path"] = os.path.join(meta["src_dir"], comp or "docker-compose.yml")
+                if comp:
+                    # `compose` names a path WITHIN the fetched repo, so we run
+                    # theirs as-is. faultline does this.
+                    meta["compose_path"] = os.path.join(meta["src_dir"], comp)
+                elif os.path.exists(os.path.join(d, "compose.yml")):
+                    # We ship our own compose that builds from ./src: upstream
+                    # provides the source, we keep control of the hardening, and
+                    # `lime audit` can still see the file.
+                    meta["compose_path"] = os.path.join(d, "compose.yml")
+                else:
+                    meta["compose_path"] = os.path.join(meta["src_dir"], "docker-compose.yml")
             elif comp:
                 meta["compose_path"] = comp if os.path.isabs(comp) else os.path.normpath(os.path.join(d, comp))
             else:

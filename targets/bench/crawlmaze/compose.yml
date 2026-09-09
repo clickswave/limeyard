@@ -1,0 +1,19 @@
+# Google's Security Crawl Maze. No published image, so we build from the source
+# limeyard fetches into ./src at first start. Nothing is vendored here, and the
+# hardening stays under our control rather than upstream's.
+networks:
+  lime-web:
+    external: true
+
+services:
+  crawlmaze:
+    build:
+      context: ./src
+    image: limeyard/crawlmaze:local
+    ports: ["127.0.0.1:7103:8080"]
+    networks: [lime-web]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    pids_limit: 256
+    mem_limit: 512m

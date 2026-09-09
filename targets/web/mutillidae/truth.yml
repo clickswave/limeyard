@@ -1,0 +1,79 @@
+target: mutillidae
+scoring: findings
+
+note: >-
+  The reason this target is here is the routing, not the vulnerability count.
+  index.php dispatches on ?page=<file>.php with a second ?do= dispatcher, so the
+  whole application hangs off two query parameters. A content-discovery engine
+  that only fuzzes paths finds the handful of real files and misses roughly 120
+  pages. Measure discovered pages here, not just findings.
+
+  Second thing worth knowing: index.php redirects unauthenticated requests for
+  most pages to the login form (line 493). That is an auth gate, not a failure,
+  and it is why most entries below are scope: authed. An unauthenticated crawl
+  legitimately reaches only the public subset, so seed the credentials in
+  target.yml before treating a miss here as an engine gap.
+
+  The database container keeps no volume, so the schema is rebuilt by setup.sh
+  on every start. If DB-backed pages redirect to database-offline.php, setup did
+  not complete rather than the engine being wrong.
+
+expected:
+  - id: MU1
+    class: sqli
+    severity: high
+    scope: authed
+    confirm: error-based
+    where: {method: GET, path: /index.php, param: username, in: query}
+    note: reached as ?page=user-info.php
+  - id: MU2
+    class: xss-reflected
+    severity: medium
+    scope: authed
+    confirm: unencoded reflection
+    where: {method: GET, path: /index.php, param: username, in: query}
+  - id: MU3
+    class: lfi
+    severity: high
+    scope: black-box
+    confirm: file read through the page dispatcher
+    where: {method: GET, path: /index.php, param: page, in: query}
+    note: >-
+      The dispatcher itself is the sink, and it is reachable before login, so
+      this is the one injection here an unauthenticated scan should find.
+  - id: MU4
+    class: cmdi
+    severity: critical
+    scope: authed
+    confirm: command output reflected
+    where: {method: POST, path: /index.php, param: target_host, in: body}
+    note: reached as ?page=dns-lookup.php
+  - id: MU5
+    class: misconfig
+    severity: medium
+    scope: authed
+    confirm: LDAP query alters the filter
+    where: {method: POST, path: /index.php, param: username, in: body}
+    note: >-
+      The only LDAP injection surface in the lab, and it runs against a real
+      OpenLDAP directory rather than a stub. Verified reachable on port 389.
+  - id: MU6
+    class: exposure
+    severity: info
+    scope: black-box
+    confirm: SOAP endpoint and WSDL served
+    where: {method: GET, path: /webservices/soap/ws-user-account.php}
+  - id: MU7
+    class: xxe
+    severity: high
+    scope: black-box
+    confirm: external entity resolved
+    where: {method: POST, path: /webservices/soap/ws-user-account.php}
+  - id: MU8
+    class: xss-stored
+    severity: medium
+    scope: out-of-scope
+    where: {path: /index.php}
+    note: needs a second request to observe, and the blog page is behind the login
+
+negative: []
