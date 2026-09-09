@@ -18,10 +18,6 @@ credentials:
   - {user: admin, pass: adminpass, role: admin}
   - {user: jeremy, pass: password, role: user}
   - {user: adrian, pass: somepassword, role: user}
-credentials:
-  - {user: admin, pass: adminpass, role: admin}
-  - {user: jeremy, pass: password, role: user}
-  - {user: adrian, pass: somepassword, role: user}
 upstream:
   author: Jeremy Druin (webpwnized), OWASP Mutillidae II
   repo: https://github.com/webpwnized/mutillidae

@@ -66,8 +66,17 @@ expected:
   - id: MU7
     class: xxe
     severity: high
-    scope: black-box
+    scope: out-of-scope
     confirm: external entity resolved
+    note: >-
+      Not exploitable in this container, so nothing can find it. libxml2 has
+      disabled external entity loading by default since 2.9, and the PHP 8.5
+      build here inherits that: a SYSTEM entity pointing at file:///etc/passwd
+      resolves to the empty string, and the nusoap stack trace shows the handler
+      being called with ''. Verified by hand on 2026-09-09 with both a general
+      and a parameter entity. Kept as documentation of the surface rather than
+      deleted, because the endpoint is real and a differently built image would
+      make it live again.
     where: {method: POST, path: /webservices/soap/ws-user-account.php}
   - id: MU8
     class: xss-stored

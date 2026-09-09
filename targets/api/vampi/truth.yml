@@ -1,31 +1,43 @@
 target: vampi
 scoring: findings
-
 expected:
-  - id: VP1
-    class: excessive-exposure
-    severity: critical
-    scope: black-box
-    confirm: plaintext passwords in response
-    where: {method: GET, path: /users/v1/_debug}
-  - id: VP2
-    class: bola
-    severity: high
-    scope: authed
-    confirm: cross-identity replay
-    where: {method: GET, path: "/users/v1/{username}", in: path}
-    note: 3 distinct findings
-  - id: VP3
-    class: sqli
-    severity: high
-    scope: black-box
-    confirm: error-based
-    where: {method: GET, path: "/books/v1/{id}", in: path}
-  - id: VP4
-    class: exposure
-    severity: info
-    scope: black-box
-    confirm: OpenAPI document served
-    where: {method: GET, path: /openapi.json}
-
+- id: VP1
+  class: excessive-exposure
+  severity: critical
+  scope: black-box
+  confirm: plaintext passwords in response
+  where:
+    method: GET
+    path: /users/v1/_debug
+- id: VP2
+  class: excessive-exposure
+  severity: high
+  scope: black-box
+  confirm: public endpoint returns another user's record
+  where:
+    method: GET
+    path: /users/v1/{username}
+    in: path
+  note: 'Reclassified 2026-09-09. This was scored as BOLA, but the endpoint answers 200 with no session
+    at all, so there is no authorization boundary being crossed. The authz engine correctly reports nothing:
+    it compares identities, and every identity including none gets the same response. Catching it needs
+    an oracle for ''a public endpoint returns personal data'', which is a different capability and does
+    not exist today.'
+- id: VP3
+  class: sqli
+  severity: high
+  scope: black-box
+  confirm: error-based
+  where:
+    method: GET
+    path: /books/v1/{id}
+    in: path
+- id: VP4
+  class: exposure
+  severity: info
+  scope: black-box
+  confirm: OpenAPI document served
+  where:
+    method: GET
+    path: /openapi.json
 negative: []

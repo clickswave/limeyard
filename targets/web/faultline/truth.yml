@@ -1,39 +1,49 @@
 target: faultline
 scoring: findings
-
 expected:
-  - id: FL1
-    class: cors
-    severity: high
-    scope: black-box
-    confirm: sentinel origin reflected alongside allow-credentials
-    where: {method: GET, path: /api}
-    note: the 2026-08-23 run recorded 4 affected routes
-  - id: FL2
-    class: bola
-    severity: high
-    scope: authed
-    confirm: cross-identity replay
-    where: {method: GET, path: "/api/customers/{id}", in: path}
-    note: 5 distinct findings
-  - id: FL3
-    class: excessive-exposure
-    severity: medium
-    scope: authed
-    confirm: response carries fields the caller may not read
-    where: {method: GET, path: /api/customers}
-    note: 5 distinct findings
-  - id: FL4
-    class: info-disclosure
-    severity: high
-    scope: out-of-scope
-    where: {path: /}
-    note: H1 plaintext password storage; code-level, no black-box oracle
-  - id: FL5
-    class: auth-bypass
-    severity: medium
-    scope: out-of-scope
-    where: {path: /api/auth/login}
-    note: D12 no account lockout; rate and logic
-
+- id: FL1
+  class: cors
+  severity: high
+  scope: black-box
+  confirm: sentinel origin reflected alongside allow-credentials
+  where:
+    method: GET
+    path: /api/v1
+  note: Four routes are affected (/api/v1, /api/v1/users/{id}, /api/v2/user/dashboard, /graphql). The
+    path here names one of them; the finding is the same misconfiguration on all four.
+- id: FL2
+  class: bola
+  severity: high
+  scope: authed
+  confirm: cross-identity replay
+  where:
+    method: GET
+    path: /api/v1/users/{id}
+    in: path
+  note: 'Path corrected 2026-09-09: the key said /api/customers/{id}, which is a 404. The real object
+    route is /api/v1/users/{id}, which answers 401 unauthenticated. The original path came from prose
+    in an older scorecard and was never checked against the app.'
+- id: FL3
+  class: excessive-exposure
+  severity: medium
+  scope: authed
+  confirm: response carries fields the caller may not read
+  where:
+    method: GET
+    path: /api/v1/users
+  note: Path corrected 2026-09-09 for the same reason as FL2.
+- id: FL4
+  class: info-disclosure
+  severity: high
+  scope: out-of-scope
+  where:
+    path: /
+  note: H1 plaintext password storage; code-level, no black-box oracle
+- id: FL5
+  class: auth-bypass
+  severity: medium
+  scope: out-of-scope
+  where:
+    path: /api/auth/login
+  note: D12 no account lockout; rate and logic
 negative: []

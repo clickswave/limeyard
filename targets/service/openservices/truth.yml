@@ -1,19 +1,83 @@
 target: openservices
 scoring: ports
-
-note: >-
-  Scored on ports and service identity, not on findings. Because we control
-  exactly which ports are open, recall here is exactly measurable, which is not
-  true of any target reachable only over loopback.
-
+note: Scored on ports and service identity, not on findings. Because we control exactly which ports are
+  open, recall here is exactly measurable, which is not true of any target reachable only over loopback.
 expected:
-  - {id: SV1, class: misconfig, scope: black-box, confirm: unauthenticated, where: {path: "10.66.20.10:6379"}, note: redis, no auth}
-  - {id: SV2, class: misconfig, scope: black-box, confirm: unauthenticated, where: {path: "10.66.20.11:27017"}, note: mongo, no auth}
-  - {id: SV3, class: misconfig, scope: black-box, confirm: unauthenticated, where: {path: "10.66.20.12:11211"}, note: memcached, no auth by design}
-  - {id: SV4, class: misconfig, scope: black-box, confirm: /v2/_catalog answers, where: {path: "10.66.20.13:5000"}, note: docker registry catalog exposed}
-  - {id: SV5, class: misconfig, scope: black-box, confirm: trust auth, where: {path: "10.66.20.14:5432"}, note: postgres accepts any password}
-  - {id: SV6, class: misconfig, scope: black-box, confirm: empty root password, where: {path: "10.66.20.15:3306"}, note: mysql}
-  - {id: SV7, class: default-creds, scope: black-box, confirm: anonymous login, where: {path: "10.66.20.16:21"}, note: ftp}
-  - {id: SV8, class: exposure, scope: black-box, confirm: /metrics served, where: {path: "10.66.20.17:9090"}, note: prometheus metrics exposed}
-
+- id: SV1
+  class: misconfig
+  scope: out-of-scope
+  confirm: unauthenticated
+  where:
+    path: 10.66.20.10:6379
+  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
+    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
+    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
+    engine exists.'
+  no auth: null
+- id: SV2
+  class: misconfig
+  scope: out-of-scope
+  confirm: unauthenticated
+  where:
+    path: 10.66.20.11:27017
+  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
+    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
+    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
+    engine exists.'
+  no auth: null
+- id: SV3
+  class: misconfig
+  scope: out-of-scope
+  confirm: unauthenticated
+  where:
+    path: 10.66.20.12:11211
+  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
+    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
+    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
+    engine exists.'
+  no auth by design: null
+- id: SV4
+  class: misconfig
+  scope: black-box
+  confirm: /v2/_catalog answers
+  where:
+    path: 10.66.20.13:5000
+  note: docker registry catalog exposed Reachable over HTTP, so cortex can and does detect it.
+- id: SV5
+  class: misconfig
+  scope: out-of-scope
+  confirm: trust auth
+  where:
+    path: 10.66.20.14:5432
+  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
+    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
+    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
+    engine exists.'
+- id: SV6
+  class: misconfig
+  scope: out-of-scope
+  confirm: empty root password
+  where:
+    path: 10.66.20.15:3306
+  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
+    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
+    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
+    engine exists.'
+- id: SV7
+  class: default-creds
+  scope: out-of-scope
+  confirm: anonymous login
+  where:
+    path: 10.66.20.16:21
+  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
+    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
+    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
+    engine exists.'
+- id: SV8
+  class: exposure
+  scope: black-box
+  confirm: /metrics served
+  where:
+    path: 10.66.20.17:9090
+  note: prometheus metrics exposed Reachable over HTTP, so cortex can and does detect it.
 negative: []

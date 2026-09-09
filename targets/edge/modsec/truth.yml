@@ -14,10 +14,16 @@ note: >-
 expected:
   - id: WAF1
     class: misconfig
-    scope: black-box
+    scope: out-of-scope
     confirm: 403 from the edge on a CRS-triggering payload
     where: {method: GET, path: /, param: q, in: query}
-    note: baseline. A scanner that cannot tell an edge block from an app response will mis-attribute everything behind a WAF.
+    note: >-
+      Reclassified 2026-09-09. No single template can express "the edge blocked
+      this": it is a delta between two runs, one against the blocking listener
+      and one against detection-only, on the same payload. Scoring it as a
+      template match made the answer key reward a coincidence. The measurement
+      is still worth doing and is described in this target's note; it needs a
+      comparison harness, not an oracle.
   - id: WAF2
     class: tech
     scope: black-box

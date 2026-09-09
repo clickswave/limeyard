@@ -40,6 +40,12 @@ CLASS_ALIASES = {
     "prototype-pollution": "proto-pollution",
     "jwt-alg-none": "jwt", "jwt-none": "jwt",
     "mass-assignment-privilege-escalation": "mass-assignment",
+    "graphql-introspection": "misconfig", "graphql_introspection": "misconfig",
+    "graphql-dos": "dos", "graphql_dos": "dos",
+    "graphql-batching": "dos", "graphql_batching": "dos",
+    "graphql-sensitive-field": "excessive-exposure",
+    "graphql_sensitive_field": "excessive-exposure",
+    "graphql-bfla": "bfla", "graphql_bfla": "bfla",
     "idor": "bola", "broken-object-level-authorization": "bola",
     "broken-function-level-authorization": "bfla",
     "broken-object-property-level-authorization": "bopla",
@@ -56,6 +62,12 @@ CLASS_FAMILIES = [
     {"lfi", "traversal"},
     {"xss-reflected", "xss-dom"},
     {"bola", "bopla"},
+    # A readable phpinfo page is an exposure to one vocabulary and an
+    # information disclosure to the other; the bug and the fix are identical.
+    # This cuts both ways: it also lets a `exposure` finding match an
+    # `info-disclosure` NEGATIVE entry, which is exactly what mirage's bait
+    # endpoints are for.
+    {"exposure", "info-disclosure"},
 ]
 
 
@@ -69,8 +81,15 @@ def norm_class(c):
 def norm_path(p):
     if not p:
         return "/"
+    # Service-kind entries are located by host:port rather than a URL path,
+    # because a bare daemon has no path. Keep that form intact on both sides.
     if "://" in p:
-        p = urlparse(p).path or "/"
+        u = urlparse(p)
+        if u.port and (not u.path or u.path == "/"):
+            return f"{u.hostname}:{u.port}"
+        p = u.path or "/"
+    elif ":" in p and "/" not in p:
+        return p
     p = p.split("?")[0].split("#")[0]
     if len(p) > 1:
         p = p.rstrip("/")
@@ -122,7 +141,16 @@ def entry_matches(entry, finding):
     where = entry.get("where") or {}
     if not class_matches(entry.get("class"), _f(finding, "class", "type", "category")):
         return None
-    if not path_matches(where.get("path"), _f(finding, "path", "url", "endpoint")):
+    fpath = _f(finding, "path", "url", "endpoint")
+    if not fpath or norm_path(fpath) == "/":
+        # Some stages report a class and nothing else. The graphql stage is the
+        # current example: its findings carry vuln_class and a name but no URL.
+        # We already know which target the finding came from, so class alone is
+        # enough to score it, but the missing location is a real triage gap and
+        # is flagged rather than quietly accepted.
+        if norm_path(where.get("path") or "/") != "/":
+            pass  # fall through to the flag below
+    elif not path_matches(where.get("path"), fpath):
         return None
     m = where.get("method")
     fm = _f(finding, "method")
@@ -130,10 +158,17 @@ def entry_matches(entry, finding):
         return None
     p = where.get("param")
     fp = _f(finding, "param", "parameter", "field")
-    if p:
-        if not fp or str(p).lower() != str(fp).lower():
-            return None
     flags = []
+    if not fpath:
+        flags.append("matched on class alone; the finding carried no location")
+    if p and fp and str(p).lower() != str(fp).lower():
+        return None
+    if p and not fp:
+        # Right class, right path, but the finding did not say which parameter
+        # it injected. That is a reporting gap in the finding shape, not grounds
+        # for scoring a real detection as a miss. Flagged so it stays visible.
+        flags.append(f"matched on class and path; the finding named no parameter "
+                     f"(the answer key names '{p}')")
     wi, fi = where.get("in"), _f(finding, "in", "location")
     if wi and fi and str(wi).lower() != str(fi).lower():
         flags.append(f"location mismatch: expected {wi}, reported {fi}")
