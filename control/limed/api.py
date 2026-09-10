@@ -906,7 +906,7 @@ class Handler(BaseHTTPRequestHandler):
                 if tr:
                     truth[slug] = tr
             card = scorer.score(findings, truth, tool=body.get("tool", "unknown"),
-                                only=body.get("targets"))
+                                only=body.get("targets"), cost=body.get("cost"))
             if body.get("save"):
                 path = scorer.save(card, lime.TRUTH_DIR)
                 card["saved"] = path

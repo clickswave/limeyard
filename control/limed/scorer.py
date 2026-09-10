@@ -185,8 +185,16 @@ def entry_matches(entry, finding):
     return flags
 
 
-def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "authed")):
-    """findings: [{target, class, path, method?, param?, in?, severity?}]"""
+def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "authed"),
+          cost=None):
+    """findings: [{target, class, path, method?, param?, in?, severity?}]
+
+    `cost` is what the run spent, per target: {target: {seconds, requests}}.
+    It is scored because scan time is a product quality attribute and nothing
+    was measuring it: a pass against a 45-endpoint application quietly grew to
+    69 minutes, and the scorecard that recorded 43 of 48 said nothing about it.
+    A scanner nobody can afford to run is not accurate, it is theoretical.
+    """
     per_target, totals = {}, {"expected": 0, "detected": 0, "missed": 0,
                               "false_positive": 0, "unmatched": 0, "out_of_scope": 0}
     by_class = {}
@@ -278,6 +286,22 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
 
     for c, b in by_class.items():
         b["recall"] = round(b["detected"] / b["expected"], 4) if b["expected"] else None
+
+    # Cost, alongside correctness. Reported per target and in total, with the
+    # slowest named: an average hides the one target that took an hour.
+    cost = cost or {}
+    if cost:
+        secs = {t: float(v.get("seconds") or 0) for t, v in cost.items()}
+        reqs = {t: int(v.get("requests") or 0) for t, v in cost.items()}
+        slowest = max(secs, key=secs.get) if secs else None
+        totals["seconds"] = round(sum(secs.values()), 1)
+        totals["requests"] = sum(reqs.values())
+        totals["slowest_target"] = slowest
+        totals["slowest_seconds"] = round(secs.get(slowest, 0), 1) if slowest else None
+        for t, v in cost.items():
+            if t in per_target:
+                per_target[t]["seconds"] = round(float(v.get("seconds") or 0), 1)
+                per_target[t]["requests"] = int(v.get("requests") or 0)
 
     return {
         "tool": tool,
