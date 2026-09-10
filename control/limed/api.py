@@ -271,14 +271,19 @@ def doctor(targets):
             if level == "fail":
                 hard_fail.append(msg)
             elif "not pinned by digest" in msg:
-                unpinned.append(msg.split(": ", 1)[-1].replace(" is not pinned by digest", ""))
+                # "path::service: image is not pinned by digest" -> "image (path)"
+                where_, _, rest = msg.partition(": ")
+                unpinned.append(f"{rest.replace(' is not pinned by digest', '')} in {where_}")
             else:
                 warn_other.append(msg)
     total_images = sum(1 for t in runnable for s in lime.compose_services(t) if s["image"])
     checks.append(_check("pinned", "Images pinned to digest",
                          "warn" if unpinned else "pass",
                          "Every image references the digest that was pulled and tested here."
-                         if not unpinned else "Floating tags. `lime pin --apply` rewrites them.",
+                         if not unpinned else
+                         "Floating tags. Pin images rewrites the lab's own compose files; an "
+                         "image inside a fetched source tree (targets/*/*/src) has to be pinned "
+                         "upstream, or it comes back on the next clone.",
                          f"{max(total_images - len(unpinned), 0)} / {total_images}", unpinned))
     checks.append(_check("hardening", "Containers hardened",
                          "fail" if hard_fail else ("warn" if warn_other else "pass"),
@@ -326,6 +331,10 @@ _PORT_HOST_IP = re.compile(r"^(\s*host_ip:\s*['\"]?)(?:0\.0\.0\.0|::)(['\"]?\s*)
 _VERIFIED = re.compile(r"^(\s*verified:\s*).*$")
 
 
+class FixIncomplete(Exception):
+    """A fixer did what it could and the check will still not pass."""
+
+
 def _fix_networks(targets):
     lime.ensure_networks()
     return f"created {lime.WEB_NET} and {lime.LAB_NET} where they were missing"
@@ -351,7 +360,14 @@ def _fix_pinned(targets):
     summary = tail[-1] if tail else "nothing to pin"
     unresolved = [l.strip() for l in tail if l.strip().startswith("unresolved")]
     if rc:
-        return summary + "; could not resolve " + ", ".join(u.split()[-1] for u in unresolved)
+        raise FixIncomplete(summary + "; could not resolve "
+                            + ", ".join(u.split()[-1] for u in unresolved))
+    # Whatever is still floating now lives in a fetched source tree, which this
+    # fixer must not touch: the next clone would undo it. Say so, and fail.
+    left = [c for c in doctor(targets)["checks"] if c["id"] == "pinned"][0]
+    if left["verdict"] != "pass":
+        raise FixIncomplete(summary + ". Still floating, inside fetched source: "
+                            + "; ".join(left["items"]) + ". Pin those upstream.")
     return summary
 
 
@@ -452,8 +468,9 @@ FIXES = {
     "net-lab": ("Create networks", "Runs the same network create the first start would.", _fix_networks),
     "disk": ("Reclaim space", "docker builder prune and docker image prune, dangling only. "
              "Nothing a running target uses is touched.", _fix_disk),
-    "pinned": ("Pin images", "Rewrites every floating tag to the digest pulled here, "
-               "the same as lime pin --apply.", _fix_pinned),
+    "pinned": ("Pin images", "Rewrites every floating tag in the lab's compose files to the "
+               "digest pulled here, the same as lime pin --apply. Fetched source trees are "
+               "left alone.", _fix_pinned),
     "compose": ("Fetch sources", "git clone the repo-backed targets that have not been fetched.",
                 _fix_sources),
     "fresh": ("Re-verify running", "Stamps today on stale targets that are up right now. "
@@ -480,8 +497,10 @@ def fix(ids=None):
         ran.add(f[2])
         try:
             results.append({"id": cid, "ok": True, "message": f[2](targets)})
-        except Exception as e:
+        except FixIncomplete as e:
             results.append({"id": cid, "ok": False, "message": str(e)})
+        except Exception as e:
+            results.append({"id": cid, "ok": False, "message": f"{type(e).__name__}: {e}"})
     return {"results": results, "doctor": doctor(lime.load_targets())}
 
 

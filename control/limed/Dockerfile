@@ -5,7 +5,7 @@ FROM docker:27-cli
 
 RUN apk add --no-cache python3 py3-yaml docker-cli-compose git ca-certificates curl
 
-COPY lime.py api.py scorer.py /opt/limed/
+COPY lime.py api.py scorer.py pin.py /opt/limed/
 RUN chmod +x /opt/limed/lime.py && ln -s /opt/limed/lime.py /usr/local/bin/lime
 
 ENV PYTHONUNBUFFERED=1 PYTHONPATH=/opt/limed

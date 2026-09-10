@@ -165,11 +165,21 @@ def dc(t, *args, capture=False):
     return subprocess.run(cmd, cwd=cwd)
 
 
+COMPOSE_PROJECT = os.environ.get("COMPOSE_PROJECT_NAME", "limeyard")
+
+
 def ensure_network(name=WEB_NET, subnet=None):
+    """Create a lab network if it is absent. The top-level compose file declares
+    the same networks, so they are created with the labels compose stamps on
+    its own, and whichever side gets there first, the other recognises it
+    instead of warning that the network was not created by compose."""
     r = subprocess.run(["docker", "network", "inspect", name],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if r.returncode != 0:
-        cmd = ["docker", "network", "create"]
+        cmd = ["docker", "network", "create",
+               "--label", f"com.docker.compose.project={COMPOSE_PROJECT}",
+               "--label", f"com.docker.compose.network={name}",
+               "--label", "com.docker.compose.version=2"]
         if subnet:
             cmd += ["--subnet", subnet]
         cmd.append(name)
