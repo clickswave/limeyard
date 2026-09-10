@@ -65,9 +65,9 @@
 						</td>
 						<td class="small dim">{byline(c) ?? ''}{#if !c.author}<span class="bad">missing</span>{/if}</td>
 						<td class="mono tiny" class:bad={licenceRisk(c.license)} class:muted={!licenceRisk(c.license)}>{c.license}</td>
-						<td class="small muted num">{c.verified || '—'}</td>
+						<td class="small muted num">{c.verified || '-'}</td>
 						<td class="mono tiny" style="padding-right:0">
-							{#if c.repo}<a href={c.repo} target="_blank" rel="noreferrer noopener">{repoLabel(c.repo)}</a>{:else}<span class="muted">—</span>{/if}
+							{#if c.repo}<a href={c.repo} target="_blank" rel="noreferrer noopener">{repoLabel(c.repo)}</a>{:else}<span class="muted">-</span>{/if}
 						</td>
 					</tr>
 				{:else}

@@ -45,10 +45,9 @@ export function firstPort(t) {
 	return p.length ? Math.min(...p) : Infinity;
 }
 
-/** 0.8125 -> "0.813"; null -> "—" (the U+2014 stays out of prose, but a
- *  table cell with no number is exactly what it is for). */
+/** 0.8125 -> "0.813". A cell with no number reads "-", the same as the CLI. */
 export function ratio(v) {
-	return v == null ? '—' : Number(v).toFixed(3);
+	return v == null ? '-' : Number(v).toFixed(3);
 }
 
 export function delta(now, before) {

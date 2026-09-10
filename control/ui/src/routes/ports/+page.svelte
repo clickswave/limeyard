@@ -95,7 +95,7 @@
 								{hostLabel(h)}
 								{#if h.via === 'scenario'}<span class="muted" style="margin-left:6px">{h.owner}</span>{/if}
 							</td>
-							<td class="r mono muted" style="font-size:11.5px">{(h.ports ?? []).join(', ') || '—'}</td>
+							<td class="r mono muted" style="font-size:11.5px">{(h.ports ?? []).join(', ') || '-'}</td>
 						</tr>
 					{:else}
 						<tr><td colspan="3" class="muted small" style="padding:20px 0">Nothing on the lab bridge.</td></tr>

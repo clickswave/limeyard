@@ -16,13 +16,10 @@ targets/api/crapi/keys/*
 control/ui/node_modules/
 control/ui/build/
 control/ui/.svelte-kit/
-control/ui/package-lock.json
 
-# AI / agent tooling and local machine config (never publish)
-.claude/
-.mcp.json
-.cursor/
+# Editor and local machine config
 .idea/
+.vscode/
 
 # python bytecode (from local checks)
 __pycache__/

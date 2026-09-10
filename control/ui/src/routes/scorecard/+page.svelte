@@ -207,7 +207,7 @@
 								<td><div class="bar"><span style="width:{pct(r.recall)}"></span></div></td>
 								<td class="r small muted num" style="padding-right:14px">{r.detected} / {r.expected}</td>
 								<td class="r small num {fpTone(r.fp)}" style="padding-right:14px;font-weight:500">{r.fp}</td>
-								<td class="r small muted num" style="padding-right:14px">{r.unmatched || '—'}</td>
+								<td class="r small muted num" style="padding-right:14px">{r.unmatched || '-'}</td>
 								<td class="mono tiny muted" style="padding-right:0">{r.missed.join(' ') || (r.expected ? 'none' : 'no in-scope entries')}</td>
 							</tr>
 						{/each}
@@ -247,7 +247,7 @@
 								<td class="r mono small num" style="padding-right:14px">{ratio(h.totals?.recall)}</td>
 								<td class="r mono small num" style="padding-right:14px">{ratio(h.totals?.precision)}</td>
 								<td class="r mono small num" style="padding-right:14px">{ratio(h.totals?.f1)}</td>
-								<td class="r small num {fpTone(h.totals?.false_positive)}" style="font-weight:500">{h.totals?.false_positive ?? '—'}</td>
+								<td class="r small num {fpTone(h.totals?.false_positive)}" style="font-weight:500">{h.totals?.false_positive ?? '-'}</td>
 							</tr>
 						{/each}
 					</tbody>

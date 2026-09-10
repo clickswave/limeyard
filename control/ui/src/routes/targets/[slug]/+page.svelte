@@ -129,7 +129,7 @@
 		</div>
 		<div class="fact">
 			<span class="label">Stack</span>
-			<div class="v">{t.stack ?? '—'}</div>
+			<div class="v">{t.stack ?? '-'}</div>
 		</div>
 		{#if t.resources && !t.fixture}
 			<div class="fact">
@@ -249,7 +249,7 @@
 								<tr style="height:40px" class:oos={e.scope === 'out-of-scope'}>
 									<td class="mono tiny muted">{e.id}</td>
 									<td style="font-weight:500">{e.class}</td>
-									<td class="small dim">{e.severity ?? '—'}</td>
+									<td class="small dim">{e.severity ?? '-'}</td>
 									<td class="small muted">{e.scope ?? 'black-box'}</td>
 									<td class="mono tiny dim">{where(e.where)}</td>
 									<td class="small muted" style="padding-right:0">{e.confirm ?? e.note ?? ''}</td>
@@ -286,7 +286,7 @@
 								{#each negatives as n (n.id)}
 									<tr style="height:40px">
 										<td class="mono tiny muted">{n.id}</td>
-										<td style="font-weight:500">{n.class ?? '—'}</td>
+										<td style="font-weight:500">{n.class ?? '-'}</td>
 										<td class="mono tiny dim">{where(n.where)}</td>
 										<td class="small dim" style="padding-right:0">{n.note ?? ''}</td>
 									</tr>

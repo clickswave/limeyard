@@ -65,13 +65,13 @@
 			<div class="facts" style="border-top:0;padding-top:0;margin-top:26px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
 				<div class="fact">
 					<span class="label">Resolver</span>
-					<div class="v mono">{s.resolver ?? '—'}</div>
+					<div class="v mono">{s.resolver ?? '-'}</div>
 					{#if s.resolver_host}<div class="sub mono">{s.resolver_host} from the host</div>{/if}
 				</div>
 				<div class="fact">
 					<span class="label">Zones</span>
 					<div class="v mono">
-						{#each s.zones ?? [] as z}<div>{z.zone}</div>{:else}—{/each}
+						{#each s.zones ?? [] as z}<div>{z.zone}</div>{:else}-{/each}
 					</div>
 				</div>
 				<div class="fact">
@@ -126,7 +126,7 @@
 									<td class="mono tiny dim cell">
 										{#each h.names ?? [] as n}<div>{n}</div>{:else}<span class="muted">no name</span>{/each}
 									</td>
-									<td class="mono tiny muted">{(h.ports ?? []).join(', ') || '—'}</td>
+									<td class="mono tiny muted">{(h.ports ?? []).join(', ') || '-'}</td>
 									<td><State state={hostState(s, h)} /></td>
 									<td class="small dim" style="padding-right:0;text-wrap:pretty">{h.note ?? ''}</td>
 								</tr>

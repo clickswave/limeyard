@@ -192,7 +192,7 @@
 						<td class="muted small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px" title={t.upstream.author ?? ''}>
 							{t.upstream.author ?? 'author missing'}
 						</td>
-						<td class="muted small">{t.heavy ? 'heavy' : '—'}</td>
+						<td class="muted small">{t.heavy ? 'heavy' : '-'}</td>
 						<td class="r" onclick={stop} style="white-space:nowrap">
 							{#if t.fixture}
 								<span class="muted small">nothing to run</span>
