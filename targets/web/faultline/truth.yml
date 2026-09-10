@@ -27,11 +27,20 @@ expected:
   class: excessive-exposure
   severity: medium
   scope: authed
-  confirm: response carries fields the caller may not read
+  confirm: response carries ssn and apiKey for every user
   where:
     method: GET
-    path: /api/v1/users
-  note: Path corrected 2026-09-09 for the same reason as FL2.
+    path: /api/v1/admin/users
+  note: >-
+    Path corrected again 2026-09-10. /api/v1/users does not exist: main.rs wires
+    /api/v1/users/:id and /api/v1/admin/users, and the listing is the admin one.
+    The 2026-09-09 correction moved it to a route that 404s, so the entry could
+    still only ever be a miss.
+
+    Verified by hand with an admin session: the response carries id, email,
+    fullName, role, phone, ssn, balanceCents and apiKey for every user. The
+    handler says so itself - "Intentionally leaks ssn + apiKey". Reaching it
+    needs an admin bearer token, which is why the scope is authed.
 - id: FL4
   class: info-disclosure
   severity: high
