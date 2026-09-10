@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # limeyard installer.
 #
-#   curl -fsSL https://raw.githubusercontent.com/clickswave/limeyard/HEAD/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/clickswave/limeyard/main/install.sh | bash
 #
 # Checks for Docker, clones the lab, writes its .env, starts the control
 # plane, then hands over to `lime setup`, which shows what each target costs
@@ -9,14 +9,14 @@
 #
 #   LIMEYARD_DIR=/somewhere   where to put the checkout (default: ./limeyard)
 #   LIMEYARD_REPO=<url|path>  clone source (default: the GitHub repo)
-#   LIMEYARD_REF=<branch>     branch to check out (default: the repo's default branch)
+#   LIMEYARD_REF=<branch>     branch to check out (default: main, the released one)
 #
 # Anything after `bash -s --` is passed to `lime setup`, so a non-interactive
 # install is:  curl ... | bash -s -- --light --yes
 set -euo pipefail
 
 REPO="${LIMEYARD_REPO:-https://github.com/clickswave/limeyard.git}"
-REF="${LIMEYARD_REF:-}"
+REF="${LIMEYARD_REF:-main}"
 DIR="${LIMEYARD_DIR:-$PWD/limeyard}"
 
 say()  { printf '\033[1m%s\033[0m\n' "$*"; }

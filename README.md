@@ -36,7 +36,7 @@ cannot fail cannot detect a regression. Three things were wrong structurally:
 You need Docker (with the compose plugin) and git. Nothing else.
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/clickswave/limeyard/HEAD/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/clickswave/limeyard/main/install.sh | bash
 ```
 
 That clones the lab into `./limeyard`, writes its `.env` with a fresh API
@@ -87,6 +87,15 @@ docker compose up -d --build  # control plane + UI on http://127.0.0.1:7000
 Every manifest carries a measured `resources` block (containers, idle RAM,
 image disk, idle CPU). The wizard, the panel's selection strip and each
 target's page sum from it, so the estimate is the same everywhere.
+
+## Branches
+
+Two, and only two.
+
+- **`main`** is what the installer clones and what you get if you do nothing.
+  It moves by pull request, never by a direct push.
+- **`dev`** is the default branch and where work lands. Open pull requests
+  against it.
 
 ## Concepts
 

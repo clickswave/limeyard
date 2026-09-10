@@ -2,6 +2,7 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /control/ui
+    target-branch: dev
     schedule:
       interval: weekly
     groups:
@@ -9,13 +10,16 @@ updates:
         patterns: ["*"]
   - package-ecosystem: docker
     directory: /control/limed
+    target-branch: dev
     schedule:
       interval: weekly
   - package-ecosystem: docker
     directory: /control/ui
+    target-branch: dev
     schedule:
       interval: weekly
   - package-ecosystem: github-actions
     directory: /
+    target-branch: dev
     schedule:
       interval: weekly

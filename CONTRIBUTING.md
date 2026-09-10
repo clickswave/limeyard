@@ -31,6 +31,15 @@ engines that discover assets rather than test one host.
 **The control plane or the panel.** The daemon in `control/limed`, the SvelteKit
 panel in `control/ui`.
 
+## Which branch
+
+Open pull requests against `dev`. It is the default branch, so GitHub will
+propose it for you.
+
+`main` is what `install.sh` clones, so it is somebody's first five minutes with
+the lab. It moves from `dev` by pull request once CI is green, and never by a
+direct push.
+
 ## Before you open a pull request
 
 ```sh
