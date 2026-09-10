@@ -217,19 +217,25 @@ def doctor(targets):
                   "pass": "Enough for the heavy targets."}[v]
         checks.append(_check("disk", "Disk headroom", v, reason, f"{gb:.0f} GB free ({pct:.0f}%)"))
 
-    missing_author = [t["slug"] for t in ts if not (t.get("upstream") or {}).get("author")]
+    # Scenarios are packaged work with an author and a licence too, so they
+    # are held to the same gate as targets.
+    cr = list(lime.creditable(targets).values())
+    cn = len(cr)
+    missing_author = [t["slug"] for t in cr if not (t.get("upstream") or {}).get("author")]
     checks.append(_check("attribution", "Attribution complete",
                          "fail" if missing_author else "pass",
-                         "Every target names its author." if not missing_author
-                         else "Targets without upstream.author. The manager refuses to register one.",
-                         f"{n - len(missing_author)} / {n}", missing_author))
+                         "Every target and scenario names its author." if not missing_author
+                         else "Nothing may exist here without upstream.author. The manager "
+                              "refuses to register one.",
+                         f"{cn - len(missing_author)} / {cn}", missing_author))
 
-    missing_lic = [t["slug"] for t in ts if not (t.get("upstream") or {}).get("license")]
+    missing_lic = [t["slug"] for t in cr if not (t.get("upstream") or {}).get("license")]
     checks.append(_check("licence", "Licences declared",
                          "warn" if missing_lic else "pass",
-                         "Every target records a licence, or the literal 'none declared'."
-                         if not missing_lic else "Targets with no upstream.license recorded.",
-                         f"{n - len(missing_lic)} / {n}", missing_lic))
+                         "Every target and scenario records a licence, or the literal "
+                         "'none declared'." if not missing_lic
+                         else "No upstream.license recorded.",
+                         f"{cn - len(missing_lic)} / {cn}", missing_lic))
 
     cutoff = time.strftime("%Y-%m-%d", time.localtime(time.time() - STALE_DAYS * 86400))
     stale = []
@@ -775,11 +781,20 @@ class Handler(BaseHTTPRequestHandler):
             })
 
         if p == "/api/credits":
-            ts = lime.load_targets()
-            return self._send(200, {"credits": [
-                {"slug": t["slug"], "name": t.get("name"), "kind": t.get("kind"),
-                 **target_view(t)["upstream"]}
-                for t in sorted(ts.values(), key=lambda x: (x.get("kind", ""), x["slug"]))]})
+            # Scenarios carry attribution too, and were being left out.
+            items = lime.creditable(lime.load_targets())
+            out = []
+            for t in sorted(items.values(), key=lambda x: (x.get("kind", ""), x["slug"])):
+                up = t.get("upstream") or {}
+                out.append({
+                    "slug": t["slug"], "name": t.get("name"), "kind": t.get("kind"),
+                    "scenario": t.get("kind") == "scenario",
+                    "author": up.get("author"), "packager": up.get("packager"),
+                    "repo": up.get("repo"), "homepage": up.get("homepage"),
+                    "license": up.get("license") or "unknown",
+                    "verified": str(up.get("verified") or ""), "note": up.get("note"),
+                })
+            return self._send(200, {"credits": out})
 
         if p == "/api/doctor":
             return self._send(200, doctor(lime.load_targets()))

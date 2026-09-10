@@ -7,7 +7,7 @@ description: >-
 
 upstream:
   author: Clickswave
-  license: proprietary
+  license: MIT
   verified: 2026-09-08
 
 resolver: 10.66.10.2
