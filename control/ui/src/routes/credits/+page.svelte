@@ -1,16 +1,19 @@
 <script>
-	import { byline, licenceRisk } from '$lib/format.js';
+	import { byline, licenceRisk, sortBy, toggleSort } from '$lib/format.js';
+	import Th from '$lib/Th.svelte';
 	let { data } = $props();
 
 	let q = $state('');
 	let onlyRisk = $state(false);
+	let sort = $state({ key: null, dir: 1 });
+	const onsort = (k) => (sort = toggleSort(sort, k));
 
 	let rows = $derived(
-		data.credits.filter((c) => {
+		sortBy(data.credits.filter((c) => {
 			if (onlyRisk && !licenceRisk(c.license)) return false;
 			if (!q) return true;
 			return `${c.name} ${c.author ?? ''} ${c.license ?? ''} ${c.kind}`.toLowerCase().includes(q.toLowerCase());
-		})
+		}), sort, (c, k) => (k === 'name' ? c.name : k === 'author' ? byline(c) : k === 'kind' ? `${c.kind} ${c.name}` : c[k] || null))
 	);
 	let risky = $derived(data.credits.filter((c) => licenceRisk(c.license)));
 	let missing = $derived(data.credits.filter((c) => !c.author));
@@ -46,11 +49,11 @@
 		<table style="min-width:820px">
 			<thead>
 				<tr>
-					<th style="width:230px">Target</th>
-					<th style="width:210px">Author</th>
-					<th style="width:130px">Licence</th>
-					<th style="width:120px">Verified</th>
-					<th style="padding-right:0">Repository</th>
+					<Th key="name" {sort} {onsort} width="230px">Target</Th>
+					<Th key="author" {sort} {onsort} width="210px">Author</Th>
+					<Th key="license" {sort} {onsort} width="130px">Licence</Th>
+					<Th key="verified" {sort} {onsort} width="120px">Verified</Th>
+					<Th key="repo" {sort} {onsort}>Repository</Th>
 				</tr>
 			</thead>
 			<tbody>

@@ -79,3 +79,33 @@ export function clockNow() {
 	const p = (n) => String(n).padStart(2, '0');
 	return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
+
+/** Header-click sorting. Same column flips direction; a new column starts
+ *  ascending. `get(row, key)` returns the value to compare. Nulls sort last
+ *  in either direction, numbers numerically, strings case-insensitively. */
+export function toggleSort(sort, key) {
+	return sort?.key === key ? { key, dir: -sort.dir } : { key, dir: 1 };
+}
+
+export function sortBy(rows, sort, get) {
+	if (!sort?.key) return rows;
+	return rows.slice().sort((a, b) => {
+		const x = get(a, sort.key);
+		const y = get(b, sort.key);
+		if (x == null && y == null) return 0;
+		if (x == null) return 1;
+		if (y == null) return -1;
+		const c =
+			typeof x === 'number' && typeof y === 'number'
+				? x - y
+				: String(x).localeCompare(String(y), undefined, { numeric: true, sensitivity: 'base' });
+		return c * sort.dir;
+	});
+}
+
+/** "10.66.10.2" -> a number that orders dotted quads correctly. */
+export function ipKey(ip) {
+	const p = String(ip ?? '').split('.');
+	if (p.length !== 4 || p.some((x) => !/^\d+$/.test(x))) return null;
+	return p.reduce((n, x) => n * 256 + Number(x), 0);
+}

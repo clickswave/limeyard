@@ -515,6 +515,19 @@ def cmd_ports(targets, args):
     return clash
 
 
+def disk_level(pct, gb):
+    """ok | low | crit | unknown. Percent alone lies on a big disk: 12% of a
+    terabyte is plenty, so both the share and the absolute space must be
+    short before anything is refused."""
+    if pct is None or gb is None:
+        return "unknown"
+    if pct < 5 and gb < 20:
+        return "crit"
+    if pct < 12 and gb < 40:
+        return "low"
+    return "ok"
+
+
 def _disk_free_pct():
     try:
         st = os.statvfs(BASE)
@@ -574,10 +587,11 @@ def cmd_doctor(targets, args):
 
     pct, gb = _disk_free_pct()
     if pct is not None:
-        c = "r" if pct < 5 else ("y" if pct < 12 else "g")
-        print(col(f"[{'!!' if pct < 5 else 'ok'}] disk free {pct:.1f}% ({gb:.0f} GB)", c))
-        if pct < 12:
-            print(col("      heavy targets are blocked below 5%; reclaim with "
+        lvl = disk_level(pct, gb)
+        c = {"crit": "r", "low": "y"}.get(lvl, "g")
+        print(col(f"[{'!!' if lvl == 'crit' else 'ok'}] disk free {pct:.1f}% ({gb:.0f} GB)", c))
+        if lvl != "ok":
+            print(col("      heavy targets are refused below 5% and 20 GB; reclaim with "
                       "`docker builder prune`", "d"))
     print("host ports:")
     cmd_ports(targets, args)

@@ -2,6 +2,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { runFix } from '$lib/actions.js';
 	import State from '$lib/State.svelte';
+	import FixModal from '$lib/FixModal.svelte';
 
 	let { data } = $props();
 
@@ -13,40 +14,46 @@
 	});
 
 	let rerunning = $state(false);
-	let fixing = $state(null); // 'all' | check id
-	let results = $state({}); // id -> {ok, message}
-	let lastFix = $state(null); // 'all' | id, for the summary line
+	let modal = $state(null); // { checks: [...] } while open
+	let running = $state(false);
+	let results = $state(null); // id -> {ok, message} for the modal, and the rows after
+	let lastRun = $state(null); // {fixed, failed} for the summary line
 
 	let checks = $derived(report?.checks ?? []);
 	let summary = $derived(report?.summary ?? { pass: 0, warn: 0, fail: 0 });
-	let fixable = $derived(report?.fixable ?? []);
-	const fixableOnPage = (c) => c.fix && c.verdict !== 'pass';
+	let fixableChecks = $derived(checks.filter((c) => c.fix && c.verdict !== 'pass'));
 
 	async function rerun() {
 		rerunning = true;
-		results = {};
-		lastFix = null;
+		results = null;
+		lastRun = null;
 		await invalidateAll();
 		rerunning = false;
 	}
 
-	async function fix(ids) {
-		fixing = ids.length === 1 ? ids[0] : 'all';
-		lastFix = fixing;
-		const { error, data: d } = await runFix(ids);
-		if (error) {
-			results = { ...results, [fixing]: { ok: false, message: error } };
-		} else {
-			const next = {};
-			for (const r of d.results ?? []) next[r.id] = { ok: r.ok, message: r.message };
-			results = next;
-			report = d.doctor;
-		}
-		fixing = null;
+	function open(list) {
+		results = null;
+		modal = { checks: list };
 	}
 
-	let fixedCount = $derived(Object.values(results).filter((r) => r.ok).length);
-	let failedCount = $derived(Object.values(results).filter((r) => !r.ok).length);
+	async function confirm() {
+		running = true;
+		const ids = modal.checks.map((c) => c.id);
+		const { error, data: d } = await runFix(ids);
+		const next = {};
+		if (error) {
+			for (const id of ids) next[id] = { ok: false, message: error };
+		} else {
+			for (const r of d.results ?? []) next[r.id] = { ok: r.ok, message: r.message };
+			report = d.doctor;
+		}
+		results = next;
+		lastRun = {
+			fixed: Object.values(next).filter((r) => r.ok).length,
+			failed: Object.values(next).filter((r) => !r.ok).length
+		};
+		running = false;
+	}
 </script>
 
 <svelte:head><title>Doctor · limeyard</title></svelte:head>
@@ -56,31 +63,30 @@
 		<h1>Doctor</h1>
 		<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
 			<span class="small muted num">{summary.pass} pass · {summary.warn} warn · {summary.fail} fail</span>
-			{#if fixable.length}
-				<button class="btn" disabled={!!fixing || rerunning} onclick={() => fix([])}>
-					{fixing === 'all' ? 'Fixing…' : `Fix all (${fixable.length})`}
+			{#if fixableChecks.length}
+				<button class="btn" disabled={running || rerunning} onclick={() => open(fixableChecks)}>
+					Fix all ({fixableChecks.length})
 				</button>
 			{/if}
-			<button class="btn" disabled={!!fixing || rerunning} onclick={rerun}>{rerunning ? 'Checking…' : 'Re-run'}</button>
+			<button class="btn" disabled={running || rerunning} onclick={rerun}>{rerunning ? 'Checking…' : 'Re-run'}</button>
 		</div>
 	</div>
 	<p class="lede small" style="margin-top:10px">
-		Environment, attribution, supply chain and hardening. A check with a Fix button has an unambiguous remedy and applies it in place; the rest need a person.
+		Environment, attribution, supply chain and hardening. A check with a Fix button has an unambiguous remedy; you see the exact commands and edits before anything runs. The rest need a person.
 	</p>
 
 	{#if !report}
 		<p class="notice bad">The daemon did not answer. Nothing can be checked until it does.</p>
 	{:else}
-		{#if lastFix && !fixing && (fixedCount || failedCount)}
-			<p class="notice" class:warn={failedCount > 0}>
-				{#if lastFix === 'all'}Fix all ran.{/if}
-				{fixedCount} {fixedCount === 1 ? 'fix' : 'fixes'} applied{failedCount ? `, ${failedCount} could not be` : ''}. The list below is the re-check.
+		{#if lastRun && !modal}
+			<p class="notice" class:warn={lastRun.failed > 0}>
+				{lastRun.fixed} {lastRun.fixed === 1 ? 'fix' : 'fixes'} applied{lastRun.failed ? `, ${lastRun.failed} did not resolve the check` : ''}. The list below is the re-check.
 			</p>
 		{/if}
 
 		<div class="rule" style="margin-top:24px">
 			{#each checks as c (c.id)}
-				{@const r = results[c.id]}
+				{@const r = results?.[c.id]}
 				<div class="row">
 					<State state={c.verdict} label={c.verdict} size="12px" />
 					<div style="min-width:0;flex:1">
@@ -92,15 +98,17 @@
 								{#if c.items.length > 12}<div class="muted">and {c.items.length - 12} more</div>{/if}
 							</div>
 						{/if}
-						{#if r}
-							<div class="tiny" class:ok={r.ok} class:bad={!r.ok} style="margin-top:6px;font-weight:500">{r.ok ? 'Fixed' : 'Could not fix'} · <span style="font-weight:400">{r.message}</span></div>
+						{#if r && !modal}
+							<div class="tiny" class:ok={r.ok} class:bad={!r.ok} style="margin-top:6px;font-weight:500">
+								{r.ok ? 'Fixed' : 'Not fixed'} · <span style="font-weight:400">{r.message}</span>
+							</div>
 						{/if}
 					</div>
 					<div class="side">
 						<span class="mono tiny muted">{c.value ?? ''}</span>
-						{#if fixableOnPage(c)}
-							<button class="btn sm" disabled={!!fixing || rerunning} onclick={() => fix([c.id])} title={c.fix.description}>
-								{fixing === c.id ? 'Fixing…' : c.fix.label}
+						{#if c.fix && c.verdict !== 'pass'}
+							<button class="btn sm" disabled={running || rerunning} onclick={() => open([c])} title={c.fix.description}>
+								{c.fix.label}
 							</button>
 						{/if}
 					</div>
@@ -109,6 +117,10 @@
 		</div>
 	{/if}
 </main>
+
+{#if modal}
+	<FixModal checks={modal.checks} {running} {results} onconfirm={confirm} onclose={() => (modal = null)} />
+{/if}
 
 <style>
 	.row {

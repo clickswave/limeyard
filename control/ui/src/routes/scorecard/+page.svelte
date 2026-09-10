@@ -1,5 +1,6 @@
 <script>
-	import { ratio, delta, when } from '$lib/format.js';
+	import { ratio, delta, when, sortBy, toggleSort } from '$lib/format.js';
+	import Th from '$lib/Th.svelte';
 
 	let { data } = $props();
 	let cards = $derived(data.history);
@@ -32,17 +33,23 @@
 	const dTone = (d, goodUp = true) => (!d ? '' : (d.startsWith('+') === goodUp ? 'ok' : 'bad'));
 	const pct = (v) => `${Math.round((v ?? 0) * 100)}%`;
 
+	let csort = $state({ key: null, dir: 1 });
+	let tsort = $state({ key: null, dir: 1 });
+	let hsort = $state({ key: null, dir: 1 });
+	const num = (r, k) => (r[k] == null ? null : Number(r[k]));
+	const rowGet = (r, k) => (k === 'name' || k === 'slug' ? r[k] : k === 'missed' ? r.missed.length : num(r, k));
+
 	let classes = $derived(
-		Object.entries(c?.by_class ?? {}).map(([name, v]) => ({
+		sortBy(Object.entries(c?.by_class ?? {}).map(([name, v]) => ({
 			name,
 			recall: v.recall,
 			detected: v.detected ?? 0,
 			expected: v.expected ?? 0,
 			fp: v.false_positive ?? 0
-		}))
+		})), csort, rowGet)
 	);
 	let targets = $derived(
-		Object.entries(c?.by_target ?? {})
+		sortBy(Object.entries(c?.by_target ?? {})
 			.map(([slug, r]) => ({
 				slug,
 				recall: r.recall,
@@ -52,7 +59,11 @@
 				missed: r.missed ?? [],
 				unmatched: r.unmatched?.length ?? 0
 			}))
-			.sort((x, y) => (y.expected + y.fp) - (x.expected + x.fp) || x.slug.localeCompare(y.slug))
+			.sort((x, y) => (y.expected + y.fp) - (x.expected + x.fp) || x.slug.localeCompare(y.slug)), tsort, rowGet)
+	);
+	let history = $derived(
+		sortBy(cards.map((h, i) => ({ h, i })), hsort, (x, k) =>
+			k === 'generated' ? x.h.generated : k === 'tool' ? x.h.tool : x.h.totals?.[k] == null ? null : Number(x.h.totals[k]))
 	);
 
 	/** Per-target rows where anything moved between two runs. */
@@ -151,11 +162,11 @@
 				<table style="min-width:820px;margin-top:14px">
 					<thead>
 						<tr>
-							<th style="width:230px">Class</th>
-							<th class="r" style="width:100px;padding-right:14px">Recall</th>
+							<Th key="name" sort={csort} onsort={(k) => (csort = toggleSort(csort, k))} width="230px">Class</Th>
+							<th class="r" style="width:100px;padding-right:14px"><button type="button" class="sortcol" class:active={csort.key === 'recall'} onclick={() => (csort = toggleSort(csort, 'recall'))}>Recall<span class="caret">{csort.key === 'recall' ? (csort.dir === 1 ? '↑' : '↓') : ''}</span></button></th>
 							<th></th>
-							<th class="r" style="width:110px">Found</th>
-							<th class="r" style="width:100px">FP</th>
+							<Th key="detected" sort={csort} onsort={(k) => (csort = toggleSort(csort, k))} right width="110px">Found</Th>
+							<Th key="fp" sort={csort} onsort={(k) => (csort = toggleSort(csort, k))} right width="100px">FP</Th>
 						</tr>
 					</thead>
 					<tbody>
@@ -179,13 +190,13 @@
 				<table style="min-width:900px;margin-top:14px">
 					<thead>
 						<tr>
-							<th style="width:200px">Target</th>
-							<th class="r" style="width:100px;padding-right:14px">Recall</th>
+							<Th key="slug" sort={tsort} onsort={(k) => (tsort = toggleSort(tsort, k))} width="200px">Target</Th>
+							<th class="r" style="width:100px;padding-right:14px"><button type="button" class="sortcol" class:active={tsort.key === 'recall'} onclick={() => (tsort = toggleSort(tsort, 'recall'))}>Recall<span class="caret">{tsort.key === 'recall' ? (tsort.dir === 1 ? '↑' : '↓') : ''}</span></button></th>
 							<th style="width:180px"></th>
-							<th class="r" style="width:90px;padding-right:14px">Found</th>
-							<th class="r" style="width:60px;padding-right:14px">FP</th>
-							<th class="r" style="width:90px;padding-right:14px">Unmatched</th>
-							<th style="padding-right:0">Missed</th>
+							<th class="r" style="width:90px;padding-right:14px"><button type="button" class="sortcol" class:active={tsort.key === 'detected'} onclick={() => (tsort = toggleSort(tsort, 'detected'))}>Found<span class="caret">{tsort.key === 'detected' ? (tsort.dir === 1 ? '↑' : '↓') : ''}</span></button></th>
+							<th class="r" style="width:60px;padding-right:14px"><button type="button" class="sortcol" class:active={tsort.key === 'fp'} onclick={() => (tsort = toggleSort(tsort, 'fp'))}>FP<span class="caret">{tsort.key === 'fp' ? (tsort.dir === 1 ? '↑' : '↓') : ''}</span></button></th>
+							<th class="r" style="width:90px;padding-right:14px"><button type="button" class="sortcol" class:active={tsort.key === 'unmatched'} onclick={() => (tsort = toggleSort(tsort, 'unmatched'))}>Unmatched<span class="caret">{tsort.key === 'unmatched' ? (tsort.dir === 1 ? '↑' : '↓') : ''}</span></button></th>
+							<Th key="missed" sort={tsort} onsort={(k) => (tsort = toggleSort(tsort, k))}>Missed</Th>
 						</tr>
 					</thead>
 					<tbody>
@@ -215,15 +226,15 @@
 					<thead>
 						<tr>
 							<th style="width:34px"></th>
-							<th>Run</th>
-							<th class="r" style="width:120px;padding-right:14px">Recall</th>
-							<th class="r" style="width:120px;padding-right:14px">Precision</th>
-							<th class="r" style="width:120px;padding-right:14px">F1</th>
-							<th class="r" style="width:130px">False positives</th>
+							<Th key="generated" sort={hsort} onsort={(k) => (hsort = toggleSort(hsort, k))}>Run</Th>
+							<th class="r" style="width:120px;padding-right:14px"><button type="button" class="sortcol" class:active={hsort.key === 'recall'} onclick={() => (hsort = toggleSort(hsort, 'recall'))}>Recall<span class="caret">{hsort.key === 'recall' ? (hsort.dir === 1 ? '↑' : '↓') : ''}</span></button></th>
+							<th class="r" style="width:120px;padding-right:14px"><button type="button" class="sortcol" class:active={hsort.key === 'precision'} onclick={() => (hsort = toggleSort(hsort, 'precision'))}>Precision<span class="caret">{hsort.key === 'precision' ? (hsort.dir === 1 ? '↑' : '↓') : ''}</span></button></th>
+							<th class="r" style="width:120px;padding-right:14px"><button type="button" class="sortcol" class:active={hsort.key === 'f1'} onclick={() => (hsort = toggleSort(hsort, 'f1'))}>F1<span class="caret">{hsort.key === 'f1' ? (hsort.dir === 1 ? '↑' : '↓') : ''}</span></button></th>
+							<Th key="false_positive" sort={hsort} onsort={(k) => (hsort = toggleSort(hsort, k))} right width="130px">False positives</Th>
 						</tr>
 					</thead>
 					<tbody>
-						{#each cards as h, i (h.id)}
+						{#each history as { h, i } (h.id)}
 							<tr style="height:42px" class:viewing={i === viewIdx}>
 								<td><input type="checkbox" checked={picked.has(h.id)} onchange={() => togglePick(h.id)} aria-label={h.id} /></td>
 								<td>

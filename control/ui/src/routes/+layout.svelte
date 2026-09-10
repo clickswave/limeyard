@@ -51,8 +51,8 @@
 			{/each}
 		</nav>
 		<div class="right">
-			{#if disk?.free_pct != null && disk.free_pct < 12}
-				<a href="/doctor" class="quiet" class:bad={disk.free_pct < 5} class:warn={disk.free_pct >= 5}
+			{#if disk?.level === 'low' || disk?.level === 'crit'}
+				<a href="/doctor" class="quiet" class:bad={disk.level === 'crit'} class:warn={disk.level === 'low'}
 					>{disk.free_gb} GB free{disk.heavy_blocked ? ' · heavy blocked' : ''}</a
 				>
 			{/if}

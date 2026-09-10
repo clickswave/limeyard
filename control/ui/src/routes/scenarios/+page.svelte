@@ -2,9 +2,23 @@
 	import { live, shownScenarioState } from '$lib/live.svelte.js';
 	import { actScenario } from '$lib/actions.js';
 	import State from '$lib/State.svelte';
+	import Th from '$lib/Th.svelte';
+	import { sortBy, toggleSort, ipKey } from '$lib/format.js';
 
 	let { data } = $props();
 	let problem = $state({});
+	let hsort = $state({}); // per scenario slug
+	const sortOf = (s) => hsort[s.slug] ?? { key: null, dir: 1 };
+	const onsort = (s, k) => (hsort = { ...hsort, [s.slug]: toggleSort(sortOf(s), k) });
+	const RANK = { running: 0, starting: 1, unhealthy: 2, stopped: 3 };
+	const hostRows = (s) =>
+		sortBy(s.hosts ?? [], sortOf(s), (h, k) =>
+			k === 'ip' ? ipKey(h.ip)
+			: k === 'names' ? (h.names?.[0] ?? null)
+			: k === 'ports' ? (h.ports?.length ? Number(h.ports[0]) : null)
+			: k === 'state' ? `${RANK[hostState(s, h)] ?? 9} ${h.ip}`
+			: h.note ?? null
+		);
 
 	const stateOf = (s) => shownScenarioState(s.slug, s.state);
 	const up = (s) => ['running', 'starting', 'partial', 'unhealthy'].includes(stateOf(s).split(' ')[0]);
@@ -98,15 +112,15 @@
 					<table style="min-width:1000px">
 						<thead>
 							<tr>
-								<th style="width:118px">IP</th>
-								<th style="width:250px">Hostnames</th>
-								<th style="width:120px">Ports</th>
-								<th style="width:110px">State</th>
-								<th style="padding-right:0">Why it is here</th>
+								<Th key="ip" sort={sortOf(s)} onsort={(k) => onsort(s, k)} width="118px">IP</Th>
+								<Th key="names" sort={sortOf(s)} onsort={(k) => onsort(s, k)} width="250px">Hostnames</Th>
+								<Th key="ports" sort={sortOf(s)} onsort={(k) => onsort(s, k)} width="120px">Ports</Th>
+								<Th key="state" sort={sortOf(s)} onsort={(k) => onsort(s, k)} width="110px">State</Th>
+								<Th key="note" sort={sortOf(s)} onsort={(k) => onsort(s, k)}>Why it is here</Th>
 							</tr>
 						</thead>
 						<tbody>
-							{#each s.hosts as h (h.ip)}
+							{#each hostRows(s) as h (h.ip)}
 								<tr style="height:46px">
 									<td class="mono small">{h.ip}</td>
 									<td class="mono tiny dim cell">

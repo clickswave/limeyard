@@ -83,11 +83,12 @@ mandatory: the panel holds the token server-side and the browser never sees it.
 | **Scenarios** | the estate: resolver, zones, subnet, and a host table with per-container state. Bring up, bring down, restart |
 | **Scorecard** | the latest run with deltas, per-class and per-target coverage, missed ids, a history you can view, and a two-run diff |
 | **Ports** | what binds on localhost, and what only exists on the lab bridge |
-| **Doctor** | one list of checks with a verdict each, and a Fix button where a fix is unambiguous |
+| **Doctor** | one list of checks with a verdict each. Fix and Fix all show the exact commands and file edits first, computed from the lab as it is, and run them on confirmation. A fix that leaves its check failing says so |
 | **Credits** | who wrote each target and under what licence |
 
 The panel updates itself: limed streams state transitions over SSE, so a
-target started from the CLI shows up without a refresh.
+target started from the CLI shows up without a refresh. Every table sorts by
+clicking a column header; a second click flips the direction.
 
 After a change to the panel or the daemon, rebuild the pair:
 

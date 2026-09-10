@@ -2,15 +2,16 @@
 	import { goto } from '$app/navigation';
 	import { live, shownState, isBusy } from '$lib/live.svelte.js';
 	import { actTarget, actMany } from '$lib/actions.js';
-	import { address, firstPort } from '$lib/format.js';
+	import { address, firstPort, sortBy, toggleSort } from '$lib/format.js';
 	import State from '$lib/State.svelte';
+	import Th from '$lib/Th.svelte';
 
 	let { data } = $props();
 
 	let query = $state('');
 	let kind = $state('all');
 	let st = $state('all');
-	let sort = $state('name');
+	let sort = $state({ key: 'name', dir: 1 });
 	let selected = $state(new Set());
 	let problem = $state('');
 
@@ -32,13 +33,17 @@
 				.toLowerCase()
 				.includes(q);
 		});
-		const by = {
-			name: (a, b) => a.name.localeCompare(b.name),
-			kind: (a, b) => a.kind.localeCompare(b.kind) || a.name.localeCompare(b.name),
-			port: (a, b) => firstPort(a) - firstPort(b) || a.name.localeCompare(b.name),
-			state: (a, b) => (ORDER[stateOf(a)] ?? 9) - (ORDER[stateOf(b)] ?? 9) || a.name.localeCompare(b.name)
-		}[sort];
-		return list.slice().sort(by);
+		// Secondary key is always the name, folded into the primary so one
+		// comparison settles it.
+		const get = (t, k) =>
+			k === 'name' ? t.name
+			: k === 'kind' ? `${t.kind} ${t.name}`
+			: k === 'state' ? `${ORDER[stateOf(t)] ?? 9} ${t.name}`
+			: k === 'port' ? (firstPort(t) === Infinity ? null : firstPort(t))
+			: k === 'author' ? (t.upstream.author || null)
+			: k === 'weight' ? `${t.heavy ? 0 : 1} ${t.name}`
+			: t.name;
+		return sortBy(list, sort, get);
 	});
 
 	let counts = $derived.by(() => {
@@ -50,7 +55,8 @@
 		`${counts.running ?? 0} running · ${counts.stopped ?? 0} stopped · ${counts.unhealthy ?? 0} unhealthy · ${data.targets.length} total`
 	);
 
-	let filtersDirty = $derived(!!query || kind !== 'all' || st !== 'all' || sort !== 'name');
+	let filtersDirty = $derived(!!query || kind !== 'all' || st !== 'all' || sort.key !== 'name' || sort.dir !== 1);
+	const onsort = (k) => (sort = toggleSort(sort, k));
 	let picked = $derived(data.targets.filter((t) => selected.has(t.slug)));
 	let heavyPicked = $derived(picked.filter((t) => t.heavy).length);
 	let allChecked = $derived(rows.length > 0 && rows.every((t) => selected.has(t.slug)));
@@ -59,7 +65,7 @@
 		query = '';
 		kind = 'all';
 		st = 'all';
-		sort = 'name';
+		sort = { key: 'name', dir: 1 };
 	}
 	function toggle(slug) {
 		const next = new Set(selected);
@@ -110,11 +116,13 @@
 			<option value="all">Any state</option>
 			{#each states as s}<option value={s}>{s}</option>{/each}
 		</select>
-		<select class="sel" bind:value={sort} aria-label="Sort order">
+		<select class="sel" value={sort.key} onchange={(e) => (sort = { key: e.target.value, dir: 1 })} aria-label="Sort order">
 			<option value="name">Sort by name</option>
 			<option value="state">Sort by state</option>
 			<option value="kind">Sort by kind</option>
 			<option value="port">Sort by port</option>
+			<option value="author">Sort by upstream</option>
+			<option value="weight">Sort by weight</option>
 		</select>
 		{#if filtersDirty}<button class="btn" onclick={clearFilters}>Clear</button>{/if}
 	</div>
@@ -141,12 +149,12 @@
 			<thead>
 				<tr>
 					<th style="width:34px"><input type="checkbox" checked={allChecked} onchange={toggleAll} aria-label="Select all" /></th>
-					<th>Target</th>
-					<th style="width:92px">Kind</th>
-					<th style="width:124px">State</th>
-					<th style="width:160px">Address</th>
-					<th style="width:160px">Upstream</th>
-					<th style="width:74px">Weight</th>
+					<Th key="name" {sort} {onsort}>Target</Th>
+					<Th key="kind" {sort} {onsort} width="92px">Kind</Th>
+					<Th key="state" {sort} {onsort} width="124px">State</Th>
+					<Th key="port" {sort} {onsort} width="160px">Address</Th>
+					<Th key="author" {sort} {onsort} width="160px">Upstream</Th>
+					<Th key="weight" {sort} {onsort} width="74px">Weight</Th>
 					<th class="r" style="width:150px">Actions</th>
 				</tr>
 			</thead>

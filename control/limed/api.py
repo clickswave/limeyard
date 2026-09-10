@@ -30,6 +30,8 @@ BIND = os.environ.get("LIMED_BIND", "0.0.0.0")
 TOKEN = os.environ.get("LIME_TOKEN", "").strip()
 OPEN_PATHS = {"/api/health"}
 
+os.environ.setdefault("LIMEYARD_DIR", lime.BASE)  # pin.files() reads it
+
 TARGET_ACTIONS = ("start", "stop", "restart", "pull", "setup")
 SCENARIO_ACTIONS = ("up", "down", "restart")
 STALE_DAYS = 180
@@ -159,6 +161,7 @@ def doctor(targets):
     checks with a verdict each. The CLI's doctor and audit print the same
     facts; this is the shape the panel renders."""
     checks = []
+    ts_map = targets
     ts = list(targets.values())
     n = len(ts)
 
@@ -201,13 +204,14 @@ def doctor(targets):
                          "required" if tok else "unset"))
 
     pct, gb = lime._disk_free_pct()
-    if pct is None:
+    lvl = lime.disk_level(pct, gb)
+    if lvl == "unknown":
         checks.append(_check("disk", "Disk headroom", "warn", "Could not measure free space.", None))
     else:
-        v = "fail" if pct < 5 else ("warn" if pct < 12 else "pass")
-        reason = {"fail": "Below 5% free. Heavy targets are refused until space is reclaimed "
-                          "(docker builder prune).",
-                  "warn": "Under 12% free. Heavy targets still start, but not many of them.",
+        v = {"crit": "fail", "low": "warn"}.get(lvl, "pass")
+        reason = {"fail": "Below 5% and 20 GB free. Heavy targets are refused until space is "
+                          "reclaimed.",
+                  "warn": "Under 12% and 40 GB free. Heavy targets still start, but not many.",
                   "pass": "Enough for the heavy targets."}[v]
         checks.append(_check("disk", "Disk headroom", v, reason, f"{gb:.0f} GB free ({pct:.0f}%)"))
 
@@ -314,7 +318,10 @@ def doctor(targets):
 
     for c in checks:
         f = FIXES.get(c["id"])
-        c["fix"] = {"label": f[0], "description": f[1]} if f else None
+        c["fix"] = None
+        if f:
+            c["fix"] = {"label": f[0], "description": f[1],
+                        "steps": f[3](ts_map) if c["verdict"] != "pass" else []}
     summary = {k: sum(1 for c in checks if c["verdict"] == k) for k in ("pass", "warn", "fail")}
     fixable = [c["id"] for c in checks if c["fix"] and c["verdict"] != "pass"]
     return {"ok": summary["fail"] == 0, "summary": summary, "checks": checks,
@@ -350,7 +357,6 @@ def _fix_disk(targets):
 
 def _fix_pinned(targets):
     import pin
-    os.environ.setdefault("LIMEYARD_DIR", lime.BASE)
     import io
     import contextlib
     buf = io.StringIO()
@@ -463,20 +469,111 @@ def _fix_loopback(targets):
     return f"rewrote port binds to 127.0.0.1 in {', '.join(changed)}; restart them to apply"
 
 
+# What each fixer would do right now, as the exact commands and edits. The panel
+# shows this before anything runs, so a click is never a surprise.
+_NET_LABELS = ("--label com.docker.compose.project=%s --label com.docker.compose.network=%s "
+               "--label com.docker.compose.version=2")
+
+
+def _rel(path):
+    return os.path.relpath(path, lime.BASE)
+
+
+def _plan_networks(targets):
+    steps = []
+    for name, subnet in ((lime.WEB_NET, None), (lime.LAB_NET, lime.LAB_SUBNET)):
+        if subprocess.run(["docker", "network", "inspect", name],
+                          capture_output=True).returncode != 0:
+            steps.append("docker network create " + _NET_LABELS % (lime.COMPOSE_PROJECT, name)
+                         + (f" --subnet {subnet}" if subnet else "") + f" {name}")
+    return steps or ["nothing to create"]
+
+
+def _plan_disk(targets):
+    return ["docker builder prune -f      # build cache no image uses",
+            "docker image prune -f        # dangling images only; nothing tagged, nothing running"]
+
+
+def _plan_pinned(targets):
+    import pin
+    steps = []
+    for path in pin.files():
+        for line in open(path):
+            m = pin.IMAGE_RE.match(line.rstrip("\n"))
+            if not m:
+                continue
+            ref = m.group(3)
+            if "@sha256:" in ref or ref.startswith("limeyard/") or "${" in ref:
+                continue
+            dig = pin.digest_for(ref)
+            steps.append(f"{_rel(path)}: {ref} -> {ref}@{dig}" if dig
+                         else f"{_rel(path)}: {ref} (no digest resolvable, left as is)")
+    return steps or ["nothing floating in the lab's own compose files"]
+
+
+def _plan_sources(targets):
+    steps = []
+    for t in targets.values():
+        if lime.is_fixture(t) or not lime.missing(t) or not t.get("repo"):
+            continue
+        branch = f"--branch {t['ref']} " if t.get("ref") else ""
+        steps.append(f"git clone --depth 1 {branch}{t['repo']} {_rel(t['src_dir'])}")
+    return steps or ["nothing to fetch"]
+
+
+def _plan_fresh(targets):
+    today = time.strftime("%Y-%m-%d")
+    cutoff = time.strftime("%Y-%m-%d", time.localtime(time.time() - STALE_DAYS * 86400))
+    steps = []
+    for t in targets.values():
+        v = str((t.get("upstream") or {}).get("verified") or "")[:10]
+        if v and v >= cutoff:
+            continue
+        if lime.state_of(t)[0] == "running":
+            steps.append(f"{_rel(os.path.join(t['dir'], 'target.yml'))}: "
+                         f"verified: {v or '(absent)'} -> {today}")
+        else:
+            steps.append(f"{t['slug']}: not running, left stale")
+    return steps or ["nothing stale"]
+
+
+def _plan_loopback(targets):
+    steps = []
+    for t in targets.values():
+        if lime.is_fixture(t) or lime.missing(t):
+            continue
+        if not any(ip and ip not in ("127.0.0.1", "localhost") for _, _, ip in lime.host_ports(t)):
+            continue
+        for line in open(t["compose_path"]):
+            body = line.rstrip("\n")
+            m = _PORT_SHORT.match(body)
+            if m:
+                steps.append(f"{_rel(t['compose_path'])}: {body.strip()} -> "
+                             f"{m.group(1).strip()}127.0.0.1:{m.group(2)}{m.group(3).strip()}")
+                continue
+            m = _PORT_HOST_IP.match(body)
+            if m:
+                steps.append(f"{_rel(t['compose_path'])}: {body.strip()} -> host_ip: 127.0.0.1")
+    return steps or ["nothing bound off loopback"]
+
+
 FIXES = {
-    "net-web": ("Create networks", "Runs the same network create the first start would.", _fix_networks),
-    "net-lab": ("Create networks", "Runs the same network create the first start would.", _fix_networks),
+    "net-web": ("Create networks", "Runs the same network create the first start would.",
+                _fix_networks, _plan_networks),
+    "net-lab": ("Create networks", "Runs the same network create the first start would.",
+                _fix_networks, _plan_networks),
     "disk": ("Reclaim space", "docker builder prune and docker image prune, dangling only. "
-             "Nothing a running target uses is touched.", _fix_disk),
+             "Nothing a running target uses is touched.", _fix_disk, _plan_disk),
     "pinned": ("Pin images", "Rewrites every floating tag in the lab's compose files to the "
                "digest pulled here, the same as lime pin --apply. Fetched source trees are "
-               "left alone.", _fix_pinned),
+               "left alone.", _fix_pinned, _plan_pinned),
     "compose": ("Fetch sources", "git clone the repo-backed targets that have not been fetched.",
-                _fix_sources),
+                _fix_sources, _plan_sources),
     "fresh": ("Re-verify running", "Stamps today on stale targets that are up right now. "
-              "Stopped ones stay stale until they are started and seen to work.", _fix_fresh),
+              "Stopped ones stay stale until they are started and seen to work.",
+              _fix_fresh, _plan_fresh),
     "loopback": ("Bind to loopback", "Rewrites 0.0.0.0 and bare port binds to 127.0.0.1 in the "
-                 "compose file. Takes effect on restart.", _fix_loopback),
+                 "compose file. Takes effect on restart.", _fix_loopback, _plan_loopback),
 }
 
 
@@ -501,7 +598,16 @@ def fix(ids=None):
             results.append({"id": cid, "ok": False, "message": str(e)})
         except Exception as e:
             results.append({"id": cid, "ok": False, "message": f"{type(e).__name__}: {e}"})
-    return {"results": results, "doctor": doctor(lime.load_targets())}
+    # A fixer that ran without error but left its check failing did not fix
+    # anything the user cares about. Say so, with the check's own reason.
+    after = doctor(lime.load_targets())
+    verdicts = {c["id"]: c for c in after["checks"]}
+    for r in results:
+        c = verdicts.get(r["id"])
+        if r["ok"] and c and c["verdict"] != "pass":
+            r["ok"] = False
+            r["message"] += f". Still {c['verdict']}: {c['reason']}"
+    return {"results": results, "doctor": after}
 
 
 # --------------------------------------------------------------- handler ---
@@ -629,7 +735,8 @@ class Handler(BaseHTTPRequestHandler):
                 "scenarios": len(lime.load_scenarios()),
                 "disk": {"free_pct": round(pct, 1) if pct else None,
                          "free_gb": round(gb, 1) if gb else None,
-                         "heavy_blocked": bool(pct is not None and pct < 5)},
+                         "level": lime.disk_level(pct, gb),
+                         "heavy_blocked": lime.disk_level(pct, gb) == "crit"},
                 "networks": {"web": lime.WEB_NET, "lab": lime.LAB_NET,
                              "lab_subnet": lime.LAB_SUBNET},
                 "time": time.time(),
@@ -766,9 +873,9 @@ class Handler(BaseHTTPRequestHandler):
         # Disk guard. A lab that fills the host disk takes the dev box with
         # it, so heavy targets are refused rather than merely warned about.
         if action in ("start", "restart", "pull") and lime.is_heavy(t):
-            pct, _ = lime._disk_free_pct()
-            if pct is not None and pct < 5:
-                return f"refusing to start a heavy target below 5% free disk ({pct:.1f}%)"
+            pct, gb = lime._disk_free_pct()
+            if lime.disk_level(pct, gb) == "crit":
+                return f"refusing to start a heavy target with {gb:.0f} GB ({pct:.1f}%) free"
         return None
 
     def _post(self, p):
