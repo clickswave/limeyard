@@ -50,6 +50,12 @@ services:
       # ...and see the definitions at their real host path, so relative paths
       # inside a target's compose resolve correctly through the socket.
       - ${LIMEYARD_DIR:-.}:${LIMEYARD_DIR:-/work}
+      # ...and run the control plane from the working tree rather than the copy
+      # baked into the image. Without this an edit to lime.py, api.py or
+      # scorer.py does nothing at all until someone remembers to rebuild, and
+      # the symptom is the worst kind: the code you just changed runs exactly as
+      # it did before, silently. Cost an hour of confusion on 2026-09-11.
+      - ./control/limed:/opt/limed:ro
     working_dir: ${LIMEYARD_DIR:-/work}
     ports:
       - "127.0.0.1:7099:7099"
