@@ -37,8 +37,21 @@ expected:
     class: sqli
     severity: high
     scope: authed
-    confirm: error-based
-    where: {method: GET, path: /users, param: q, in: query}
+    confirm: error-based differential (unbalanced quote 500s, balanced quote does not)
+    where: {method: PATCH, path: "/users/{id}", param: "user[id]", in: body}
+    note: >-
+      Path, method and parameter all corrected 2026-09-10. The key said
+      GET /users?q=, which does not exist: routes.rb has no such route and no
+      controller reads a `q`. The two candidate sinks a reader would try next
+      are both safe in this build - admin_controller passes params[:ip] to
+      `where(ip_address: ip)`, which is parameterised, and the `field` selector
+      is allow-listed to three column names by Analytics.parse_field.
+
+      The one raw interpolation left is users_controller#update:
+      `User.where("id = '#{params[:user][:id]}'")`. Verified by hand: user[id]
+      of `1` returns 200, `1'` returns 500, and `1''` returns 200 again, which
+      is the balanced-quote control clearing the error. Reaching it needs the
+      session AND the per-form CSRF token, which is why this target is here.
   - id: RG4
     class: session
     severity: medium

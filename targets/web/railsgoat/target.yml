@@ -12,7 +12,7 @@ weight: light
 egress: false
 disk: 535MB
 credentials:
-  - {user: admin@metacorp.com, pass: admin, role: admin}
+  - {user: admin@metacorp.com, pass: admin1234, role: admin}
 upstream:
   author: OWASP RailsGoat project
   repo: https://github.com/OWASP/railsgoat
