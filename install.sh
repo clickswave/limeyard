@@ -76,12 +76,17 @@ echo
 
 # With flags the wizard has nothing to ask. Without them it reads answers from
 # the terminal, which is not stdin when this script arrives through a pipe.
+# `-r /dev/tty` only tests permission bits: with no controlling terminal the
+# node exists and is readable, and the open still fails with ENXIO. Probe it
+# in a subshell so a failure is an answer rather than an error message.
 if [ $# -gt 0 ]; then
   exec ./lime setup "$@" < /dev/null
 elif [ -t 0 ]; then
   exec ./lime setup
-elif [ -r /dev/tty ]; then
+elif (exec 3< /dev/tty) 2>/dev/null; then
   exec ./lime setup < /dev/tty
 else
-  warn "no terminal to ask on; starting nothing. Run ./lime setup from $DIR."
+  warn "Nothing started: no terminal to ask on."
+  echo "  The panel is up at http://127.0.0.1:7000."
+  echo "  Run ./lime setup from $DIR, or re-run with flags: --light --yes"
 fi

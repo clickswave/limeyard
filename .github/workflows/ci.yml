@@ -54,12 +54,46 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-  images:
-    name: control and ui images build
+  install:
+    name: installer, end to end
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: compose config is valid
         run: docker compose config -q
-      - name: build both images
-        run: docker compose build --pull
+      - name: install.sh parses and lints
+        run: |
+          bash -n install.sh
+          shellcheck -S warning install.sh || true
+
+      # The requirement checks are the half of the script most users meet
+      # first, and the half no happy-path test touches.
+      - name: it refuses a machine without docker
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          for t in git uname head od tr openssl; do ln -sf "$(command -v $t)" "$RUNNER_TEMP/bin/$t"; done
+          out=$(PATH="$RUNNER_TEMP/bin" bash install.sh </dev/null 2>&1 || true)
+          echo "$out"
+          echo "$out" | grep -q "Docker is not installed"
+
+      # The real thing: clone this checkout, write .env, build both images,
+      # start the control plane, hand over to the wizard. --none so it starts
+      # no targets and pulls no fleet.
+      - name: it installs
+        run: bash install.sh --none
+        env:
+          LIMEYARD_REPO: ${{ github.workspace }}
+          LIMEYARD_DIR: ${{ runner.temp }}/lab
+
+      - name: and the lab it installed works
+        working-directory: ${{ runner.temp }}/lab
+        run: |
+          grep -qE '^LIME_TOKEN=.{16,}' .env
+          curl -fsS --retry 10 --retry-delay 2 --retry-all-errors http://127.0.0.1:7000/ -o /dev/null
+          curl -fsS http://127.0.0.1:7099/api/health | grep -q '"ok": true'
+          ./lime status
+          ./lime doctor
+      - name: teardown
+        if: always()
+        working-directory: ${{ runner.temp }}/lab
+        run: docker compose down -v || true
