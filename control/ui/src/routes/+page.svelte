@@ -59,6 +59,17 @@
 	const onsort = (k) => (sort = toggleSort(sort, k));
 	let picked = $derived(data.targets.filter((t) => selected.has(t.slug)));
 	let heavyPicked = $derived(picked.filter((t) => t.heavy).length);
+	/** What the selection costs, from each manifest's measured block. */
+	let cost = $derived.by(() => {
+		const r = { ram_mb: 0, disk_gb: 0, containers: 0 };
+		for (const t of picked) {
+			r.ram_mb += t.resources?.ram_mb ?? 0;
+			r.disk_gb += t.resources?.disk_gb ?? 0;
+			r.containers += t.resources?.containers ?? 0;
+		}
+		return r;
+	});
+	const gb = (mb) => (mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${mb} MB`);
 	let allChecked = $derived(rows.length > 0 && rows.every((t) => selected.has(t.slug)));
 
 	function clearFilters() {
@@ -133,6 +144,7 @@
 			<span class="small num" style="font-weight:500">
 				{picked.length} {picked.length === 1 ? 'target' : 'targets'} selected{heavyPicked ? ` · ${heavyPicked} heavy` : ''}
 			</span>
+			<span class="small muted num" title="Measured idle, from each target's manifest">about {gb(cost.ram_mb)} RAM · {cost.disk_gb.toFixed(1)} GB images · {cost.containers} containers</span>
 			<span class="vr"></span>
 			<button class="btn" onclick={() => bulk('start')}>Start</button>
 			<button class="btn" onclick={() => bulk('stop')}>Stop</button>

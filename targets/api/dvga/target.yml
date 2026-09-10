@@ -17,3 +17,11 @@ upstream:
   license: MIT
   verified: 2026-09-08
 truth: truth.yml
+
+# What this costs to run, measured idle on the reference box on 2026-09-10.
+# RAM is resident memory across its containers; disk is the pulled images.
+resources:
+  containers: 1
+  ram_mb: 45
+  disk_gb: 1.1
+  cpu_idle_pct: 0.0

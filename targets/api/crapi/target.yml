@@ -15,3 +15,11 @@ upstream:
   verified: 2026-09-08
 setup: First boot is slow (DBs + migrations). OTP / reset mails land in mailhog at http://127.0.0.1:7011.
 truth: truth.yml
+
+# What this costs to run, measured idle on the reference box on 2026-09-10.
+# RAM is resident memory across its containers; disk is the pulled images.
+resources:
+  containers: 7
+  ram_mb: 353
+  disk_gb: 1.9
+  cpu_idle_pct: 3.0

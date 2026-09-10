@@ -18,3 +18,11 @@ upstream:
     which are long stale, and note bitnami/* images are no longer free on Docker
     Hub, so composes found online that use them will break.
 truth: truth.yml
+
+# What this costs to run, measured idle on the reference box on 2026-09-10.
+# RAM is resident memory across its containers; disk is the pulled images.
+resources:
+  containers: 8
+  ram_mb: 375
+  disk_gb: 2.3
+  cpu_idle_pct: 0.9

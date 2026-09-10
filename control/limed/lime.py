@@ -255,6 +255,194 @@ def run_setup(t):
         subprocess.run(["sh", hook])
 
 
+# ----------------------------------------------------------------- setup ---
+# Every manifest carries a measured `resources` block. The wizard and the panel
+# sum those to say what a selection will cost before anything starts.
+
+def resources_of(t):
+    r = t.get("resources") or {}
+    if not r and not is_fixture(t):
+        # Unmeasured: assume a modest single container so the estimate errs high.
+        r = {"containers": 1, "ram_mb": 256, "disk_gb": 0.5, "cpu_idle_pct": 0.5, "guess": True}
+    return {"containers": int(r.get("containers", 0)), "ram_mb": int(r.get("ram_mb", 0)),
+            "disk_gb": float(r.get("disk_gb", 0)), "cpu_idle_pct": float(r.get("cpu_idle_pct", 0)),
+            "guess": bool(r.get("guess", False))}
+
+
+def estimate(items):
+    tot = {"containers": 0, "ram_mb": 0, "disk_gb": 0.0, "cpu_idle_pct": 0.0, "guessed": 0}
+    for t in items:
+        r = resources_of(t)
+        tot["containers"] += r["containers"]
+        tot["ram_mb"] += r["ram_mb"]
+        tot["disk_gb"] += r["disk_gb"]
+        tot["cpu_idle_pct"] += r["cpu_idle_pct"]
+        tot["guessed"] += 1 if r["guess"] else 0
+    tot["disk_gb"] = round(tot["disk_gb"], 1)
+    tot["cpu_idle_pct"] = round(tot["cpu_idle_pct"], 1)
+    return tot
+
+
+def host_headroom():
+    """What the box has to give: available RAM, free disk, cpus."""
+    ram_gb = None
+    try:
+        mem = {}
+        with open("/proc/meminfo") as f:
+            for line in f:
+                k, _, v = line.partition(":")
+                mem[k] = int(v.split()[0])
+        ram_gb = mem["MemAvailable"] / 1048576
+    except Exception:
+        pass
+    pct, disk_gb = _disk_free_pct()
+    return {"ram_avail_gb": ram_gb, "disk_free_gb": disk_gb, "cpus": os.cpu_count()}
+
+
+def _ask(prompt, default=""):
+    try:
+        a = input(prompt).strip()
+    except EOFError:
+        print()
+        return default
+    return a or default
+
+
+def cmd_setup(targets, args):
+    """Interactive first run: show the fleet and what it costs, take a
+    selection, compare it with the host, confirm, start."""
+    scenarios = load_scenarios()
+    runnable = [t for t in targets.values() if not is_fixture(t)]
+    light = [t for t in runnable if not is_heavy(t)]
+    heavy = [t for t in runnable if is_heavy(t)]
+
+    print()
+    print(col("What is in the lab", "b"))
+    print(f"  {'target':14} {'kind':8} {'weight':6} {'ctrs':>4} {'ram':>7} {'disk':>7}  description")
+    for t in sorted(runnable, key=lambda x: (is_heavy(x), x.get("kind", ""), x["slug"])):
+        r = resources_of(t)
+        print(f"  {t['slug']:14} {t.get('kind', ''):8} {'heavy' if is_heavy(t) else 'light':6} "
+              f"{r['containers']:>4} {r['ram_mb']:>4} MB {r['disk_gb']:>4.1f} GB  "
+              f"{(t.get('description') or '')[:60]}")
+    for s in scenarios.values():
+        r = resources_of(s)
+        print(f"  {s['slug']:14} {'scenario':8} {'':6} {r['containers']:>4} {r['ram_mb']:>4} MB "
+              f"{r['disk_gb']:>4.1f} GB  {(s.get('description') or '').split('.')[0][:60]}")
+    fixtures = [t for t in targets.values() if is_fixture(t)]
+    if fixtures:
+        print(f"  {', '.join(t['slug'] for t in fixtures)}: fixture, nothing to run")
+    print()
+
+    mode = None
+    if getattr(args, "all", False):
+        mode = "all"
+    elif getattr(args, "light", False):
+        mode = "light"
+    elif getattr(args, "none", False):
+        mode = "none"
+    elif getattr(args, "pick", None):
+        mode = "pick"
+    if mode is None:
+        print("What should run?")
+        print(f"  1  every light target and the estate scenario   ({len(light)} targets, recommended)")
+        print(f"  2  everything, heavy ones too                    ({len(runnable)} targets)")
+        print("  3  let me pick")
+        print("  4  nothing yet, just the panel")
+        mode = {"1": "light", "2": "all", "3": "pick", "4": "none", "": "light"}.get(_ask("  > [1] "), None)
+        while mode is None:
+            mode = {"1": "light", "2": "all", "3": "pick", "4": "none"}.get(_ask("  1, 2, 3 or 4: "), None)
+
+    chosen_t, chosen_s = [], []
+    if mode == "light":
+        chosen_t, chosen_s = light, list(scenarios.values())
+    elif mode == "all":
+        chosen_t, chosen_s = runnable, list(scenarios.values())
+    elif mode == "pick":
+        raw = getattr(args, "pick", None)
+        if not raw:
+            print("  Type slugs, kinds or scenario names, comma separated. `light` and `all` work too.")
+            raw = _ask("  > ")
+        want = [w.strip().lower() for w in str(raw).split(",") if w.strip()]
+        for w in want:
+            if w == "light":
+                chosen_t += light
+            elif w == "all":
+                chosen_t += runnable
+            elif w in targets and not is_fixture(targets[w]):
+                chosen_t.append(targets[w])
+            elif w in scenarios:
+                chosen_s.append(scenarios[w])
+            elif w in KINDS:
+                chosen_t += [t for t in runnable if t.get("kind") == w]
+            else:
+                print(col(f"  unknown: {w}", "y"))
+        chosen_t = list({t["slug"]: t for t in chosen_t}.values())
+        chosen_s = list({s["slug"]: s for s in chosen_s}.values())
+
+    if not chosen_t and not chosen_s:
+        print()
+        print("Nothing started. The panel is at http://127.0.0.1:7000; start targets from there,")
+        print("or `./lime start --all`, or run `./lime setup` again.")
+        return 0
+
+    est = estimate(chosen_t + chosen_s)
+    head = host_headroom()
+    print()
+    print("This selection, idle, on the box it was measured on:")
+    print(f"  {len(chosen_t)} targets, {len(chosen_s)} scenarios, {est['containers']} containers")
+    print(f"  RAM  about {est['ram_mb'] / 1024:.1f} GB resident"
+          + (f"  (host has {head['ram_avail_gb']:.1f} GB available)" if head["ram_avail_gb"] else ""))
+    print(f"  disk about {est['disk_gb']:.1f} GB of images to pull"
+          + (f"  (host has {head['disk_free_gb']:.0f} GB free)" if head["disk_free_gb"] else ""))
+    print(f"  CPU  near idle once up ({est['cpu_idle_pct']:.0f}% of one core); "
+          f"pulling and first boots are the busy part")
+    if est["guessed"]:
+        print(col(f"  {est['guessed']} of these have no measurement and are guessed high.", "y"))
+    problems = []
+    if head["ram_avail_gb"] and est["ram_mb"] / 1024 > head["ram_avail_gb"] * 0.7:
+        problems.append("RAM: this would take most of what is free; expect swapping.")
+    if head["disk_free_gb"] and est["disk_gb"] * 1.3 > head["disk_free_gb"]:
+        problems.append("disk: the images plus their layers may not fit.")
+    hv = [t["slug"] for t in chosen_t if is_heavy(t)]
+    if hv:
+        problems.append(f"heavy: {', '.join(hv)} build from source or pull gigabytes; minutes, not seconds.")
+    for p in problems:
+        print(col(f"  warning, {p}", "y"))
+    print()
+    if not getattr(args, "yes", False):
+        if _ask("Start it? [y/N] ").lower() not in ("y", "yes"):
+            print("Nothing started.")
+            return 0
+
+    ensure_networks()
+    ok = True
+    for t in chosen_t:
+        print(col(f"\n== {t['slug']}", "b"))
+        if t.get("repo") and not ensure_src(t):
+            ok = False
+            continue
+        if missing(t):
+            print(col(f"  compose missing: {t['compose_path']}", "r"))
+            ok = False
+            continue
+        if dc(t, "up", "-d").returncode != 0:
+            ok = False
+            continue
+        run_setup(t)
+    for s in chosen_s:
+        print(f"\n== scenario {s['slug']}")
+        if dc(s, "up", "-d").returncode != 0:
+            ok = False
+            continue
+        run_setup(s)
+    print()
+    print(col("Up." if ok else "Up, with failures above.", "g" if ok else "y"))
+    print("  panel   http://127.0.0.1:7000")
+    print("  status  ./lime status")
+    print("  stop    ./lime stop --all --heavy")
+    return 0 if ok else 1
+
+
 def resolve(targets, names, all_flag, heavy, kind=None):
     pool = targets.values()
     if kind:
@@ -858,6 +1046,12 @@ def build_parser():
     cr = sub.add_parser("credits", help="who wrote each target, and under what licence")
     cr.add_argument("--markdown", action="store_true", help="emit the README Credits section")
     sub.add_parser("ports", help="host-port map + clash check")
+    su = sub.add_parser("setup", help="first run: pick what to run, see what it costs, start it")
+    su.add_argument("--light", action="store_true", help="every light target and the scenarios")
+    su.add_argument("--all", action="store_true", help="everything, heavy targets too")
+    su.add_argument("--none", action="store_true", help="start nothing, just the panel")
+    su.add_argument("--pick", help="comma separated slugs, kinds or scenario names")
+    su.add_argument("--yes", action="store_true", help="do not ask before starting")
     dr = sub.add_parser("doctor", help="environment, attribution and disk checks")
     dr.add_argument("--fix", action="store_true",
                     help="repair every check that has an automatic fix, then re-check")
@@ -886,7 +1080,7 @@ SCENARIO_CMDS = {"scenarios": cmd_scenarios, "scenario-up": cmd_scn_up,
 DISPATCH = {
     "start": cmd_start, "stop": cmd_stop, "restart": cmd_restart, "pull": cmd_pull,
     "list": cmd_list, "status": cmd_status, "credits": cmd_credits,
-    "ports": cmd_ports, "doctor": cmd_doctor, "audit": cmd_audit, "truth": cmd_truth, "pin": cmd_pin,
+    "ports": cmd_ports, "setup": cmd_setup, "doctor": cmd_doctor, "audit": cmd_audit, "truth": cmd_truth, "pin": cmd_pin,
     "logs": cmd_logs, "serve": cmd_serve, "monitor": cmd_monitor,
 }
 

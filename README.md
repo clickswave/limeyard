@@ -33,19 +33,60 @@ cannot fail cannot detect a regression. Three things were wrong structurally:
 
 ## Quick start
 
+You need Docker (with the compose plugin) and git. Nothing else.
+
 ```sh
-cp .env.example .env
-echo "LIMEYARD_DIR=$PWD"                 >> .env
-echo "LIME_TOKEN=$(openssl rand -hex 24)" >> .env   # required, see SECURITY.md
-docker compose up -d          # control plane + UI on http://127.0.0.1:7000
+curl -fsSL https://raw.githubusercontent.com/clickswave/limeyard/HEAD/install.sh | bash
+```
+
+That clones the lab into `./limeyard`, writes its `.env` with a fresh API
+token, builds and starts the control plane, then asks what to run. Before
+anything starts it shows what the selection costs, measured idle on the
+reference box, against what your machine has free:
+
+```
+This selection, idle, on the box it was measured on:
+  17 targets, 1 scenarios, 45 containers
+  RAM  about 2.9 GB resident  (host has 22.4 GB available)
+  disk about 11.0 GB of images to pull  (host has 111 GB free)
+  CPU  near idle once up (3% of one core); pulling and first boots are the busy part
+Start it? [y/N]
+```
+
+Non-interactive: `curl ... | bash -s -- --light --yes` (or `--all`,
+`--none`, `--pick dvwa,juice-shop,estate`). Put the checkout elsewhere with
+`LIMEYARD_DIR=/path`.
+
+The panel is then at http://127.0.0.1:7000, and the same things by hand:
+
+```sh
+./lime setup                  # the wizard again, any time
 ./lime start --all            # every light target
+./lime start crapi --heavy    # a heavy one, explicitly
 ./lime scenario-up estate     # the network estate: DNS, vhosts, services
+./lime status                 # what is up
+./lime stop --all --heavy     # everything down; images and volumes stay
 ./lime credits                # who wrote each target, and under what licence
 ./lime doctor                 # environment, attribution and disk checks
 ./lime doctor --fix           # apply every check's automatic remedy, then re-check
 ./lime audit                  # container hardening + supply chain invariants
 ./lime pin                    # report image drift against the registry
 ```
+
+By hand, without the installer:
+
+```sh
+git clone https://github.com/clickswave/limeyard && cd limeyard
+cp .env.example .env
+echo "LIMEYARD_DIR=$PWD"                 >> .env
+echo "LIME_TOKEN=$(openssl rand -hex 24)" >> .env   # required, see SECURITY.md
+docker compose up -d --build  # control plane + UI on http://127.0.0.1:7000
+./lime setup
+```
+
+Every manifest carries a measured `resources` block (containers, idle RAM,
+image disk, idle CPU). The wizard, the panel's selection strip and each
+target's page sum from it, so the estimate is the same everywhere.
 
 ## Concepts
 

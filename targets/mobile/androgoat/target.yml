@@ -22,3 +22,10 @@ upstream:
     internally; do not vendor or redistribute the APK. Catalogued by OWASP as
     MASTG-APP-0001.
 truth: truth.yml
+
+# An APK fixture: nothing to run, so it costs nothing.
+resources:
+  containers: 0
+  ram_mb: 0
+  disk_gb: 0
+  cpu_idle_pct: 0

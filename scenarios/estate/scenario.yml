@@ -79,3 +79,11 @@ expected_assets:
     "10.66.10.41:5432": postgresql
     "10.66.10.42:6379": redis
     "10.66.10.43:1025": smtp
+
+# What this costs to run, measured idle on the reference box on 2026-09-10.
+# RAM is resident memory across its containers; disk is the pulled images.
+resources:
+  containers: 12
+  ram_mb: 71
+  disk_gb: 0.6
+  cpu_idle_pct: 0.3

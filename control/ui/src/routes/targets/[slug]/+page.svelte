@@ -130,8 +130,14 @@
 		<div class="fact">
 			<span class="label">Stack</span>
 			<div class="v">{t.stack ?? '—'}</div>
-			{#if t.disk}<div class="sub">{t.disk} on disk</div>{/if}
 		</div>
+		{#if t.resources && !t.fixture}
+			<div class="fact">
+				<span class="label">Footprint</span>
+				<div class="v num">{t.resources.containers} {t.resources.containers === 1 ? 'container' : 'containers'} · {t.resources.ram_mb} MB RAM · {t.resources.disk_gb} GB images</div>
+				<div class="sub">{t.resources.guess ? 'not measured yet, guessed high' : 'measured idle on the reference box'}{t.disk ? ` · ${t.disk}` : ''}</div>
+			</div>
+		{/if}
 		<div class="fact">
 			<span class="label">Upstream</span>
 			<div class="v">

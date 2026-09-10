@@ -21,3 +21,11 @@ credentials:
   - {user: admin@faultline.local, pass: admin, role: admin}
 setup: 'First start clones the repo and builds it (Rust; slow).'
 truth: truth.yml
+
+# What this costs to run, measured idle on the reference box on 2026-09-10.
+# RAM is resident memory across its containers; disk is the pulled images.
+resources:
+  containers: 5
+  ram_mb: 61
+  disk_gb: 1.0
+  cpu_idle_pct: 0.3

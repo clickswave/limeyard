@@ -28,3 +28,11 @@ upstream:
     Upstream's compose also publishes phpMyAdmin and phpLDAPadmin on host ports.
     We do not: neither is a scan target and both are extra host exposure.
 truth: truth.yml
+
+# What this costs to run, measured idle on the reference box on 2026-09-10.
+# RAM is resident memory across its containers; disk is the pulled images.
+resources:
+  containers: 3
+  ram_mb: 91
+  disk_gb: 1.3
+  cpu_idle_pct: 0.6

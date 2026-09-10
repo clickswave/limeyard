@@ -23,3 +23,11 @@ upstream:
     We run the published image with an explicit command instead, so nothing is
     vendored and nothing from the host is mounted in.
 truth: truth.yml
+
+# What this costs to run, measured idle on the reference box on 2026-09-10.
+# RAM is resident memory across its containers; disk is the pulled images.
+resources:
+  containers: 1
+  ram_mb: 510
+  disk_gb: 1.3
+  cpu_idle_pct: 0.0

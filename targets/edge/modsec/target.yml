@@ -21,3 +21,11 @@ upstream:
     The nginx template declares exactly one server block, so one CRS container
     serves one vhost. Multi-vhost needs N containers or your own template.
 truth: truth.yml
+
+# What this costs to run, measured idle on the reference box on 2026-09-10.
+# RAM is resident memory across its containers; disk is the pulled images.
+resources:
+  containers: 3
+  ram_mb: 87
+  disk_gb: 0.2
+  cpu_idle_pct: 0.0
