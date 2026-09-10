@@ -1,71 +1,91 @@
 <script>
-	import { invalidateAll } from '$app/navigation';
-	let { data } = $props();
-	let busy = $state({});
-	let open = $state({});
+	import { live, shownScenarioState } from '$lib/live.svelte.js';
+	import { actScenario } from '$lib/actions.js';
+	import State from '$lib/State.svelte';
 
-	async function act(slug, action) {
-		busy = { ...busy, [slug]: action };
-		await fetch(`/api/scenarios/${slug}/${action}`, { method: 'POST' });
-		setTimeout(() => {
-			busy = { ...busy, [slug]: null };
-			invalidateAll();
-		}, 2500);
+	let { data } = $props();
+	let problem = $state({});
+
+	const stateOf = (s) => shownScenarioState(s.slug, s.state);
+	const up = (s) => ['running', 'starting', 'partial', 'unhealthy'].includes(stateOf(s).split(' ')[0]);
+	const busy = (s) => !!live.pending[`scenario:${s.slug}`];
+
+	/** Per-host state: what limed saw for that container, else the scenario's. */
+	function hostState(s, h) {
+		const st = s.host_states?.[h.ip];
+		if (st) return st;
+		return up(s) ? stateOf(s) : 'stopped';
 	}
-	const tone = (s) => (s === 'running' ? 'run' : s === 'stopped' ? 'idle' : 'wait');
+	const hostsUp = (s) => (s.hosts ?? []).filter((h) => hostState(s, h) === 'running').length;
+
+	async function act(s, action) {
+		problem = { ...problem, [s.slug]: '' };
+		const err = await actScenario(s.slug, action);
+		if (err) problem = { ...problem, [s.slug]: err };
+	}
 </script>
 
-<div class="head">
+<svelte:head><title>Scenarios · limeyard</title></svelte:head>
+
+<main class="page">
 	<h1>Scenarios</h1>
-	<span class="faint small">{data.scenarios.length}</span>
-</div>
-<p class="lede muted">
-	Targets wired into a network topology with authoritative DNS. The zone file is the answer key.
-</p>
 
-{#each data.scenarios as s}
-	<section class="scn">
-		<div class="shead">
-			<strong>{s.name}</strong>
-			<span class="status {tone(s.state)}"><i class="dot"></i>{s.state}</span>
-			<span class="spacer"></span>
-			{#if s.state === 'stopped'}
-				<button class="btn sm primary" disabled={!!busy[s.slug]} onclick={() => act(s.slug, 'up')}>
-					{busy[s.slug] ? 'Starting…' : 'Bring up'}
-				</button>
-			{:else}
-				<button class="btn sm" disabled={!!busy[s.slug]} onclick={() => act(s.slug, 'down')}
-					>Tear down</button
-				>
-			{/if}
-			<button class="btn sm" onclick={() => (open = { ...open, [s.slug]: !open[s.slug] })}>
-				{open[s.slug] ? 'Hide' : 'Topology'}
-			</button>
-		</div>
-		<p class="muted small sdesc">{s.description ?? ''}</p>
+	{#each data.scenarios as s (s.slug)}
+		{@const st = stateOf(s)}
+		<section class="scn">
+			<div class="top">
+				<div style="min-width:0">
+					<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+						<h2 style="font-size:17px">{s.name}</h2>
+						<State state={st} />
+					</div>
+					{#if s.description}<p class="lede" style="margin-top:11px">{s.description}</p>{/if}
+				</div>
+				<div style="display:flex;gap:8px;flex:none">
+					<button class="btn" disabled={busy(s)} onclick={() => act(s, up(s) ? 'down' : 'up')}>{up(s) ? 'Bring down' : 'Bring up'}</button>
+					<button class="btn" disabled={busy(s)} onclick={() => act(s, 'restart')}>Restart</button>
+				</div>
+			</div>
+			{#if problem[s.slug]}<p class="tiny bad" style="margin-top:8px">{problem[s.slug]}</p>{/if}
 
-		<div class="counts">
-			<span class="tag">{s.hosts?.length ?? 0} hosts</span>
-			<span class="tag">{s.zones?.length ?? 0} zones</span>
-			{#if s.expected_assets?.subdomains_via_axfr}
-				<span class="tag">{s.expected_assets.subdomains_via_axfr.length} expected subdomains</span>
-			{/if}
-		</div>
+			<div class="facts" style="border-top:0;padding-top:0;margin-top:26px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
+				<div class="fact">
+					<span class="label">Resolver</span>
+					<div class="v mono">{s.resolver ?? '—'}</div>
+					{#if s.resolver_host}<div class="sub mono">{s.resolver_host} from the host</div>{/if}
+				</div>
+				<div class="fact">
+					<span class="label">Zones</span>
+					<div class="v mono">
+						{#each s.zones ?? [] as z}<div>{z.zone}</div>{:else}—{/each}
+					</div>
+				</div>
+				<div class="fact">
+					<span class="label">Subnet</span>
+					<div class="v mono">{s.subnet}</div>
+				</div>
+				<div class="fact">
+					<span class="label">Hosts</span>
+					<div class="v num">{s.hosts?.length ?? 0} · {hostsUp(s)} running</div>
+				</div>
+			</div>
 
-		{#if open[s.slug]}
 			{#if s.zones?.length}
-				<h3>DNS zones</h3>
-				<div class="table-wrap">
-					<table>
-						<thead><tr><th>Zone</th><th>Transfer</th><th>Note</th></tr></thead>
+				<div class="wrap" style="margin-top:26px">
+					<table style="min-width:760px">
+						<thead>
+							<tr>
+								<th style="width:230px">Zone</th>
+								<th style="width:120px">Transfer</th>
+								<th style="padding-right:0">What an engine must get right</th>
+							</tr>
+						</thead>
 						<tbody>
 							{#each s.zones as z}
-								<tr>
-									<td class="mono">{z.zone}</td>
-									<td
-										><span class="tag">{z.allow_transfer ? 'open' : 'refused'}</span></td
-									>
-									<td class="faint small">{z.note ?? ''}</td>
+								<tr style="height:42px">
+									<td class="mono small">{z.zone}</td>
+									<td class="small" class:warn={!z.allow_transfer}>{z.allow_transfer ? 'AXFR open' : 'AXFR refused'}</td>
+									<td class="small dim" style="padding-right:0;text-wrap:pretty">{z.note ?? ''}</td>
 								</tr>
 							{/each}
 						</tbody>
@@ -74,17 +94,27 @@
 			{/if}
 
 			{#if s.hosts?.length}
-				<h3>Hosts</h3>
-				<div class="table-wrap">
-					<table>
-						<thead><tr><th>IP</th><th>Names</th><th>Ports</th><th>Note</th></tr></thead>
+				<div class="wrap" style="margin-top:30px">
+					<table style="min-width:1000px">
+						<thead>
+							<tr>
+								<th style="width:118px">IP</th>
+								<th style="width:250px">Hostnames</th>
+								<th style="width:120px">Ports</th>
+								<th style="width:110px">State</th>
+								<th style="padding-right:0">Why it is here</th>
+							</tr>
+						</thead>
 						<tbody>
-							{#each s.hosts as h}
-								<tr>
-									<td class="mono nowrap">{h.ip}</td>
-									<td class="mono">{(h.names ?? []).join(', ') || '—'}</td>
-									<td class="mono faint nowrap">{(h.ports ?? []).join(', ')}</td>
-									<td class="faint small">{h.note ?? ''}</td>
+							{#each s.hosts as h (h.ip)}
+								<tr style="height:46px">
+									<td class="mono small">{h.ip}</td>
+									<td class="mono tiny dim cell">
+										{#each h.names ?? [] as n}<div>{n}</div>{:else}<span class="muted">no name</span>{/each}
+									</td>
+									<td class="mono tiny muted">{(h.ports ?? []).join(', ') || '—'}</td>
+									<td><State state={hostState(s, h)} /></td>
+									<td class="small dim" style="padding-right:0;text-wrap:pretty">{h.note ?? ''}</td>
 								</tr>
 							{/each}
 						</tbody>
@@ -93,41 +123,42 @@
 			{/if}
 
 			{#if s.expected_assets && Object.keys(s.expected_assets).length}
-				<h3>Expected assets <span class="faint" style="font-weight:400">what discovery should find</span></h3>
-				<div class="table-wrap">
-					<table>
-						<tbody>
-							{#each Object.entries(s.expected_assets) as [k, v]}
-								<tr>
-									<td class="akey">{k.replaceAll('_', ' ')}</td>
-									<td class="mono small">
-										{#if Array.isArray(v)}
-											{v.join(', ')}
-										{:else if v && typeof v === 'object'}
-											{#each Object.entries(v) as [ik, iv]}
-												<div>{ik} <span class="faint">→</span> {Array.isArray(iv) ? iv.join(', ') : iv}</div>
-											{/each}
-										{:else}{v}{/if}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
+				<details style="margin-top:26px">
+					<summary class="small muted">Expected assets, what discovery should report</summary>
+					<div class="wrap">
+						<table style="margin-top:12px;font-size:13px">
+							<tbody>
+								{#each Object.entries(s.expected_assets) as [k, v]}
+									<tr style="height:auto">
+										<td class="cell muted" style="width:220px">{k.replaceAll('_', ' ')}</td>
+										<td class="cell mono tiny dim">
+											{#if Array.isArray(v)}
+												{v.join(', ')}
+											{:else if v && typeof v === 'object'}
+												{#each Object.entries(v) as [ik, iv]}
+													<div>{ik} <span class="muted">·</span> {Array.isArray(iv) ? iv.join(', ') : iv}</div>
+												{/each}
+											{:else}{v}{/if}
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				</details>
 			{/if}
-		{/if}
-	</section>
-{/each}
-
-{#if !data.scenarios.length}<p class="empty">No scenarios defined.</p>{/if}
+		</section>
+	{:else}
+		<div class="empty" style="margin-top:26px">
+			<div class="t">No scenarios defined.</div>
+			<div class="s">Add one under scenarios/&lt;slug&gt;/ with a scenario.yml and a compose.yml.</div>
+		</div>
+	{/each}
+</main>
 
 <style>
-	.head { display: flex; align-items: baseline; gap: 10px; }
-	.lede { max-width: 78ch; margin: 6px 0 18px; font-size: 13px; }
-	.scn { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; background: var(--bg); }
-	.shead { display: flex; align-items: center; gap: 9px; }
-	.spacer { flex: 1; }
-	.sdesc { margin: 7px 0 10px; max-width: 84ch; }
-	.counts { display: flex; gap: 6px; }
-	.akey { color: var(--ink-2); width: 210px; font-size: 12.5px; }
+	.scn { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
+	.scn + .scn { margin-top: 44px; }
+	.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+	summary { cursor: pointer; }
 </style>

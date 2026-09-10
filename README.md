@@ -42,6 +42,7 @@ docker compose up -d          # control plane + UI on http://127.0.0.1:7000
 ./lime scenario-up estate     # the network estate: DNS, vhosts, services
 ./lime credits                # who wrote each target, and under what licence
 ./lime doctor                 # environment, attribution and disk checks
+./lime doctor --fix           # apply every check's automatic remedy, then re-check
 ./lime audit                  # container hardening + supply chain invariants
 ./lime pin                    # report image drift against the registry
 ```
@@ -53,6 +54,7 @@ docker compose up -d          # control plane + UI on http://127.0.0.1:7000
 | **target** | one thing under test, of a declared `kind`. Owns a compose file, optional setup, and its own answer key. Runs as its own isolated compose project, so two targets using Postgres never share one |
 | **scenario** | several targets wired into a network topology with authoritative DNS. What asset discovery is scored against |
 | **truth** | the machine-readable answer key. See [truth/schema.md](truth/schema.md) |
+| **doctor** | one list of checks with a verdict each: environment, attribution, supply chain, hardening. Checks with an unambiguous remedy carry a one-click fix in the panel (`/doctor`) and `--fix` on the CLI: create networks, reclaim disk, pin images, fetch sources, re-verify running targets, rewrite off-loopback binds. Attribution, port clashes and hardening need a person |
 
 Kinds: `web api bench cve service estate edge control mobile`.
 

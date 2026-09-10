@@ -9,72 +9,68 @@
 		data.credits.filter((c) => {
 			if (onlyRisk && !licenceRisk(c.license)) return false;
 			if (!q) return true;
-			return `${c.name} ${c.author ?? ''} ${c.license ?? ''} ${c.kind}`
-				.toLowerCase()
-				.includes(q.toLowerCase());
+			return `${c.name} ${c.author ?? ''} ${c.license ?? ''} ${c.kind}`.toLowerCase().includes(q.toLowerCase());
 		})
 	);
 	let risky = $derived(data.credits.filter((c) => licenceRisk(c.license)));
 	let missing = $derived(data.credits.filter((c) => !c.author));
+
+	const repoLabel = (r) => String(r).replace(/^https?:\/\//, '').replace(/\/$/, '');
 </script>
 
-<div class="head">
+<svelte:head><title>Credits · limeyard</title></svelte:head>
+
+<main class="page">
 	<h1>Credits</h1>
-	<span class="faint small">{data.credits.length} targets</span>
-</div>
-<p class="lede muted">
-	Generated from each <code>target.yml</code>. <code>./lime credits</code> prints the same list.
-</p>
-
-{#if missing.length}
-	<p class="notice crit">
-		{missing.length} target{missing.length > 1 ? 's have' : ' has'} no author recorded.
-		<code>./lime doctor</code> fails while that is true.
+	<p class="lede" style="margin-top:12px;max-width:66ch">
+		limeyard is almost entirely other people's work. Every target below was written by someone else and is used under the licence named. The lab adds packaging, an answer key and a scorer, and nothing else.
 	</p>
-{/if}
-{#if risky.length}
-	<p class="notice warn">
-		{risky.length} of {data.credits.length} targets declare no usable licence. Run them internally; never
-		vendor or redistribute.
-	</p>
-{/if}
 
-<div class="toolbar">
-	<input type="search" placeholder="Search author, licence, target…" bind:value={q} />
-	<label class="check"><input type="checkbox" bind:checked={onlyRisk} /> Licence risk only</label>
-</div>
+	{#if missing.length}
+		<p class="notice bad">
+			{missing.length} target{missing.length > 1 ? 's have' : ' has'} no author recorded. Doctor fails while that is true.
+		</p>
+	{/if}
+	{#if risky.length}
+		<p class="notice warn">
+			{risky.length} of {data.credits.length} targets declare no usable licence. Run them internally; never vendor or redistribute.
+		</p>
+	{/if}
 
-<div class="table-wrap">
-	<table>
-		<thead>
-			<tr><th>Target</th><th>Kind</th><th>Author</th><th>Licence</th><th>Verified</th></tr>
-		</thead>
-		<tbody>
-			{#each rows as c}
+	<div class="toolbar">
+		<input class="inp" type="search" placeholder="Search target, author, licence" bind:value={q} style="width:250px;max-width:100%" />
+		<label class="check"><input type="checkbox" bind:checked={onlyRisk} /> Licence risk only</label>
+	</div>
+
+	<div class="wrap" style="margin-top:20px">
+		<table style="min-width:820px">
+			<thead>
 				<tr>
-					<td><a href="/targets/{c.slug}">{c.name}</a></td>
-					<td class="muted small">{c.kind}</td>
-					<td>
-						{#if c.author}
-							{#if c.repo}
-								<a href={c.repo} target="_blank" rel="noreferrer noopener">{byline(c)}</a>
-							{:else}{byline(c)}{/if}
-						{:else}<span class="tag alert">missing</span>{/if}
-					</td>
-					<td><span class="tag" class:alert={licenceRisk(c.license)}>{c.license}</span></td>
-					<td class="faint small nowrap">{c.verified || '—'}</td>
+					<th style="width:230px">Target</th>
+					<th style="width:210px">Author</th>
+					<th style="width:130px">Licence</th>
+					<th style="width:120px">Verified</th>
+					<th style="padding-right:0">Repository</th>
 				</tr>
-			{/each}
-			{#if !rows.length}<tr><td colspan="5" class="empty">Nothing matches.</td></tr>{/if}
-		</tbody>
-	</table>
-</div>
-
-<style>
-	.head { display: flex; align-items: baseline; gap: 10px; }
-	.lede { max-width: 74ch; margin: 6px 0 16px; font-size: 13px; }
-	.toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
-	.toolbar input[type='search'] { width: 280px; }
-	.check { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); }
-	.notice { margin-bottom: 12px; }
-</style>
+			</thead>
+			<tbody>
+				{#each rows as c (c.slug)}
+					<tr style="height:42px">
+						<td>
+							<a class="quiet" href="/targets/{c.slug}" style="font-weight:500">{c.name}</a>
+							<span class="mono muted" style="font-size:11.5px;margin-left:8px">{c.kind}</span>
+						</td>
+						<td class="small dim">{byline(c) ?? ''}{#if !c.author}<span class="bad">missing</span>{/if}</td>
+						<td class="mono tiny" class:bad={licenceRisk(c.license)} class:muted={!licenceRisk(c.license)}>{c.license}</td>
+						<td class="small muted num">{c.verified || '—'}</td>
+						<td class="mono tiny" style="padding-right:0">
+							{#if c.repo}<a href={c.repo} target="_blank" rel="noreferrer noopener">{repoLabel(c.repo)}</a>{:else}<span class="muted">—</span>{/if}
+						</td>
+					</tr>
+				{:else}
+					<tr><td colspan="5" class="muted small" style="padding:24px 0">Nothing matches.</td></tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+</main>

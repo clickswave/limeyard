@@ -1,72 +1,95 @@
 <script>
 	let { data } = $props();
-	let clashes = $derived((data.ports.ports ?? []).filter((p) => p.clash));
-	let failed = $derived((data.doctor.checks ?? []).filter((c) => !c.ok));
+	let ports = $derived(data.ports.ports ?? []);
+	let lab = $derived(data.ports.lab ?? []);
+	let off = $derived(data.ports.off_loopback ?? []);
+	let clashes = $derived(ports.filter((p) => p.clash));
+
+	/** Every host line: scenario hosts with their names, and target services
+	 *  that sit on the lab bridge without a DNS name. */
+	const hostLabel = (h) => (h.names?.length ? h.names.join(', ') : h.service ? `${h.owner} / ${h.service}` : h.note || 'no name');
 </script>
 
-<div class="head">
-	<h1>Ports and health</h1>
-	<span class="status {data.doctor.ok ? 'run' : 'stop'}"
-		><i class="dot"></i>doctor {data.doctor.ok ? 'pass' : 'fail'}</span
-	>
-</div>
+<svelte:head><title>Ports · limeyard</title></svelte:head>
 
-{#if data.ports.off_loopback?.length}
-	<p class="notice crit">
-		{data.ports.off_loopback.length} target(s) bound off loopback. This lab is deliberately vulnerable
-		and must never be reachable from another machine:
-		{data.ports.off_loopback.map((o) => `${o.target}/${o.service} on ${o.bind}`).join(', ')}
+<main class="page">
+	<h1>Ports</h1>
+	<p class="lede small" style="margin-top:10px">
+		Everything the lab binds on localhost, and the addresses that only exist on the lab bridge.
 	</p>
-{/if}
-{#if clashes.length}
-	<p class="notice crit">{clashes.length} port clash(es) detected.</p>
-{/if}
 
-<h2>Host port map</h2>
-<div class="table-wrap">
-	<table>
-		<thead><tr><th>Port</th><th>Owner</th><th class="right">Status</th></tr></thead>
-		<tbody>
-			{#each data.ports.ports ?? [] as p}
-				<tr>
-					<td class="mono nowrap">127.0.0.1:{p.port}</td>
-					<td class="mono">{p.owners.join(', ')}</td>
-					<td class="right"
-						>{#if p.clash}<span class="tag alert">clash</span>{:else}<span class="faint small">ok</span
-							>{/if}</td
-					>
-				</tr>
-			{/each}
-			{#if !(data.ports.ports ?? []).length}<tr><td colspan="3" class="empty">No published ports.</td></tr>{/if}
-		</tbody>
-	</table>
-</div>
+	{#if off.length}
+		<p class="notice bad">
+			{off.length} port{off.length > 1 ? 's' : ''} bound off loopback. This lab is deliberately vulnerable and must never be
+			reachable from another machine: {off.map((o) => `${o.target}/${o.service} on ${o.bind}`).join(', ')}.
+			<a href="/doctor">Doctor</a> can rewrite them.
+		</p>
+	{/if}
+	{#if clashes.length}
+		<p class="notice bad">
+			{clashes.length} port clash{clashes.length > 1 ? 'es' : ''}: {clashes.map((p) => `${p.port} (${p.owners.map((o) => o.slug).join(', ')})`).join('; ')}. The second to start loses.
+		</p>
+	{/if}
 
-<h2>Checks</h2>
-<div class="table-wrap">
-	<table>
-		<thead><tr><th>Check</th><th>Target</th><th>Detail</th><th class="right">Result</th></tr></thead>
-		<tbody>
-			{#each data.doctor.checks ?? [] as c}
-				<tr>
-					<td>{c.check}</td>
-					<td class="faint">{c.target ?? '—'}</td>
-					<td class="faint small">{c.detail ?? ''}</td>
-					<td class="right"
-						><span class="tag" class:alert={!c.ok}>{c.ok ? 'pass' : 'fail'}</span></td
-					>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
-</div>
-{#if failed.length}
-	<p class="faint small" style="margin-top:10px">
-		{failed.length} failing check(s). <code>./lime doctor</code> prints the same list with fixes.
-	</p>
-{/if}
+	<div class="cols">
+		<div>
+			<h2 style="font-size:13px">Host ports</h2>
+			<table style="margin-top:12px">
+				<thead>
+					<tr><th style="width:86px">Port</th><th>Target</th><th class="r" style="width:84px">Kind</th></tr>
+				</thead>
+				<tbody>
+					{#each ports as p (p.port)}
+						{#each p.owners as o, i}
+							<tr style="height:38px" class:clash={p.clash}>
+								<td class="mono small" style="font-weight:500">{i === 0 ? p.port : ''}</td>
+								<td class="small">
+									<a class="quiet" href="/targets/{o.slug}">{o.name ?? o.slug}</a>
+									{#if o.service && o.service !== o.slug}<span class="muted mono tiny" style="margin-left:6px">{o.service}</span>{/if}
+									{#if p.clash}<span class="bad tiny" style="margin-left:6px">clash</span>{/if}
+								</td>
+								<td class="r mono muted" style="font-size:11.5px">{o.kind}</td>
+							</tr>
+						{/each}
+					{:else}
+						<tr><td colspan="3" class="muted small" style="padding:20px 0">No published ports.</td></tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+		<div>
+			<h2 style="font-size:13px">Lab addresses <span class="muted mono" style="font-weight:400;margin-left:6px">{data.ports.subnet}</span></h2>
+			<table style="margin-top:12px">
+				<thead>
+					<tr><th style="width:118px">IP</th><th>Host</th><th class="r" style="width:110px">Ports</th></tr>
+				</thead>
+				<tbody>
+					{#each lab as h (h.ip + h.owner + (h.service ?? ''))}
+						<tr style="height:38px">
+							<td class="mono small" style="font-weight:500">{h.ip}</td>
+							<td class="mono tiny dim" title={h.note ?? ''}>
+								{hostLabel(h)}
+								{#if h.via === 'scenario'}<span class="muted" style="margin-left:6px">{h.owner}</span>{/if}
+							</td>
+							<td class="r mono muted" style="font-size:11.5px">{(h.ports ?? []).join(', ') || '—'}</td>
+						</tr>
+					{:else}
+						<tr><td colspan="3" class="muted small" style="padding:20px 0">Nothing on the lab bridge.</td></tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</main>
 
 <style>
-	.head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-	.notice { margin-bottom: 12px; }
+	.cols {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+		gap: 48px;
+		margin-top: 28px;
+		padding-top: 24px;
+		border-top: 1px solid var(--line);
+	}
+	tr.clash td { color: var(--unhealthy); }
 </style>

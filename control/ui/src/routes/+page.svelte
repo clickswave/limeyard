@@ -1,315 +1,209 @@
 <script>
-	import { invalidateAll } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { byline, licenceRisk } from '$lib/format.js';
-	import MultiStart from '$lib/MultiStart.svelte';
+	import { goto } from '$app/navigation';
+	import { live, shownState, isBusy } from '$lib/live.svelte.js';
+	import { actTarget, actMany } from '$lib/actions.js';
+	import { address, firstPort } from '$lib/format.js';
+	import State from '$lib/State.svelte';
 
 	let { data } = $props();
 
-	let q = $state('');
-	let kind = $state('');
-	let state_ = $state('');
-	let sort = $state('kind');
-	let dir = $state(1);
-	let perPage = $state(25);
-	let pageNo = $state(1);
-	let busy = $state({});
+	let query = $state('');
+	let kind = $state('all');
+	let st = $state('all');
+	let sort = $state('name');
 	let selected = $state(new Set());
-	let panel = $state(false);
+	let problem = $state('');
+
+	const ORDER = { running: 0, starting: 1, stopping: 1, pulling: 1, setup: 1, partial: 2, unhealthy: 3, stopped: 4, missing: 5, fixture: 6 };
+
+	/** What a row shows. Fixtures have nothing to run and say so. */
+	const stateOf = (t) => (t.fixture ? 'fixture' : shownState(t.slug, t.state).split(' ')[0]);
 
 	let kinds = $derived([...new Set(data.targets.map((t) => t.kind))].sort());
-	let states = $derived([...new Set(data.targets.map((t) => t.state.split(' ')[0]))].sort());
+	let states = $derived([...new Set(data.targets.map(stateOf))].sort((a, b) => (ORDER[a] ?? 9) - (ORDER[b] ?? 9)));
 
-	let filtered = $derived(
-		data.targets.filter((t) => {
-			if (kind && t.kind !== kind) return false;
-			if (state_ && !t.state.startsWith(state_)) return false;
+	let rows = $derived.by(() => {
+		const q = query.trim().toLowerCase();
+		const list = data.targets.filter((t) => {
+			if (kind !== 'all' && t.kind !== kind) return false;
+			if (st !== 'all' && stateOf(t) !== st) return false;
 			if (!q) return true;
-			return `${t.name} ${t.slug} ${t.description ?? ''} ${t.upstream.author ?? ''} ${t.stack ?? ''}`
+			return `${t.name} ${t.slug} ${t.stack ?? ''} ${t.upstream.author ?? ''} ${t.description ?? ''}`
 				.toLowerCase()
-				.includes(q.toLowerCase());
-		})
-	);
-
-	let sorted = $derived(
-		[...filtered].sort((a, b) => {
-			const key = (t) =>
-				sort === 'name'
-					? t.name.toLowerCase()
-					: sort === 'state'
-						? t.state
-						: sort === 'author'
-							? (t.upstream.author ?? '~').toLowerCase()
-							: `${t.kind}~${t.name.toLowerCase()}`;
-			return key(a) < key(b) ? -dir : key(a) > key(b) ? dir : 0;
-		})
-	);
-
-	let pages = $derived(Math.max(1, Math.ceil(sorted.length / perPage)));
-	let clamped = $derived(Math.min(pageNo, pages));
-	let rows = $derived(sorted.slice((clamped - 1) * perPage, clamped * perPage));
-	let allOnPageSelected = $derived(rows.length > 0 && rows.every((t) => selected.has(t.slug)));
-
-	$effect(() => {
-		q;
-		kind;
-		state_;
-		perPage;
-		pageNo = 1;
+				.includes(q);
+		});
+		const by = {
+			name: (a, b) => a.name.localeCompare(b.name),
+			kind: (a, b) => a.kind.localeCompare(b.kind) || a.name.localeCompare(b.name),
+			port: (a, b) => firstPort(a) - firstPort(b) || a.name.localeCompare(b.name),
+			state: (a, b) => (ORDER[stateOf(a)] ?? 9) - (ORDER[stateOf(b)] ?? 9) || a.name.localeCompare(b.name)
+		}[sort];
+		return list.slice().sort(by);
 	});
 
-	function setSort(col) {
-		if (sort === col) dir = -dir;
-		else {
-			sort = col;
-			dir = 1;
-		}
-	}
+	let counts = $derived.by(() => {
+		const c = {};
+		for (const t of data.targets) c[stateOf(t)] = (c[stateOf(t)] ?? 0) + 1;
+		return c;
+	});
+	let countsLine = $derived(
+		`${counts.running ?? 0} running · ${counts.stopped ?? 0} stopped · ${counts.unhealthy ?? 0} unhealthy · ${data.targets.length} total`
+	);
 
+	let filtersDirty = $derived(!!query || kind !== 'all' || st !== 'all' || sort !== 'name');
+	let picked = $derived(data.targets.filter((t) => selected.has(t.slug)));
+	let heavyPicked = $derived(picked.filter((t) => t.heavy).length);
+	let allChecked = $derived(rows.length > 0 && rows.every((t) => selected.has(t.slug)));
+
+	function clearFilters() {
+		query = '';
+		kind = 'all';
+		st = 'all';
+		sort = 'name';
+	}
 	function toggle(slug) {
 		const next = new Set(selected);
-		if (next.has(slug)) next.delete(slug);
-		else next.add(slug);
+		next.has(slug) ? next.delete(slug) : next.add(slug);
 		selected = next;
 	}
-	function togglePage() {
+	function toggleAll() {
 		const next = new Set(selected);
-		if (allOnPageSelected) rows.forEach((t) => next.delete(t.slug));
-		else rows.forEach((t) => next.add(t.slug));
+		if (allChecked) rows.forEach((t) => next.delete(t.slug));
+		else rows.forEach((t) => !t.fixture && next.add(t.slug));
 		selected = next;
 	}
 
-	let timers = {};
-	function release(slug) {
-		clearTimeout(timers[slug]);
-		delete timers[slug];
-		busy = { ...busy, [slug]: null };
+	const live_ = (t) => ['running', 'starting', 'partial', 'unhealthy'].includes(stateOf(t));
+
+	async function one(t, action) {
+		problem = '';
+		const err = await actTarget(t.slug, action);
+		if (err) problem = `${t.name}: ${err}`;
 	}
-
-	async function act(slug, action) {
-		if (busy[slug]) return; // a second click while the first is in flight
-		busy = { ...busy, [slug]: action };
-		try {
-			const r = await fetch(`/api/targets/${slug}/${action}`, { method: 'POST' });
-			if (!r.ok) {
-				const j = await r.json().catch(() => ({}));
-				alert(j.error ?? `failed to ${action} ${slug}`);
-				return release(slug);
-			}
-		} catch (e) {
-			alert(String(e));
-			return release(slug);
-		}
-		// Cleared by the SSE state event below. The timer is only a floor, so a
-		// stuck image pull cannot lock the row forever.
-		timers[slug] = setTimeout(() => {
-			release(slug);
-			invalidateAll();
-		}, 45000);
+	async function bulk(action) {
+		problem = '';
+		const slugs = picked.filter((t) => !t.fixture).map((t) => t.slug);
+		const { error, refused } = await actMany(slugs, action);
+		if (error) problem = error;
+		else if (refused.length) problem = refused.map((r) => `${r.slug}: ${r.error}`).join(' · ');
+		selected = new Set();
 	}
-
-	onMount(() => {
-		const es = new EventSource('/api/events');
-		let t;
-		es.addEventListener('state', (e) => {
-			const { slug } = JSON.parse(e.data);
-			if (busy[slug]) release(slug);
-			clearTimeout(t);
-			t = setTimeout(invalidateAll, 300);
-		});
-		return () => {
-			clearTimeout(t);
-			Object.values(timers).forEach(clearTimeout);
-			es.close();
-		};
-	});
-
-	const tone = (s) =>
-		s === 'running' ? 'run' : s === 'unhealthy' ? 'stop' : s === 'stopped' ? 'idle' : 'wait';
-	const caret = (c) => (sort === c ? (dir === 1 ? '↑' : '↓') : '');
+	const open = (t) => goto(`/targets/${t.slug}`);
+	const stop = (e) => e.stopPropagation();
 </script>
 
-<div class="head">
-	<h1>Targets</h1>
-	<span class="faint small">{data.targets.length}</span>
-	<span class="spacer"></span>
-	{#if selected.size}
-		<span class="faint small">{selected.size} selected</span>
-		<button class="btn sm" onclick={() => (selected = new Set())}>Clear</button>
-	{/if}
-	<button class="btn solid" onclick={() => (panel = true)}>Start targets</button>
-</div>
+<svelte:head><title>Targets · limeyard</title></svelte:head>
 
-<div class="toolbar">
-	<input type="search" placeholder="Search name, author, stack…" bind:value={q} />
-	<select bind:value={kind}>
-		<option value="">All kinds</option>
-		{#each kinds as k}<option value={k}>{k}</option>{/each}
-	</select>
-	<select bind:value={state_}>
-		<option value="">Any state</option>
-		{#each states as s}<option value={s}>{s}</option>{/each}
-	</select>
-	{#if q || kind || state_}
-		<button
-			class="btn sm"
-			onclick={() => {
-				q = '';
-				kind = '';
-				state_ = '';
-			}}>Reset</button
-		>
-	{/if}
-	<span class="spacer"></span>
-	<select bind:value={perPage} title="rows per page">
-		<option value={25}>25 rows</option>
-		<option value={50}>50 rows</option>
-		<option value={10}>10 rows</option>
-	</select>
-</div>
+<main class="page">
+	<div class="head">
+		<h1>Targets</h1>
+		<div class="small muted num">{countsLine}</div>
+	</div>
 
-<div class="table-wrap">
-	<table>
-		<thead>
-			<tr>
-				<th class="pick">
-					<input
-						type="checkbox"
-						checked={allOnPageSelected}
-						onchange={togglePage}
-						aria-label="Select page"
-					/>
-				</th>
-				<th><button class="sortcol" onclick={() => setSort('name')}>Target {caret('name')}</button></th>
-				<th><button class="sortcol" onclick={() => setSort('kind')}>Kind {caret('kind')}</button></th>
-				<th><button class="sortcol" onclick={() => setSort('state')}>State {caret('state')}</button></th>
-				<th>Endpoint</th>
-				<th><button class="sortcol" onclick={() => setSort('author')}>Author {caret('author')}</button></th>
-				<th>Key</th>
-				<th class="right">Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each rows as t (t.slug)}
-				<tr class:pending={!!busy[t.slug]} class:selected={selected.has(t.slug)}>
-					<td class="pick">
-						<input
-							type="checkbox"
-							checked={selected.has(t.slug)}
-							onchange={() => toggle(t.slug)}
-							aria-label="Select {t.name}"
-						/>
-					</td>
-					<td>
-						<a class="tname" href="/targets/{t.slug}" title={t.description ?? ''}>{t.name}</a>
-						{#if t.heavy}<span class="tag"> heavy</span>{/if}
-					</td>
-					<td class="muted small">{t.kind}</td>
-					<td>
-						<span class="status {tone(t.state.split(' ')[0])}"><i class="dot"></i>{t.state}</span>
-					</td>
-					<td class="mono">
-						{#if t.url}
-							<a class="endpoint" href={t.url} target="_blank" rel="noreferrer noopener" title={t.url}
-								>{t.url.replace('http://', '')}</a
-							>
-						{:else}<span class="faint">lab network</span>{/if}
-					</td>
-					<!-- Attribution is a column, not a hover. Almost every target here is
-					     someone else's work and several declare no licence. -->
-					<td>
-						{#if t.upstream.author}
-							<div class="author" title={byline(t.upstream)}>
-								{#if t.upstream.repo}
-									<a href={t.upstream.repo} target="_blank" rel="noreferrer noopener"
-										>{byline(t.upstream)}</a
-									>
-								{:else}{byline(t.upstream)}{/if}
-							</div>
-							<span class="tag" class:alert={licenceRisk(t.upstream.license)}
-								>{t.upstream.license}</span
-							>
-						{:else}<span class="tag alert">author missing</span>{/if}
-					</td>
-					<td class="faint small">{t.has_truth ? '✓' : '—'}</td>
-					<td class="right nowrap">
-						{#if t.kind === 'mobile'}
-							<span class="faint small">fixture</span>
-						{:else if t.state === 'stopped'}
-							<button
-								class="btn primary"
-								disabled={!!busy[t.slug]}
-								onclick={() => act(t.slug, 'start')}
-							>
-								{busy[t.slug] === 'start' ? 'Starting…' : 'Start'}
-							</button>
-						{:else}
-							<button class="btn" disabled={!!busy[t.slug]} onclick={() => act(t.slug, 'restart')}
-								>Restart</button
-							>
-							<button class="btn danger" disabled={!!busy[t.slug]} onclick={() => act(t.slug, 'stop')}>
-								{busy[t.slug] === 'stop' ? 'Stopping…' : 'Stop'}
-							</button>
-						{/if}
-					</td>
+	<div class="toolbar">
+		<input class="inp" type="search" placeholder="Search name, slug, stack" bind:value={query} style="width:250px;max-width:100%" />
+		<select class="sel" bind:value={kind} aria-label="Filter by kind">
+			<option value="all">All kinds</option>
+			{#each kinds as k}<option value={k}>{k}</option>{/each}
+		</select>
+		<select class="sel" bind:value={st} aria-label="Filter by state">
+			<option value="all">Any state</option>
+			{#each states as s}<option value={s}>{s}</option>{/each}
+		</select>
+		<select class="sel" bind:value={sort} aria-label="Sort order">
+			<option value="name">Sort by name</option>
+			<option value="state">Sort by state</option>
+			<option value="kind">Sort by kind</option>
+			<option value="port">Sort by port</option>
+		</select>
+		{#if filtersDirty}<button class="btn" onclick={clearFilters}>Clear</button>{/if}
+	</div>
+
+	<!-- A fixed-height strip: ticking a row never shifts the table. -->
+	<div class="strip">
+		{#if picked.length}
+			<span class="small num" style="font-weight:500">
+				{picked.length} {picked.length === 1 ? 'target' : 'targets'} selected{heavyPicked ? ` · ${heavyPicked} heavy` : ''}
+			</span>
+			<span class="vr"></span>
+			<button class="btn" onclick={() => bulk('start')}>Start</button>
+			<button class="btn" onclick={() => bulk('stop')}>Stop</button>
+			<button class="btn" onclick={() => bulk('restart')}>Restart</button>
+			<button class="btn link" style="margin-left:auto" onclick={() => (selected = new Set())}>Clear selection</button>
+		{:else}
+			<span class="small muted">Select rows to start, stop or restart them together.</span>
+		{/if}
+	</div>
+	{#if problem}<p class="tiny bad" style="margin-top:8px">{problem}</p>{/if}
+
+	<div class="wrap" style="margin-top:14px">
+		<table style="min-width:980px">
+			<thead>
+				<tr>
+					<th style="width:34px"><input type="checkbox" checked={allChecked} onchange={toggleAll} aria-label="Select all" /></th>
+					<th>Target</th>
+					<th style="width:92px">Kind</th>
+					<th style="width:124px">State</th>
+					<th style="width:160px">Address</th>
+					<th style="width:160px">Upstream</th>
+					<th style="width:74px">Weight</th>
+					<th class="r" style="width:150px">Actions</th>
 				</tr>
-			{/each}
-			{#if !rows.length}
-				<tr><td colspan="8" class="empty">No targets match those filters.</td></tr>
-			{/if}
-		</tbody>
-	</table>
-</div>
+			</thead>
+			<tbody>
+				{#each rows as t (t.slug)}
+					{@const s = stateOf(t)}
+					{@const busy = isBusy(t.slug)}
+					<tr class="click" class:pending={busy} onclick={() => open(t)} style="height:46px">
+						<td onclick={stop}>
+							{#if !t.fixture}
+								<input type="checkbox" checked={selected.has(t.slug)} onchange={() => toggle(t.slug)} aria-label={t.name} />
+							{/if}
+						</td>
+						<td>
+							<div style="font-weight:500;line-height:1.3">{t.name}</div>
+							<div class="mono muted" style="font-size:11.5px;line-height:1.4">{t.slug}</div>
+						</td>
+						<td class="mono muted tiny">{t.kind}</td>
+						<td><State state={s} /></td>
+						<td class="mono muted tiny">{address(t) || (t.fixture ? 'APK fixture' : '')}</td>
+						<td class="muted small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px" title={t.upstream.author ?? ''}>
+							{t.upstream.author ?? 'author missing'}
+						</td>
+						<td class="muted small">{t.heavy ? 'heavy' : '—'}</td>
+						<td class="r" onclick={stop} style="white-space:nowrap">
+							{#if t.fixture}
+								<span class="muted small">nothing to run</span>
+							{:else}
+								<button class="btn sm" disabled={busy} onclick={() => one(t, live_(t) ? 'stop' : 'start')}>
+									{live_(t) ? 'Stop' : 'Start'}
+								</button>
+								<button class="btn sm" disabled={busy} onclick={() => one(t, 'restart')} style="margin-left:6px">Restart</button>
+							{/if}
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 
-<div class="pager">
-	<span class="faint small">
-		{#if sorted.length}
-			{(clamped - 1) * perPage + 1}–{Math.min(clamped * perPage, sorted.length)} of {sorted.length}
-		{:else}Nothing to show{/if}
-	</span>
-	<span class="spacer"></span>
-	{#if pages > 1}
-		<button class="btn sm" disabled={clamped <= 1} onclick={() => (pageNo = clamped - 1)}>Prev</button>
-		<span class="faint small">{clamped} / {pages}</span>
-		<button class="btn sm" disabled={clamped >= pages} onclick={() => (pageNo = clamped + 1)}>Next</button>
+	{#if !rows.length}
+		<div class="empty">
+			<div class="t">No targets match those filters.</div>
+			<div class="s">{data.targets.length ? 'Nothing in the lab matches this combination right now.' : 'The daemon reported no targets. Is LIMEYARD_DIR pointing at the checkout?'}</div>
+			{#if filtersDirty}<button class="btn" onclick={clearFilters} style="margin-top:16px">Clear filters</button>{/if}
+		</div>
 	{/if}
-</div>
-
-{#if panel}
-	<MultiStart
-		targets={data.targets}
-		{selected}
-		onclose={() => (panel = false)}
-		onchanged={invalidateAll}
-	/>
-{/if}
+</main>
 
 <style>
-	.head { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-	.spacer { flex: 1; }
-	.toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
-	.toolbar input[type='search'] { width: 280px; }
-	.sortcol {
-		background: none; border: 0; padding: 0; font: inherit; color: inherit;
-		text-transform: inherit; letter-spacing: inherit; cursor: pointer;
+	.strip {
+		height: 40px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: 16px;
+		border-bottom: 1px solid var(--line);
 	}
-	.sortcol:hover { color: var(--ink-2); }
-	.tname { font-weight: 500; }
-	.author {
-		font-size: 12.5px; color: var(--ink-2); max-width: 270px;
-		overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-	}
-	.endpoint {
-		display: block; max-width: 285px; overflow: hidden;
-		text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2);
-	}
-	.endpoint:hover { color: var(--accent); }
-	.pick { width: 1%; padding-right: 0; }
-	.pager { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
-
-	/* Everything but Target is sized to content, so there is no dead gap. */
-	th:nth-child(1), th:nth-child(3), th:nth-child(4),
-	th:nth-child(7), th:nth-child(8) { width: 1%; white-space: nowrap; }
-	th:nth-child(5) { width: 300px; }
-	th:nth-child(6) { width: 290px; }
+	.vr { width: 1px; height: 16px; background: var(--line-ctl); }
 </style>

@@ -416,6 +416,50 @@ def cmd_logs(targets, args):
     dc(targets[args.name], "logs", *(["-f"] if args.follow else ["--tail", "200"]))
 
 
+def compose_doc(t):
+    """The parsed compose file, or {} when absent or unparseable."""
+    if not (yaml and os.path.exists(t["compose_path"])):
+        return {}
+    try:
+        with open(t["compose_path"]) as f:
+            return yaml.safe_load(f) or {}
+    except Exception:
+        return {}
+
+
+def compose_services(t):
+    """[{service, container_name, image, pinned, lab_ip}] for every service."""
+    out = []
+    for sname, svc in (compose_doc(t).get("services") or {}).items():
+        img = str(svc.get("image") or "")
+        ip = None
+        for _, net in ((svc.get("networks") or {}).items()
+                       if isinstance(svc.get("networks"), dict) else []):
+            if isinstance(net, dict) and net.get("ipv4_address"):
+                ip = str(net["ipv4_address"])
+        out.append({"service": sname,
+                    "container_name": svc.get("container_name"),
+                    "image": img or None,
+                    "pinned": ("@sha256:" in img) if img else None,
+                    "lab_ip": ip})
+    return out
+
+
+def host_states(s):
+    """Per-host state for a scenario: {lab_ip: state}. A scenario is several
+    containers with static addresses, and the panel wants to say which of
+    them is actually up, not just whether the compose project exists."""
+    by_name = {name: st for name, st, _ in containers(s)}
+    out = {}
+    for svc in compose_services(s):
+        if not svc["lab_ip"]:
+            continue
+        name = svc["container_name"] or f"{s['project']}-{svc['service']}-1"
+        st = by_name.get(name)
+        out[svc["lab_ip"]] = st if st else "stopped"
+    return out
+
+
 def host_ports(t):
     if not (yaml and os.path.exists(t["compose_path"])):
         return []
@@ -470,6 +514,12 @@ def _disk_free_pct():
 
 
 def cmd_doctor(targets, args):
+    if getattr(args, "fix", False):
+        from api import fix
+        res = fix()
+        for r in res["results"]:
+            print((col("[ok] ", "g") if r["ok"] else col("[!!] ", "r")) + f"{r['id']}: {r['message']}")
+        print()
     ok = True
     dok = subprocess.run(["docker", "info"], capture_output=True).returncode == 0
     print(("[ok] " if dok else "[!!] ") + "docker daemon reachable")
@@ -725,7 +775,9 @@ def build_parser():
     cr = sub.add_parser("credits", help="who wrote each target, and under what licence")
     cr.add_argument("--markdown", action="store_true", help="emit the README Credits section")
     sub.add_parser("ports", help="host-port map + clash check")
-    sub.add_parser("doctor", help="environment, attribution and disk checks")
+    dr = sub.add_parser("doctor", help="environment, attribution and disk checks")
+    dr.add_argument("--fix", action="store_true",
+                    help="repair every check that has an automatic fix, then re-check")
     sub.add_parser("audit", help="container-hardening and supply-chain invariants")
     pn = sub.add_parser("pin", help="pin images to the digest we verified")
     pn.add_argument("--apply", action="store_true", help="rewrite the compose files")
