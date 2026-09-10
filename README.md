@@ -68,6 +68,61 @@ control/ui/                the SvelteKit control panel
 truth/                     the contract, and dated scorecards
 ```
 
+## Control panel
+
+`docker compose up -d` starts two containers and nothing else: `limeyard_control`
+(the limed daemon, holding the Docker socket) and `limeyard_ui` (the SvelteKit
+panel). Both bind loopback only. The panel is at http://127.0.0.1:7000 and the
+raw API at http://127.0.0.1:7099. Both need `.env`, and `LIME_TOKEN` in it is
+mandatory: the panel holds the token server-side and the browser never sees it.
+
+| page | what it is for |
+|---|---|
+| **Targets** | every target, filter by kind and state, sort, multi-select with Start, Stop, Restart. Click a row for the target |
+| **Target** | facts (address, credentials, stack, upstream, verification, image digests), the live log, and the answer key with its negatives |
+| **Scenarios** | the estate: resolver, zones, subnet, and a host table with per-container state. Bring up, bring down, restart |
+| **Scorecard** | the latest run with deltas, per-class and per-target coverage, missed ids, a history you can view, and a two-run diff |
+| **Ports** | what binds on localhost, and what only exists on the lab bridge |
+| **Doctor** | one list of checks with a verdict each, and a Fix button where a fix is unambiguous |
+| **Credits** | who wrote each target and under what licence |
+
+The panel updates itself: limed streams state transitions over SSE, so a
+target started from the CLI shows up without a refresh.
+
+After a change to the panel or the daemon, rebuild the pair:
+
+```sh
+docker compose up -d --build
+```
+
+To work on the panel against a running daemon without rebuilding the image:
+
+```sh
+cd control/ui && npm install
+LIMED_URL=http://127.0.0.1:7099 LIME_TOKEN=<from .env> npm run dev   # :7000
+```
+
+### API
+
+Every call except `/api/health` needs `X-Lime-Token`.
+
+```
+GET  /api/targets                    list, with state and attribution
+GET  /api/targets/<slug>             plus truth, images, lab addresses
+GET  /api/targets/<slug>/logs        SSE, docker compose logs -f
+POST /api/targets/<slug>/<action>    start | stop | restart | pull | setup
+POST /api/targets/bulk               {action, slugs}: a pool of three, per-slug refusals
+GET  /api/scenarios                  with per-host container state
+POST /api/scenarios/<slug>/<action>  up | down | restart
+GET  /api/scorecards                 newest first, by_class carries false positives
+GET  /api/scorecards/<id>            one card
+POST /api/score                      {tool, findings, save?, targets?}
+GET  /api/doctor                     checks with verdict, reason, value, items, fix
+POST /api/doctor/fix                 {ids}: those checks, or every fixable one when empty
+GET  /api/ports  /api/credits  /api/truth  /api/status
+GET  /api/events                     SSE: state, scenario, tick
+```
+
 ## Networks
 
 Three tiers, because one was the original problem.
