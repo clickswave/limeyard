@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /control/ui
+    schedule:
+      interval: weekly
+    groups:
+      panel:
+        patterns: ["*"]
+  - package-ecosystem: docker
+    directory: /control/limed
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /control/ui
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

@@ -1,0 +1,65 @@
+# What a push has to survive. Nothing here starts a target: the lab's own
+# invariants are file-level, and the two images just have to build.
+name: ci
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  LIMEYARD_DIR: ${{ github.workspace }}
+  LIME_TOKEN: ci-only-never-used
+
+jobs:
+  lab:
+    name: manifests, truth, audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: control plane compiles
+        run: python -m compileall -q control/limed
+      - name: every answer key loads and merges
+        run: python control/limed/lime.py truth > /dev/null
+      - name: every target credits its author
+        run: python control/limed/lime.py credits > /dev/null
+      - name: container hardening and supply chain invariants
+        run: python control/limed/lime.py audit
+      - name: doctor
+        # Docker is present on the runner, so this checks what it can:
+        # attribution, compose files, answer keys, disk. Networks are absent
+        # until a first start and that is reported, not failed.
+        run: python control/limed/lime.py doctor
+
+  ui:
+    name: control panel builds
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: control/ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: control/ui/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  images:
+    name: control and ui images build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: compose config is valid
+        run: docker compose config -q
+      - name: build both images
+        run: docker compose build --pull
