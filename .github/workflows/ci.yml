@@ -70,8 +70,10 @@ jobs:
       # first, and the half no happy-path test touches.
       - name: it refuses a machine without docker
         run: |
+          # PATH is replaced wholesale, so the shell the script runs under has
+          # to be on it as well as the tools the script calls.
           mkdir -p "$RUNNER_TEMP/bin"
-          for t in git uname head od tr openssl; do ln -sf "$(command -v $t)" "$RUNNER_TEMP/bin/$t"; done
+          for t in bash sh git uname head od tr openssl; do ln -sf "$(command -v $t)" "$RUNNER_TEMP/bin/$t"; done
           out=$(PATH="$RUNNER_TEMP/bin" bash install.sh </dev/null 2>&1 || true)
           echo "$out"
           echo "$out" | grep -q "Docker is not installed"
@@ -95,5 +97,6 @@ jobs:
           ./lime doctor
       - name: teardown
         if: always()
-        working-directory: ${{ runner.temp }}/lab
-        run: docker compose down -v || true
+        # Not working-directory: an earlier failure means there is no lab to
+        # tear down, and a missing directory must not fail the job twice.
+        run: cd "$RUNNER_TEMP/lab" 2>/dev/null && docker compose down -v || true
