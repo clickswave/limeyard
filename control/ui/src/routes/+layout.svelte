@@ -147,8 +147,10 @@
 	.right :global(.st) { color: var(--running); }
 	.right :global(.st[data-st='unhealthy']) { color: var(--unhealthy); }
 	.clock { font-size: 12.5px; }
-	.host { display: flex; gap: 12px; font-size: 12px; color: var(--ink-3); }
+	.host { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--ink-3); }
 	.host:hover { color: var(--ink); }
+	/* A hairline between the three readings, faint enough to be felt, not read. */
+	.host span + span { padding-left: 10px; border-left: 1px solid var(--line); }
 	.host .warn { color: var(--starting); }
 	.host .bad { color: var(--unhealthy); }
 	@media (max-width: 900px) { .host span:not(:last-child) { display: none; } }
