@@ -304,6 +304,11 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
             if t in per_target:
                 per_target[t]["seconds"] = round(float(v.get("seconds") or 0), 1)
                 per_target[t]["requests"] = int(v.get("requests") or 0)
+                # Sites the engine could not get a baseline for. They were not
+                # tested, and a recall figure that counts them as clean misses is
+                # measuring the load the pass applied, not the tool.
+                if v.get("skipped_sites"):
+                    per_target[t]["skipped_sites"] = int(v["skipped_sites"])
                 if v.get("truncated"):
                     per_target[t]["truncated"] = True
         # A run the clock cut short did not miss what it never reached, and a
