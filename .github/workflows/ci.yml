@@ -82,10 +82,16 @@ jobs:
       # start the control plane, hand over to the wizard. --none so it starts
       # no targets and pulls no fleet.
       - name: it installs
-        run: bash install.sh --none
+        run: |
+          # install.sh asks for main by name, and the runner has checked out
+          # only the branch under test. Give that branch a name it can ask for,
+          # so CI installs the code in the pull request rather than main.
+          git branch -f ci-under-test HEAD
+          bash install.sh --none
         env:
           LIMEYARD_REPO: ${{ github.workspace }}
           LIMEYARD_DIR: ${{ runner.temp }}/lab
+          LIMEYARD_REF: ci-under-test
 
       - name: and the lab it installed works
         working-directory: ${{ runner.temp }}/lab
