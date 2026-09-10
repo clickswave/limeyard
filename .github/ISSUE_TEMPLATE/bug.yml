@@ -1,0 +1,34 @@
+name: Something is broken
+description: A target will not start, the panel misbehaves, the daemon is wrong
+labels: ["bug"]
+body:
+  - type: input
+    id: what
+    attributes:
+      label: What is broken
+      placeholder: juice-shop, the scorecard page, ./lime start
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes:
+      label: What you did, and what happened instead
+    validations: { required: true }
+  - type: textarea
+    id: doctor
+    attributes:
+      label: ./lime doctor
+      description: Paste the output. It carries most of what we would ask for next.
+      render: shell
+    validations: { required: true }
+  - type: input
+    id: platform
+    attributes:
+      label: Host, Docker and compose versions
+      placeholder: Arch Linux, docker 29.7.2, compose 2.33.0
+    validations: { required: true }
+  - type: textarea
+    id: logs
+    attributes:
+      label: Container logs, if a target failed to start
+      description: "./lime logs <slug>"
+      render: shell

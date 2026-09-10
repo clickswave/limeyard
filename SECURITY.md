@@ -182,3 +182,11 @@ This lab is deliberately vulnerable, so vulnerabilities in the targets are not
 findings. What is worth reporting: anything that lets a target escape its
 container, reach the host, or drive limed without the token. Those are real
 bugs in limeyard.
+
+Report those privately, at
+<https://github.com/clickswave/limeyard/security/advisories/new>, not as an
+issue. Include what you ran and what you got; a container id and a shell prompt
+on the host says more than a description of one.
+
+Everything else, including a target that will not start and an answer key that
+is wrong, belongs in the issue tracker where other people can see it.

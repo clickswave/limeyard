@@ -308,6 +308,79 @@ def _ask(prompt, default=""):
     return a or default
 
 
+def cmd_measure(targets, args):
+    """Print the `resources` block for running targets. Contributors paste the
+    output into target.yml; the installer and the panel add these up to say
+    what a selection costs before it is started, so a guess here is a lie
+    there. Measure one target at a time, settled, for a number worth having."""
+    items = {**targets, **load_scenarios()}
+    names = args.names or [k for k, v in items.items()
+                           if not is_fixture(v) and state_of(v)[0] == "running"]
+    ps = subprocess.run(["docker", "ps", "--format",
+                         '{{.Names}}\t{{.Label "com.docker.compose.project"}}'],
+                        capture_output=True, text=True).stdout
+    owner = {}
+    for line in ps.strip().splitlines():
+        parts = line.split("\t")
+        owner[parts[0]] = parts[1] if len(parts) > 1 else ""
+    st = subprocess.run(["docker", "stats", "--no-stream", "--format",
+                         "{{.Name}}\t{{.MemUsage}}\t{{.CPUPerc}}"],
+                        capture_output=True, text=True).stdout
+
+    def as_mb(chunk):
+        used = chunk.split("/")[0].strip()
+        for unit, factor in (("GiB", 1024), ("MiB", 1), ("KiB", 1 / 1024), ("B", 1 / 1048576)):
+            if used.endswith(unit):
+                try:
+                    return float(used[: -len(unit)]) * factor
+                except ValueError:
+                    return 0.0
+        return 0.0
+
+    mem, cpu, count = {}, {}, {}
+    for line in st.strip().splitlines():
+        name, m, c = line.split("\t")
+        proj = owner.get(name, "")
+        mem[proj] = mem.get(proj, 0.0) + as_mb(m)
+        cpu[proj] = cpu.get(proj, 0.0) + float(c.rstrip("%") or 0)
+        count[proj] = count.get(proj, 0) + 1
+
+    rc = 0
+    for slug in names:
+        t = items.get(slug)
+        if t is None:
+            print(col(f"unknown target or scenario '{slug}'", "r"), file=sys.stderr)
+            rc = 1
+            continue
+        if is_fixture(t):
+            print(f"# {slug}: fixture, nothing to run")
+            print("resources:\n  containers: 0\n  ram_mb: 0\n  disk_gb: 0\n  cpu_idle_pct: 0\n")
+            continue
+        proj = t["project"]
+        if not count.get(proj):
+            print(col(f"# {slug}: not running. Start it, let it settle, measure again.", "y"))
+            rc = 1
+            continue
+        disk, unknown = 0, []
+        for svc in compose_services(t):
+            ref = svc["image"] or f"{proj}-{svc['service']}"
+            r = subprocess.run(["docker", "image", "inspect", ref, "--format", "{{.Size}}"],
+                               capture_output=True, text=True)
+            if r.returncode == 0 and r.stdout.strip().isdigit():
+                disk += int(r.stdout.strip())
+            else:
+                unknown.append(ref)
+        print(f"# {slug}, measured idle on this box, {time.strftime('%Y-%m-%d')}")
+        if unknown:
+            print(col(f"# image not present, disk is short by it: {', '.join(unknown)}", "y"))
+        print("resources:")
+        print(f"  containers: {count[proj]}")
+        print(f"  ram_mb: {round(mem[proj])}")
+        print(f"  disk_gb: {round(disk / 1e9, 1)}")
+        print(f"  cpu_idle_pct: {round(cpu[proj], 1)}\n")
+    return rc
+
+
 def cmd_setup(targets, args):
     """Interactive first run: show the fleet and what it costs, take a
     selection, compare it with the host, confirm, start."""
@@ -1078,6 +1151,8 @@ def build_parser():
     cr = sub.add_parser("credits", help="who wrote each target, and under what licence")
     cr.add_argument("--markdown", action="store_true", help="emit the README Credits section")
     sub.add_parser("ports", help="host-port map + clash check")
+    ms = sub.add_parser("measure", help="print the resources block for running targets")
+    ms.add_argument("names", nargs="*", help="target or scenario slugs (default: everything running)")
     su = sub.add_parser("setup", help="first run: pick what to run, see what it costs, start it")
     su.add_argument("--light", action="store_true", help="every light target and the scenarios")
     su.add_argument("--all", action="store_true", help="everything, heavy targets too")
@@ -1112,7 +1187,7 @@ SCENARIO_CMDS = {"scenarios": cmd_scenarios, "scenario-up": cmd_scn_up,
 DISPATCH = {
     "start": cmd_start, "stop": cmd_stop, "restart": cmd_restart, "pull": cmd_pull,
     "list": cmd_list, "status": cmd_status, "credits": cmd_credits,
-    "ports": cmd_ports, "setup": cmd_setup, "doctor": cmd_doctor, "audit": cmd_audit, "truth": cmd_truth, "pin": cmd_pin,
+    "ports": cmd_ports, "setup": cmd_setup, "measure": cmd_measure, "doctor": cmd_doctor, "audit": cmd_audit, "truth": cmd_truth, "pin": cmd_pin,
     "logs": cmd_logs, "serve": cmd_serve, "monitor": cmd_monitor,
 }
 

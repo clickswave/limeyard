@@ -1,0 +1,56 @@
+name: Propose a target
+description: Something the fleet should contain and does not
+labels: ["target"]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        The fleet is not trying to be complete. A target earns its place by
+        being something a scanner should find that nothing here covers yet, or
+        by being a precision control: something that looks vulnerable and is not.
+  - type: input
+    id: name
+    attributes:
+      label: What it is
+      placeholder: Name and a one-line description
+    validations: { required: true }
+  - type: input
+    id: repo
+    attributes:
+      label: Upstream repository
+    validations: { required: true }
+  - type: input
+    id: author
+    attributes:
+      label: Who wrote it
+      description: Attribution is a hard gate. A target without a named author cannot be registered.
+    validations: { required: true }
+  - type: input
+    id: licence
+    attributes:
+      label: Licence
+      description: The SPDX id, or the literal "none declared". Say which; do not guess.
+    validations: { required: true }
+  - type: textarea
+    id: gap
+    attributes:
+      label: What it covers that the fleet does not
+      description: Name the classes, or the discovery problem. "More coverage" is not a reason.
+    validations: { required: true }
+  - type: textarea
+    id: truth
+    attributes:
+      label: What its answer key would say
+      description: >-
+        Roughly what a scanner should find, and what it must not. A target
+        nobody can write a truth.yml for cannot be scored, and an unscored
+        target is decoration.
+  - type: dropdown
+    id: weight
+    attributes:
+      label: Weight
+      options:
+        - light, starts in seconds
+        - heavy, gigabytes or a build from source
+        - not sure
+    validations: { required: true }

@@ -213,6 +213,14 @@ The `mirage` target exists only for the second one. Nothing in it is vulnerable
 and everything in it looks like it is, so any finding against it is a false
 positive by construction.
 
+## Contributing
+
+[CONTRIBUTING.md](CONTRIBUTING.md) has the whole of it: what a contribution
+usually is, the invariants `./lime audit` enforces, and why a correction to an
+answer key is worth more here than a new feature. The short version of the
+rules is below. Everyone taking part is held to the
+[code of conduct](CODE_OF_CONDUCT.md).
+
 ## Adding a target
 
 ```
@@ -236,6 +244,9 @@ Rules that keep the lab clean:
   manager refuses to register one. See below.
 - limeyard vendors no third-party source. Put `repo:` and `compose:` in the
   manifest and the source is fetched at runtime into `<target>/src` instead.
+- Record what it costs. Start it, let it settle, and `./lime measure <slug>`
+  prints the `resources` block to paste in. The installer and the panel add
+  these up to warn someone before they start it, so a guess here is a lie there.
 
 ## Trust and isolation
 

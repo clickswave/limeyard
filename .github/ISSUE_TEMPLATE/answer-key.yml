@@ -1,0 +1,50 @@
+name: An answer key is wrong
+description: A truth.yml claims something the target does not do, or misses something it does
+labels: ["truth"]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        The most valuable report there is. An answer key that is subtly wrong
+        produces scores that look fine, so corrections are welcome even when
+        they lower our own numbers.
+  - type: input
+    id: target
+    attributes:
+      label: Target
+      placeholder: dvwa
+    validations: { required: true }
+  - type: input
+    id: entry
+    attributes:
+      label: Entry id
+      description: The id in truth.yml, for example DV1 or DV-N2. Say "missing" if there is no entry for it.
+      placeholder: DV1
+    validations: { required: true }
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is wrong
+      options:
+        - The entry describes a vulnerability that is not there
+        - The location is wrong (path, parameter, method)
+        - The class or severity is wrong
+        - The scope is wrong (black-box, authed, out-of-scope)
+        - A real finding has no entry
+        - A negative is actually vulnerable
+    validations: { required: true }
+  - type: textarea
+    id: evidence
+    attributes:
+      label: How you know
+      description: >-
+        The request you sent and what came back. An assertion cannot be checked;
+        a request can. Redact nothing, none of this is real data.
+      render: shell
+    validations: { required: true }
+  - type: textarea
+    id: correction
+    attributes:
+      label: What it should say
+      description: The corrected YAML, if you have it. Keep the id; ids are referenced by every scorecard ever saved.
+      render: yaml

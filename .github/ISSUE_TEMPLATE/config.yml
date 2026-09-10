@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: A vulnerability in limeyard itself
+    url: https://github.com/clickswave/limeyard/security/advisories/new
+    about: >-
+      Container escape, host access, or driving limed without its token. Report
+      it privately here, not as an issue. Vulnerabilities in the targets are the
+      point of the lab and are not findings.
+  - name: A question about running the lab
+    url: https://github.com/clickswave/limeyard/discussions
+    about: Ask here. Read SECURITY.md first if it is about isolation.
