@@ -149,6 +149,7 @@
 			<thead>
 				<tr>
 					<th style="width:34px"><input type="checkbox" checked={allChecked} onchange={toggleAll} aria-label="Select all" /></th>
+					<th style="width:40px" class="num" title="Position in the current order">#</th>
 					<Th key="name" {sort} {onsort}>Target</Th>
 					<Th key="kind" {sort} {onsort} width="92px">Kind</Th>
 					<Th key="state" {sort} {onsort} width="124px">State</Th>
@@ -159,7 +160,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each rows as t (t.slug)}
+				{#each rows as t, i (t.slug)}
 					{@const s = stateOf(t)}
 					{@const busy = isBusy(t.slug)}
 					<tr class="click" class:pending={busy} onclick={() => open(t)} style="height:46px">
@@ -168,6 +169,7 @@
 								<input type="checkbox" checked={selected.has(t.slug)} onchange={() => toggle(t.slug)} aria-label={t.name} />
 							{/if}
 						</td>
+						<td class="mono muted tiny num">{i + 1}</td>
 						<td>
 							<div style="font-weight:500;line-height:1.3">{t.name}</div>
 							<div class="mono muted" style="font-size:11.5px;line-height:1.4">{t.slug}</div>
