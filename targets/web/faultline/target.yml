@@ -9,13 +9,16 @@ expose:
 weight: heavy
 egress: false
 project: faultline
+# Pinned, for the same reason mirage is: a change over there must not reach
+# this lab until someone bumps the tag and checks the answer key still holds.
 repo: https://github.com/clickswave/faultline
+ref: v0.1.0
 compose: deploy/docker-compose.yml
 upstream:
   author: Clickswave
   repo: https://github.com/clickswave/faultline
   license: MIT
-  verified: 2026-09-08
+  verified: 2026-09-10
 credentials:
   - {user: alice@example.com, pass: password, role: user}
   - {user: admin@faultline.local, pass: admin, role: admin}
