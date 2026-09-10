@@ -393,7 +393,8 @@ def cmd_setup(targets, args):
     print(f"  RAM  about {est['ram_mb'] / 1024:.1f} GB resident"
           + (f"  (host has {head['ram_avail_gb']:.1f} GB available)" if head["ram_avail_gb"] else ""))
     print(f"  disk about {est['disk_gb']:.1f} GB of images to pull"
-          + (f"  (host has {head['disk_free_gb']:.0f} GB free)" if head["disk_free_gb"] else ""))
+          + (f"  (host has {head['disk_free_gb']:.0f} GB free for them)"
+             if head["disk_free_gb"] else ""))
     print(f"  CPU  near idle once up ({est['cpu_idle_pct']:.0f}% of one core); "
           f"pulling and first boots are the busy part")
     if est["guessed"]:
@@ -775,12 +776,43 @@ def disk_view():
             "heavy_blocked": disk_level(pct, gb) == "crit"}
 
 
-def _disk_free_pct():
+def _fs_free(path):
     try:
-        st = os.statvfs(BASE)
-        return 100.0 * st.f_bavail / st.f_blocks, st.f_bavail * st.f_frsize / 1e9
+        st = os.statvfs(path)
+        if not st.f_blocks:
+            return None
+        return {"path": path, "pct": 100.0 * st.f_bavail / st.f_blocks,
+                "gb": st.f_bavail * st.f_frsize / 1e9}
     except Exception:
+        return None
+
+
+_docker_root = None
+
+
+def docker_root():
+    """Where Docker keeps images and volumes. Inside the control container the
+    host's /var/lib/docker is not mounted, but the container's own writable
+    layer lives on that same filesystem, so "/" measures it correctly."""
+    global _docker_root
+    if _docker_root is None:
+        r = subprocess.run(["docker", "info", "--format", "{{.DockerRootDir}}"],
+                           capture_output=True, text=True)
+        root = r.stdout.strip() if r.returncode == 0 else ""
+        _docker_root = root if root and os.path.isdir(root) else "/"
+    return _docker_root
+
+
+def _disk_free_pct():
+    """Free space where it actually runs out. Images and volumes go under
+    Docker's data root; fetched sources go in the checkout. Those are often
+    different disks, and a checkout on a small partition said "21 GB free"
+    while Docker had 104, so take whichever is tighter."""
+    seen = [f for f in (_fs_free(docker_root()), _fs_free(BASE)) if f]
+    if not seen:
         return None, None
+    f = min(seen, key=lambda x: x["gb"])
+    return f["pct"], f["gb"]
 
 
 def cmd_doctor(targets, args):
