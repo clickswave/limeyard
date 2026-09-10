@@ -1,7 +1,7 @@
 # limeyard control plane. Drives each target as its own isolated `docker compose`
 # project via the host Docker socket, and serves the HTTP API the UI talks to.
 # Dev use only.
-FROM docker:27-cli
+FROM docker:29-cli
 
 RUN apk add --no-cache python3 py3-yaml docker-cli-compose git ca-certificates curl
 

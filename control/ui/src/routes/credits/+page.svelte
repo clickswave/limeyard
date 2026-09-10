@@ -26,7 +26,7 @@
 <main class="page">
 	<h1>Credits</h1>
 	<p class="lede" style="margin-top:12px;max-width:66ch">
-		limeyard is almost entirely other people's work. Every target below was written by someone else and is used under the licence named. The lab adds packaging, an answer key and a scorer, and nothing else.
+		limeyard is almost entirely other people's work. Every target and scenario below was written by someone else and is used under the licence named. The lab adds packaging, an answer key and a scorer, and nothing else.
 	</p>
 
 	{#if missing.length}
@@ -60,7 +60,7 @@
 				{#each rows as c (c.slug)}
 					<tr style="height:42px">
 						<td>
-							<a class="quiet" href="/targets/{c.slug}" style="font-weight:500">{c.name}</a>
+							<a class="quiet" href={c.scenario ? '/scenarios' : `/targets/${c.slug}`} style="font-weight:500">{c.name}</a>
 							<span class="mono muted" style="font-size:11.5px;margin-left:8px">{c.kind}</span>
 						</td>
 						<td class="small dim">{byline(c) ?? ''}{#if !c.author}<span class="bad">missing</span>{/if}</td>
