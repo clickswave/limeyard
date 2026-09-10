@@ -189,7 +189,9 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
           cost=None):
     """findings: [{target, class, path, method?, param?, in?, severity?}]
 
-    `cost` is what the run spent, per target: {target: {seconds, requests}}.
+    `cost` is what the run spent, per target:
+    {target: {seconds, requests, truncated}}. A target marked `truncated` had
+    its pass cut by a deadline, so its misses are not evidence about the tool.
     It is scored because scan time is a product quality attribute and nothing
     was measuring it: a pass against a 45-endpoint application quietly grew to
     69 minutes, and the scorecard that recorded 43 of 48 said nothing about it.
@@ -302,6 +304,16 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
             if t in per_target:
                 per_target[t]["seconds"] = round(float(v.get("seconds") or 0), 1)
                 per_target[t]["requests"] = int(v.get("requests") or 0)
+                if v.get("truncated"):
+                    per_target[t]["truncated"] = True
+        # A run the clock cut short did not miss what it never reached, and a
+        # recall figure that does not say so is worse than no figure: it turns
+        # "we ran out of time" into "the scanner cannot find this". Named at
+        # the top of the card so it cannot be read past.
+        cut = sorted(t for t, v in cost.items() if v.get("truncated"))
+        if cut:
+            totals["truncated_targets"] = cut
+            totals["recall_is_a_lower_bound"] = True
 
     return {
         "tool": tool,
