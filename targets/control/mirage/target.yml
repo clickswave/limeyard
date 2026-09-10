@@ -12,7 +12,8 @@ weight: light
 egress: false
 upstream:
   author: Clickswave
-  license: proprietary
+  repo: https://github.com/clickswave/limeyard
+  license: MIT
   verified: 2026-09-08
 truth: truth.yml
 
