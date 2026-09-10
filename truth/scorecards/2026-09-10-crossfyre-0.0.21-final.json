@@ -1,0 +1,1461 @@
+{
+  "tool": "crossfyre-0.0.21-final",
+  "generated": "2026-09-10T11:24:02Z",
+  "totals": {
+    "expected": 48,
+    "detected": 39,
+    "missed": 9,
+    "false_positive": 0,
+    "unmatched": 154,
+    "out_of_scope": 24,
+    "precision": 1.0,
+    "recall": 0.8125,
+    "f1": 0.8966
+  },
+  "by_class": {
+    "bfla": {
+      "expected": 1,
+      "detected": 1,
+      "recall": 1.0
+    },
+    "bola": {
+      "expected": 4,
+      "detected": 3,
+      "recall": 0.75
+    },
+    "cmdi": {
+      "expected": 4,
+      "detected": 3,
+      "recall": 0.75
+    },
+    "cors": {
+      "expected": 1,
+      "detected": 1,
+      "recall": 1.0
+    },
+    "cve": {
+      "expected": 1,
+      "detected": 1,
+      "recall": 1.0
+    },
+    "default-creds": {
+      "expected": 2,
+      "detected": 2,
+      "recall": 1.0
+    },
+    "deserialization": {
+      "expected": 1,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "dos": {
+      "expected": 2,
+      "detected": 2,
+      "recall": 1.0
+    },
+    "excessive-exposure": {
+      "expected": 5,
+      "detected": 3,
+      "recall": 0.6
+    },
+    "exposure": {
+      "expected": 5,
+      "detected": 4,
+      "recall": 0.8
+    },
+    "info-disclosure": {
+      "expected": 1,
+      "detected": 1,
+      "recall": 1.0
+    },
+    "lfi": {
+      "expected": 3,
+      "detected": 2,
+      "recall": 0.6667
+    },
+    "misconfig": {
+      "expected": 6,
+      "detected": 6,
+      "recall": 1.0
+    },
+    "sqli": {
+      "expected": 7,
+      "detected": 6,
+      "recall": 0.8571
+    },
+    "tech": {
+      "expected": 2,
+      "detected": 2,
+      "recall": 1.0
+    },
+    "xss-reflected": {
+      "expected": 3,
+      "detected": 2,
+      "recall": 0.6667
+    }
+  },
+  "by_target": {
+    "androgoat": {
+      "expected_in_scope": 0,
+      "detected": [],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [],
+      "out_of_scope": [
+        "AG1",
+        "AG2",
+        "AG3",
+        "AG4"
+      ],
+      "location_flags": [],
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "bwapp": {
+      "expected_in_scope": 5,
+      "detected": [
+        "BW1",
+        "BW2",
+        "BW3",
+        "BW4",
+        "BW5"
+      ],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "tech",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "exposure",
+          "path": "/web.config",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/login.php",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/htmli_get.php",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/xss_get.php",
+          "param": null,
+          "severity": "high"
+        }
+      ],
+      "out_of_scope": [
+        "BW6"
+      ],
+      "location_flags": [
+        {
+          "id": "BW1",
+          "flags": [
+            "matched on class and path; the finding named no parameter (the answer key names 'title')"
+          ]
+        },
+        {
+          "id": "BW2",
+          "flags": [
+            "matched on class and path; the finding named no parameter (the answer key names 'firstname')"
+          ]
+        },
+        {
+          "id": "BW3",
+          "flags": [
+            "matched on class and path; the finding named no parameter (the answer key names 'target')"
+          ]
+        },
+        {
+          "id": "BW4",
+          "flags": [
+            "matched on class and path; the finding named no parameter (the answer key names 'language')"
+          ]
+        }
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "crapi": {
+      "expected_in_scope": 3,
+      "detected": [
+        "CR1",
+        "CR3"
+      ],
+      "missed": [
+        "CR2"
+      ],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "bola",
+          "path": "/identity/api/v2/vehicle/cd515c12-0fc1-48ae-8b61-9230b70a845b/location",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "bola",
+          "path": "/identity/api/v2/vehicle/f89b5f21-7829-45cb-a650-299a61090378/location",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "bola",
+          "path": "/workshop/api/mechanic/mechanic_report",
+          "param": "report_id",
+          "severity": "critical"
+        },
+        {
+          "class": "bola",
+          "path": "/workshop/api/mechanic/mechanic_report",
+          "param": "report_id",
+          "severity": "critical"
+        },
+        {
+          "class": "bola",
+          "path": "/workshop/api/mechanic/mechanic_report",
+          "param": "report_id",
+          "severity": "critical"
+        },
+        {
+          "class": "bola",
+          "path": "/workshop/api/mechanic/mechanic_report",
+          "param": "report_id",
+          "severity": "critical"
+        },
+        {
+          "class": "bola",
+          "path": "/workshop/api/mechanic/mechanic_report",
+          "param": "report_id",
+          "severity": "critical"
+        }
+      ],
+      "out_of_scope": [
+        "CR4",
+        "CR5"
+      ],
+      "location_flags": [
+        {
+          "id": "CR1",
+          "flags": [
+            "location mismatch: expected path, reported endpoint"
+          ]
+        }
+      ],
+      "precision": 1.0,
+      "recall": 0.6667,
+      "f1": 0.8
+    },
+    "crawlground": {
+      "expected_in_scope": 0,
+      "detected": [],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "tech",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/reset",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "open-redirect",
+          "path": "/api/redirect",
+          "param": "url",
+          "severity": "medium"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/api/page",
+          "param": "url",
+          "severity": "high"
+        }
+      ],
+      "out_of_scope": [],
+      "location_flags": [],
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "crawlmaze": {
+      "expected_in_scope": 0,
+      "detected": [],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "tech",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        }
+      ],
+      "out_of_scope": [],
+      "location_flags": [],
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "dvga": {
+      "expected_in_scope": 7,
+      "detected": [
+        "DG1",
+        "DG2",
+        "DG3",
+        "DG4",
+        "DG5",
+        "DG6",
+        "DG7"
+      ],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "exposure",
+          "path": "/graphql",
+          "param": "query",
+          "severity": "medium"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": null
+        }
+      ],
+      "out_of_scope": [],
+      "location_flags": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "dvwa": {
+      "expected_in_scope": 4,
+      "detected": [
+        "DV1",
+        "DV2",
+        "DV3",
+        "DV4"
+      ],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "tech",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/login.php",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "sqli",
+          "path": "/vulnerabilities/sqli_blind",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "sqli",
+          "path": "/vulnerabilities/fi",
+          "param": "page",
+          "severity": "high"
+        },
+        {
+          "class": "sqli",
+          "path": "/vulnerabilities/xss_r",
+          "param": "name",
+          "severity": "high"
+        },
+        {
+          "class": "ssrf",
+          "path": "/vulnerabilities/fi",
+          "param": "page",
+          "severity": "high"
+        },
+        {
+          "class": "open-redirect",
+          "path": "/vulnerabilities/open_redirect/source/low.php",
+          "param": "redirect",
+          "severity": "medium"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/vulnerabilities/fi",
+          "param": "page",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/vulnerabilities/fi",
+          "param": "page",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/vulnerabilities/fi",
+          "param": "page",
+          "severity": "high"
+        }
+      ],
+      "out_of_scope": [
+        "DV5",
+        "DV6",
+        "DV7"
+      ],
+      "location_flags": [
+        {
+          "id": "DV1",
+          "flags": [
+            "matched on class and path; the finding named no parameter (the answer key names 'id')"
+          ]
+        },
+        {
+          "id": "DV4",
+          "flags": [
+            "matched on class and path; the finding named no parameter (the answer key names 'ip')"
+          ]
+        }
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "faultline": {
+      "expected_in_scope": 3,
+      "detected": [
+        "FL1",
+        "FL2"
+      ],
+      "missed": [
+        "FL3"
+      ],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "tech",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "cors",
+          "path": "/api/v1/users/1",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "cors",
+          "path": "/api/v2/user/dashboard",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "cors",
+          "path": "/graphql",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "exposure",
+          "path": "/.well-known/security.txt",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/api/v1/users/1",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "bola",
+          "path": "/api/v1/users/2",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/api/v1/users/2",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "bola",
+          "path": "/api/v1/users/3",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/api/v1/users/3",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "bola",
+          "path": "/api/v1/users/4",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/api/v1/users/4",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "bola",
+          "path": "/api/v1/users/5",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/api/v1/users/5",
+          "param": null,
+          "severity": "high"
+        }
+      ],
+      "out_of_scope": [
+        "FL4",
+        "FL5"
+      ],
+      "location_flags": [
+        {
+          "id": "FL2",
+          "flags": [
+            "location mismatch: expected path, reported endpoint"
+          ]
+        }
+      ],
+      "precision": 1.0,
+      "recall": 0.6667,
+      "f1": 0.8
+    },
+    "juice-shop": {
+      "expected_in_scope": 3,
+      "detected": [
+        "JS1",
+        "JS2",
+        "JS3"
+      ],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "exposure",
+          "path": "/security.txt",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "exposure",
+          "path": "/.well-known/security.txt",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "bola",
+          "path": "/rest/basket/2",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "bola",
+          "path": "/rest/basket/6",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "bola",
+          "path": "/rest/basket/7",
+          "param": null,
+          "severity": "critical"
+        }
+      ],
+      "out_of_scope": [
+        "JS4",
+        "JS5"
+      ],
+      "location_flags": [
+        {
+          "id": "JS2",
+          "flags": [
+            "location mismatch: expected path, reported endpoint"
+          ]
+        }
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "log4shell": {
+      "expected_in_scope": 2,
+      "detected": [
+        "LS1",
+        "LS2"
+      ],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        }
+      ],
+      "out_of_scope": [],
+      "location_flags": [
+        {
+          "id": "LS1",
+          "flags": [
+            "matched on class and path; the finding named no parameter (the answer key names 'X-Api-Version')"
+          ]
+        },
+        {
+          "id": "LS2",
+          "flags": [
+            "matched on class alone; the finding carried no location"
+          ]
+        }
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "mirage": {
+      "expected_in_scope": 0,
+      "detected": [],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [],
+      "out_of_scope": [],
+      "location_flags": [],
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "modsec": {
+      "expected_in_scope": 1,
+      "detected": [
+        "WAF2"
+      ],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        }
+      ],
+      "out_of_scope": [
+        "WAF1"
+      ],
+      "location_flags": [
+        {
+          "id": "WAF2",
+          "flags": [
+            "matched on class alone; the finding carried no location"
+          ]
+        }
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "mutillidae": {
+      "expected_in_scope": 6,
+      "detected": [
+        "MU5"
+      ],
+      "missed": [
+        "MU1",
+        "MU2",
+        "MU3",
+        "MU4",
+        "MU6"
+      ],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "tech",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "exposure",
+          "path": "/phpinfo.php",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/documentation/mutillidae-test-scripts.txt",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "sqli",
+          "path": "/hints-page-wrapper.php",
+          "param": "level1HintIncludeFile",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/hints-page-wrapper.php",
+          "param": "level1HintIncludeFile",
+          "severity": "high"
+        },
+        {
+          "class": "sqli",
+          "path": "/hints-page-wrapper.php",
+          "param": "level1HintIncludeFile",
+          "severity": "high"
+        },
+        {
+          "class": "sqli",
+          "path": "/hints-page-wrapper.php",
+          "param": "level1HintIncludeFile",
+          "severity": "high"
+        },
+        {
+          "class": "sqli",
+          "path": "/hints-page-wrapper.php",
+          "param": "level1HintIncludeFile",
+          "severity": "high"
+        },
+        {
+          "class": "cve",
+          "path": "/",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "tech",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "info-disclosure",
+          "path": "/phpinfo.php",
+          "param": null,
+          "severity": "low"
+        }
+      ],
+      "out_of_scope": [
+        "MU7",
+        "MU8"
+      ],
+      "location_flags": [
+        {
+          "id": "MU5",
+          "flags": [
+            "matched on class and path; the finding named no parameter (the answer key names 'username')",
+            "location mismatch: expected body, reported header"
+          ]
+        }
+      ],
+      "precision": 1.0,
+      "recall": 0.1667,
+      "f1": 0.2857
+    },
+    "openservices": {
+      "expected_in_scope": 7,
+      "detected": [
+        "SV1",
+        "SV2",
+        "SV3",
+        "SV4",
+        "SV5",
+        "SV6",
+        "SV8"
+      ],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        }
+      ],
+      "out_of_scope": [
+        "SV7"
+      ],
+      "location_flags": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "railsgoat": {
+      "expected_in_scope": 3,
+      "detected": [
+        "RG3"
+      ],
+      "missed": [
+        "RG1",
+        "RG2"
+      ],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "tech",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/forgot_password",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/dashboard/home",
+          "param": "font",
+          "severity": "high"
+        }
+      ],
+      "out_of_scope": [
+        "RG4",
+        "RG5"
+      ],
+      "location_flags": [
+        {
+          "id": "RG3",
+          "flags": [
+            "matched on class and path; the finding named no parameter (the answer key names 'user[id]')"
+          ]
+        }
+      ],
+      "precision": 1.0,
+      "recall": 0.3333,
+      "f1": 0.5
+    },
+    "vampi": {
+      "expected_in_scope": 4,
+      "detected": [
+        "VP1",
+        "VP2",
+        "VP3",
+        "VP4"
+      ],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "tech",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/users/v1/1/password",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/users/v1/login",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/users/v1/register",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "bola",
+          "path": "/books/v1/bookTitle69",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/books/v1/bookTitle69",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "bola",
+          "path": "/books/v1/bookTitle76",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/books/v1/bookTitle76",
+          "param": null,
+          "severity": "high"
+        },
+        {
+          "class": "bola",
+          "path": "/books/v1/bookTitle87",
+          "param": null,
+          "severity": "critical"
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/books/v1/bookTitle87",
+          "param": null,
+          "severity": "high"
+        }
+      ],
+      "out_of_scope": [],
+      "location_flags": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "vulnerableapp": {
+      "expected_in_scope": 0,
+      "detected": [],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_10",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_5",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_1",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_6",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_4",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_2",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_7",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_3",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_8",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_9",
+          "param": null,
+          "severity": "medium"
+        }
+      ],
+      "out_of_scope": [],
+      "location_flags": [],
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "webgoat": {
+      "expected_in_scope": 0,
+      "detected": [],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/WebGoat/login",
+          "param": null,
+          "severity": "medium"
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/WebGoat/register.mvc",
+          "param": null,
+          "severity": "medium"
+        }
+      ],
+      "out_of_scope": [
+        "WG1",
+        "WG2",
+        "WG3",
+        "WG4"
+      ],
+      "location_flags": [],
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "xssmaze": {
+      "expected_in_scope": 0,
+      "detected": [],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "low"
+        },
+        {
+          "class": "misconfig",
+          "path": "/",
+          "param": null,
+          "severity": "info"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/svg/level1",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/pdiff/level5",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/dataurl/level1",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/ctype/level4",
+          "param": "callback",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/social-media/level1",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/ctype/level1",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/multireflect/level6",
+          "param": "msg",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/cmspattern/level3",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/css/level1",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/whitespace/level5",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/clipboard/level2",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/csti/level2",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/misc-context/level5",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/markdown/level3",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/scriptgadget/level6",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/domctx/level6",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/multiline/level1",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/svgctx/level5",
+          "param": "query",
+          "severity": "high"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/rwpattern/level4",
+          "param": "query",
+          "severity": "high"
+        }
+      ],
+      "out_of_scope": [],
+      "location_flags": [],
+      "precision": null,
+      "recall": null,
+      "f1": null
+    }
+  }
+}
