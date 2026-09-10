@@ -10,11 +10,18 @@ expose:
   http: 7301
 weight: light
 egress: false
+
+# Fetched at a pinned tag, not vendored. The traps and the claims this lab
+# makes about them have to move together, so bumping `ref` and editing
+# truth.yml is one commit here.
+repo: https://github.com/clickswave/mirage
+ref: v0.1.0
+compose: compose.yml
 upstream:
   author: Clickswave
-  repo: https://github.com/clickswave/limeyard
+  repo: https://github.com/clickswave/mirage
   license: MIT
-  verified: 2026-09-08
+  verified: 2026-09-10
 truth: truth.yml
 
 # What this costs to run, measured idle on the reference box on 2026-09-10.

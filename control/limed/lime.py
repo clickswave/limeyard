@@ -1021,8 +1021,12 @@ def audit_compose(path, doc):
             if len(parts) < 3 or parts[0] not in ("127.0.0.1", "localhost"):
                 out.append(("fail", f"{where}: port {spec} is not bound to 127.0.0.1"))
 
+        # A service that builds here has no registry digest to pin to: the tag
+        # is just a local name for whatever the Dockerfile produced. Only
+        # images that are pulled can drift under us.
         img = str(svc.get("image") or "")
-        if img and "@sha256:" not in img and not img.startswith("limeyard/"):
+        if img and not svc.get("build") and "@sha256:" not in img \
+                and not img.startswith("limeyard/"):
             out.append(("warn", f"{where}: {img} is not pinned by digest"))
     return out
 
