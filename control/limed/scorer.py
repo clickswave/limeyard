@@ -130,6 +130,14 @@ def _f(finding, *keys):
     return None
 
 
+# Classes that describe the HOST rather than a location on it. Which URL the
+# fingerprint happened to match is an implementation detail: Spring Boot is
+# identified from whatever path its error handler answers on, and the answer key
+# quite reasonably writes the path as "/". Requiring the paths to agree scored a
+# correct identification as a miss.
+HOST_LEVEL_CLASSES = {"tech", "waf", "panel"}
+
+
 def entry_matches(entry, finding):
     """A finding matches a truth entry on class + location.
 
@@ -142,6 +150,8 @@ def entry_matches(entry, finding):
     if not class_matches(entry.get("class"), _f(finding, "class", "type", "category")):
         return None
     fpath = _f(finding, "path", "url", "endpoint")
+    if norm_class(entry.get("class")) in HOST_LEVEL_CLASSES:
+        fpath = None  # scored on class alone; see HOST_LEVEL_CLASSES
     if not fpath or norm_path(fpath) == "/":
         # Some stages report a class and nothing else. The graphql stage is the
         # current example: its findings carry vuln_class and a name but no URL.

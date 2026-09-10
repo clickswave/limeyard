@@ -12,12 +12,20 @@ expected:
     severity: critical
     scope: black-box
     confirm: Marshal.load of a base64 parameter
-    where: {method: GET, path: /password_resets/edit, param: user, in: query}
+    where: {method: POST, path: /password_resets, param: user, in: body}
     note: >-
-      app/controllers/password_resets_controller.rb calls
-      Marshal.load(Base64.decode64(params[:user])) behind skip_before_action
-      :authenticated. Ruby has no URLDNS-equivalent universal gadget, so a
-      scanner with only a Java gadget chain scores zero here. That is the test.
+      Path corrected 2026-09-09. The key said GET /password_resets/edit, which
+      does not exist in this build: routes.rb wires `post "password_resets" =>
+      "password_resets#reset_password"`, and that action calls
+      Marshal.load(Base64.decode64(params[:user])). The old path answered 404
+      with a Rails routing error, so nothing could ever have found it.
+
+      Ruby has no URLDNS-equivalent universal gadget, so a scanner carrying only
+      a Java gadget chain scores zero here regardless. Reaching the endpoint at
+      all is also a discovery problem: the form is rendered only after a valid
+      reset token, so a crawl never sees it and content discovery has to guess
+      the route. Expect this to read as a discovery gap, and that is the honest
+      result rather than a reason to move the entry out of scope.
   - id: RG2
     class: bola
     severity: high
@@ -34,13 +42,17 @@ expected:
   - id: RG4
     class: session
     severity: medium
-    scope: black-box
+    scope: out-of-scope
     confirm: anti-CSRF token present on every form
-    where: {method: GET, path: /sessions/new}
+    where: {method: GET, path: /login}
     note: >-
-      Not a vulnerability. It is the reason this target is here: a crawler that
-      cannot carry the token plus the signed session cookie reaches almost
-      nothing behind the login.
+      Not a vulnerability, and no scanner should report it, so scoring it as an
+      expected finding was wrong: it could only ever be a permanent miss.
+      Rescoped 2026-09-09 and kept as documentation of why this target is here.
+      The property it describes is real and is measured properly by RG2 and RG3,
+      which are only reachable if the crawl carries the token and the signed
+      session cookie. The path is also corrected: the app links /login, and
+      /sessions/new is the internal route name.
   - id: RG5
     class: xss-stored
     severity: medium

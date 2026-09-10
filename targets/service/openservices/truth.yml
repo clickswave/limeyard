@@ -1,83 +1,95 @@
 target: openservices
 scoring: ports
-note: Scored on ports and service identity, not on findings. Because we control exactly which ports are
-  open, recall here is exactly measurable, which is not true of any target reachable only over loopback.
+
+note: >-
+  Scored on ports and service identity, not on findings from a web engine.
+  Because we control exactly which ports are open, recall here is exactly
+  measurable, which is not true of any target reachable only over loopback.
+
+  These entries were all out of scope until 2026-09-09, on the grounds that
+  nothing in the toolchain spoke a non-HTTP protocol. That was true and it was
+  a hole, not an excuse: an open Redis is one of the most valuable things on an
+  estate. scout grew a `services` pass that speaks these protocols, so they are
+  back in scope and are detected. The reachable path is
+  `scout services <host:port>...`, or the node's service-enum op given a
+  `targets` list, which is the shape a port scan already produces.
+
 expected:
 - id: SV1
   class: misconfig
-  scope: out-of-scope
-  confirm: unauthenticated
+  severity: critical
+  scope: black-box
+  confirm: PING answered on an unauthenticated connection
   where:
     path: 10.66.20.10:6379
-  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
-    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
-    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
-    engine exists.'
-  no auth: null
+  note: Redis with no requirepass. Detected, with the version read from INFO.
 - id: SV2
   class: misconfig
-  scope: out-of-scope
-  confirm: unauthenticated
+  severity: critical
+  scope: black-box
+  confirm: listDatabases succeeds without credentials
   where:
     path: 10.66.20.11:27017
-  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
-    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
-    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
-    engine exists.'
-  no auth: null
+  note: MongoDB with authorization disabled. Detected over OP_MSG.
 - id: SV3
   class: misconfig
-  scope: out-of-scope
-  confirm: unauthenticated
+  severity: high
+  scope: black-box
+  confirm: version answered on an unauthenticated connection
   where:
     path: 10.66.20.12:11211
-  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
-    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
-    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
-    engine exists.'
-  no auth by design: null
+  note: >-
+    memcached, which has no authentication in its default configuration, so
+    reachability is the finding. Detected.
 - id: SV4
   class: misconfig
+  severity: medium
   scope: black-box
   confirm: /v2/_catalog answers
   where:
     path: 10.66.20.13:5000
-  note: docker registry catalog exposed Reachable over HTTP, so cortex can and does detect it.
+  note: Docker registry catalog exposed. Reachable over HTTP, so cortex detects it.
 - id: SV5
-  class: misconfig
-  scope: out-of-scope
-  confirm: trust auth
+  class: default-creds
+  severity: critical
+  scope: black-box
+  confirm: AuthenticationOk with no password offered
   where:
     path: 10.66.20.14:5432
-  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
-    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
-    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
-    engine exists.'
+  note: >-
+    PostgreSQL on trust auth: the startup message alone gets a superuser
+    session. Detected, with the version read from the parameter block.
 - id: SV6
-  class: misconfig
-  scope: out-of-scope
-  confirm: empty root password
+  class: default-creds
+  severity: critical
+  scope: black-box
+  confirm: handshake completes for root with an empty password
   where:
     path: 10.66.20.15:3306
-  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
-    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
-    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
-    engine exists.'
+  note: >-
+    MySQL 8 root with no password. Detected; it needs the auth-switch exchange
+    to be followed, because the default plugin since 8.0 is caching_sha2.
 - id: SV7
   class: default-creds
+  severity: medium
   scope: out-of-scope
   confirm: anonymous login
   where:
     path: 10.66.20.16:21
-  note: 'Out of scope with the current engine set, not a detection failure. pulse proves the port is open,
-    but nothing in the product identifies a non-HTTP service: scout is an HTTP fingerprinter and answers
-    ''fetch failed ... SendRequest'' when pointed at this port. Move back in scope the day a service-identification
-    engine exists.'
+  note: >-
+    Corrected 2026-09-09. This claimed anonymous FTP, and the image has no
+    anonymous account: `USER anonymous` gets 331 and then 530 Login incorrect.
+    scout identifies the service and reports auth as required, which is right.
+    There is nothing to find here, so the entry is out of scope rather than a
+    standing miss. Restoring the case needs an image that actually enables
+    anonymous access.
 - id: SV8
   class: exposure
+  severity: medium
   scope: black-box
   confirm: /metrics served
   where:
     path: 10.66.20.17:9090
-  note: prometheus metrics exposed Reachable over HTTP, so cortex can and does detect it.
+  note: Prometheus metrics exposed. Reachable over HTTP, so cortex detects it.
+
 negative: []
