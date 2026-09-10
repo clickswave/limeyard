@@ -27,11 +27,23 @@ expected:
   class: sqli
   severity: high
   scope: black-box
-  confirm: error-based
+  confirm: error-based (sqlalchemy/sqlite OperationalError in the body)
   where:
     method: GET
-    path: /books/v1/{id}
+    path: /users/v1/{username}
     in: path
+  note: >-
+    Path corrected 2026-09-10. The key said /books/v1/{id}, which needs a bearer
+    token and shows no injection signal at all: a quote there just means "no
+    such book". The raw SQL in this build is in models/user_model.py, get_user,
+    which builds SELECT * FROM users WHERE username = '<value>' by
+    interpolation.
+
+    That is the same endpoint as VP2, which is realistic rather than a
+    duplicate: one endpoint hands out other people's records AND concatenates
+    the identifier into SQL. Verified by hand - name1 returns 200, name1'
+    returns 500 with sqlalchemy.exc.OperationalError in the body, name1''
+    returns 404 with no error, and name1'-- - returns 200.
 - id: VP4
   class: exposure
   severity: info
