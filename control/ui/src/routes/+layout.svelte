@@ -38,7 +38,18 @@
 			? page.url.pathname === '/' || page.url.pathname.startsWith('/targets')
 			: page.url.pathname.startsWith(href);
 
-	let disk = $derived(data.status?.disk);
+	let disk = $derived(live.disk ?? data.status?.disk);
+	let host = $derived(live.host ?? data.status?.host);
+	// Colour only when it matters: a machine at 40% CPU is not news.
+	const tone = (pct, warn, bad) => (pct == null ? '' : pct >= bad ? 'bad' : pct >= warn ? 'warn' : '');
+	let cpuTone = $derived(tone(host?.cpu_pct, 85, 95));
+	let ramTone = $derived(tone(host?.ram?.pct, 85, 95));
+	let diskTone = $derived(disk?.level === 'crit' ? 'bad' : disk?.level === 'low' ? 'warn' : '');
+	let hostTitle = $derived(
+		host
+			? `load ${host.load1 ?? '?'} on ${host.cpus ?? '?'} cpus · ram ${host.ram?.pct ?? '?'}% used · disk ${disk?.free_pct ?? '?'}% free`
+			: ''
+	);
 	let up = $derived(data.limedUp && (live.connected || live.tick === 0));
 </script>
 
@@ -51,10 +62,12 @@
 			{/each}
 		</nav>
 		<div class="right">
-			{#if disk?.level === 'low' || disk?.level === 'crit'}
-				<a href="/doctor" class="quiet" class:bad={disk.level === 'crit'} class:warn={disk.level === 'low'}
-					>{disk.free_gb} GB free{disk.heavy_blocked ? ' · heavy blocked' : ''}</a
-				>
+			{#if host || disk}
+				<a href="/doctor" class="quiet host mono num" title={hostTitle}>
+					{#if host?.cpu_pct != null}<span class={cpuTone}>cpu {Math.round(host.cpu_pct)}%</span>{/if}
+					{#if host?.ram}<span class={ramTone}>ram {host.ram.used_gb}/{host.ram.total_gb} GB</span>{/if}
+					{#if disk?.free_gb != null}<span class={diskTone}>{Math.round(disk.free_gb)} GB free{disk.heavy_blocked ? ' · heavy blocked' : ''}</span>{/if}
+				</a>
 			{/if}
 			<State state={up ? 'running' : 'unhealthy'} label={up ? 'daemon' : 'daemon offline'} size="12.5px" />
 			<span class="clock mono num">{clock}</span>
@@ -134,5 +147,9 @@
 	.right :global(.st) { color: var(--running); }
 	.right :global(.st[data-st='unhealthy']) { color: var(--unhealthy); }
 	.clock { font-size: 12.5px; }
-	.right a.quiet { font-size: 12.5px; }
+	.host { display: flex; gap: 12px; font-size: 12px; color: var(--ink-3); }
+	.host:hover { color: var(--ink); }
+	.host .warn { color: var(--starting); }
+	.host .bad { color: var(--unhealthy); }
+	@media (max-width: 900px) { .host span:not(:last-child) { display: none; } }
 </style>

@@ -87,7 +87,9 @@ mandatory: the panel holds the token server-side and the browser never sees it.
 | **Credits** | who wrote each target and under what licence |
 
 The panel updates itself: limed streams state transitions over SSE, so a
-target started from the CLI shows up without a refresh. Every table sorts by
+target started from the CLI shows up without a refresh. The header carries
+the host's CPU, RAM and free disk from the same stream, coloured only when
+they are worth noticing. Every table sorts by
 clicking a column header; a second click flips the direction.
 
 After a change to the panel or the daemon, rebuild the pair:

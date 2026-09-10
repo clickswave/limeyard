@@ -12,7 +12,9 @@ export const live = $state({
 	states: {},
 	scenarios: {},
 	pending: {},
-	tick: 0
+	tick: 0,
+	host: null,
+	disk: null
 });
 
 const PENDING_LABEL = {
@@ -39,6 +41,8 @@ export function connect() {
 		live.states = d.states ?? {};
 		live.scenarios = d.scenarios ?? {};
 		live.tick = d.time;
+		if (d.host) live.host = d.host;
+		if (d.disk) live.disk = d.disk;
 		live.connected = true;
 	});
 	const bump = (e) => {

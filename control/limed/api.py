@@ -727,16 +727,13 @@ class Handler(BaseHTTPRequestHandler):
         if p == "/api/status":
             ts = lime.load_targets()
             by_state, by_kind = _counts(ts)
-            pct, gb = lime._disk_free_pct()
             return self._send(200, {
                 "targets": len(ts),
                 "by_state": by_state,
                 "by_kind": by_kind,
                 "scenarios": len(lime.load_scenarios()),
-                "disk": {"free_pct": round(pct, 1) if pct else None,
-                         "free_gb": round(gb, 1) if gb else None,
-                         "level": lime.disk_level(pct, gb),
-                         "heavy_blocked": lime.disk_level(pct, gb) == "crit"},
+                "disk": lime.disk_view(),
+                "host": lime.host_load(),
                 "networks": {"web": lime.WEB_NET, "lab": lime.LAB_NET,
                              "lab_subnet": lime.LAB_SUBNET},
                 "time": time.time(),
@@ -850,7 +847,8 @@ class Handler(BaseHTTPRequestHandler):
                         if slug in last_sc:
                             self._sse("scenario", {"slug": slug, "from": last_sc[slug], "to": label})
                         last_sc[slug] = label
-                self._sse("tick", {"time": time.time(), "states": last, "scenarios": last_sc})
+                self._sse("tick", {"time": time.time(), "states": last, "scenarios": last_sc,
+                                   "disk": lime.disk_view(), "host": lime.host_load()})
                 time.sleep(int(os.environ.get("LIMED_POLL", "5")))
         except (BrokenPipeError, ConnectionResetError):
             pass

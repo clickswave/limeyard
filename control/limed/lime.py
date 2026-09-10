@@ -528,6 +528,65 @@ def disk_level(pct, gb):
     return "ok"
 
 
+_cpu_last = None
+
+
+def _cpu_times():
+    with open("/proc/stat") as f:
+        vals = [int(x) for x in f.readline().split()[1:]]
+    idle = vals[3] + (vals[4] if len(vals) > 4 else 0)  # idle + iowait
+    return sum(vals), idle
+
+
+def host_load():
+    """CPU, RAM and load for the machine the lab runs on. /proc is not
+    namespaced for these files, so a container reads the host's numbers.
+    CPU is the busy share since the previous call, which is what a ticking
+    stream wants; the first call samples twice."""
+    global _cpu_last
+    cpu = None
+    try:
+        total, idle = _cpu_times()
+        if _cpu_last is None:
+            _cpu_last = (total, idle)
+            time.sleep(0.25)
+            total, idle = _cpu_times()
+        dt, di = total - _cpu_last[0], idle - _cpu_last[1]
+        if dt > 0:
+            _cpu_last = (total, idle)
+            cpu = round(100.0 * (dt - di) / dt, 1)
+    except Exception:
+        pass
+    ram = None
+    try:
+        mem = {}
+        with open("/proc/meminfo") as f:
+            for line in f:
+                k, _, v = line.partition(":")
+                mem[k] = int(v.split()[0])
+        total_gb = mem["MemTotal"] / 1048576
+        avail_gb = mem["MemAvailable"] / 1048576
+        ram = {"total_gb": round(total_gb, 1), "used_gb": round(total_gb - avail_gb, 1),
+               "pct": round(100.0 * (1 - avail_gb / total_gb), 1)}
+    except Exception:
+        pass
+    load1 = None
+    try:
+        with open("/proc/loadavg") as f:
+            load1 = float(f.read().split()[0])
+    except Exception:
+        pass
+    return {"cpu_pct": cpu, "ram": ram, "load1": load1, "cpus": os.cpu_count()}
+
+
+def disk_view():
+    pct, gb = _disk_free_pct()
+    return {"free_pct": round(pct, 1) if pct else None,
+            "free_gb": round(gb, 1) if gb else None,
+            "level": disk_level(pct, gb),
+            "heavy_blocked": disk_level(pct, gb) == "crit"}
+
+
 def _disk_free_pct():
     try:
         st = os.statvfs(BASE)
