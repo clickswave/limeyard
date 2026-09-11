@@ -206,6 +206,12 @@ def containers(t):
 
 
 def state_of(t):
+    # A fixture has no containers by design: an APK is installed on a device,
+    # not started here. Calling that "stopped" makes a healthy lab look like
+    # something is down, and made the CLI contradict both the panel and
+    # doctor, which have always called it what it is.
+    if is_fixture(t):
+        return "fixture", "d"
     cs = containers(t)
     if not cs:
         return "stopped", "d"
