@@ -309,6 +309,10 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
                 # measuring the load the pass applied, not the tool.
                 if v.get("skipped_sites"):
                     per_target[t]["skipped_sites"] = int(v["skipped_sites"])
+                # Where the time went, per class. The ratio is what tells a
+                # slow scan from an expensive one.
+                if v.get("by_class"):
+                    per_target[t]["by_class"] = str(v["by_class"])
                 if v.get("truncated"):
                     per_target[t]["truncated"] = True
         # A run the clock cut short did not miss what it never reached, and a
