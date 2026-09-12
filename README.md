@@ -14,6 +14,10 @@ machine-readable answer key per target, and a control panel to drive it all.
 > enforces it. Read [SECURITY.md](SECURITY.md) before first run, including the
 > part about what container isolation does not cover.
 
+[![The limeyard control panel, listing every target with its kind, state, address and upstream](https://raw.githubusercontent.com/clickswave/limeyard/main/docs/panel.png)](#control-panel)
+
+The control panel on http://127.0.0.1:7000, showing the lab as it runs.
+
 limeyard was `vuln_apps`. It was renamed because it stopped being a folder of
 applications: it now holds bare services, a DNS zone, a WAF pair, a precision
 target and APK fixtures, none of which are apps.
