@@ -185,6 +185,55 @@ def entry_matches(entry, finding):
     return flags
 
 
+def score_crawl(tr, fs, scopes=("black-box", "authed")):
+    """Reach, not findings. Used by `scoring: crawl`.
+
+    crawl-maze and crawlground ask one question: did the crawler get there. The
+    entries carry no class because there is nothing vulnerable to classify, so
+    the findings matcher cannot score them, and before this they were scored as
+    findings and came back 0 of 0.
+
+    There is no false positive here, so there is no precision. Reaching a URL
+    that is not a scored case is what a crawler does all day: crawl-maze serves
+    ordinary pages alongside its 91 `.found` resources. Those are counted as
+    `off_key` and deliberately kept out of the global `unmatched` pool, which
+    exists for findings we failed to document and would otherwise be inflated
+    by every page a crawl legitimately walked.
+    """
+    expected = tr.get("expected") or []
+    in_scope = [e for e in expected if e.get("scope", "black-box") in scopes]
+    oos = [e for e in expected if e.get("scope") not in scopes]
+
+    want = {}
+    for e in in_scope:
+        want[norm_path((e.get("where") or {}).get("path"))] = e.get("id")
+
+    seen = set()
+    for f in fs:
+        p = _f(f, "path", "url", "endpoint")
+        if p:
+            seen.add(norm_path(p))
+
+    detected = sorted(i for p, i in want.items() if p in seen)
+    missed = sorted(i for p, i in want.items() if p not in seen)
+    coverage = (len(detected) / len(want)) if want else None
+
+    return {
+        "scoring": "crawl",
+        "expected_in_scope": len(want),
+        "detected": detected,
+        "missed": missed,
+        "false_positives": [],
+        "unmatched": [],
+        "off_key": len([p for p in seen if p not in want]),
+        "out_of_scope": [e.get("id") for e in oos],
+        "location_flags": [],
+        "precision": None,
+        "recall": round(coverage, 4) if coverage is not None else None,
+        "f1": None,
+    }
+
+
 def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "authed"),
           cost=None):
     """findings: [{target, class, path, method?, param?, in?, severity?}]
@@ -224,6 +273,32 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
         # Record the difference so a reader can see the score is partial.
         ext = tr.get("external") or {}
         unresolved = bool(ext) and not expected and not negative
+
+        # `scoring` has been in truth/schema.md from the start and nothing read
+        # it, so every target was scored as findings. `crawl` is the mode that
+        # actually needed its own path: its entries carry no class, so the
+        # findings matcher scored crawl-maze and crawlground 0 of 0 whether or
+        # not their truth resolved. `ports` needs no branch, because
+        # openservices locates its entries by host:port in `where.path` and the
+        # findings matcher handles that correctly already.
+        mode = tr.get("scoring") or "findings"
+        if mode == "crawl":
+            row = score_crawl(tr, fs, scopes)
+            if unresolved:
+                row["external"] = {"resolved": False, "format": ext.get("format"),
+                                   "url": ext.get("url")}
+                totals["unresolved_external"] += 1
+                totals.setdefault("unresolved_external_targets", []).append(slug)
+            per_target[slug] = row
+            # Deliberately NOT added to the findings totals. Coverage and
+            # detection are different measurements, and folding 91 crawl cases
+            # into the same recall denominator as 48 vulnerabilities produces a
+            # headline that means nothing. Crawl reach gets its own block.
+            c = totals.setdefault("crawl", {"targets": 0, "cases": 0, "reached": 0})
+            c["targets"] += 1
+            c["cases"] += row["expected_in_scope"]
+            c["reached"] += len(row["detected"])
+            continue
 
         used, detected, notes = set(), [], []
         for e in in_scope:
@@ -295,6 +370,10 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
             b["expected"] += 1
             if e["id"] in detected:
                 b["detected"] += 1
+
+    if "crawl" in totals:
+        c = totals["crawl"]
+        c["coverage"] = round(c["reached"] / c["cases"], 4) if c["cases"] else None
 
     tp, fn, fp = totals["detected"], totals["missed"], totals["false_positive"]
     totals["precision"] = round(tp / (tp + fp), 4) if (tp + fp) else None
@@ -381,6 +460,11 @@ def render(card):
         out.append("                       their findings sit in unmatched, so the figures "
                    "above are a partial score")
     out.append(f"  skipped    {t['out_of_scope']:5d}     out-of-scope, never counted")
+    if t.get("crawl"):
+        c = t["crawl"]
+        cov = "  -  " if c.get("coverage") is None else f"{c['coverage'] * 100:5.1f}%"
+        out.append(f"  crawl      {cov}   {c['reached']}/{c['cases']} reachable cases "
+                   f"across {c['targets']} target(s), scored separately")
     out.append("")
     out.append("  by class")
     for c, b in card["by_class"].items():
@@ -390,6 +474,19 @@ def render(card):
     for slug, r in card["by_target"].items():
         bits = f"{len(r['detected'])}/{r['expected_in_scope']}"
         extra = []
+        if r.get("scoring") == "crawl":
+            # Naming 51 missed ids is not a report, it is a wall. The ids are in
+            # the JSON for whoever wants to diff two runs.
+            if r["missed"]:
+                extra.append(f"{len(r['missed'])} unreached")
+            if r.get("off_key"):
+                extra.append(f"{r['off_key']} off-key")
+            if (r.get("external") or {}).get("resolved") is False:
+                extra.append("truth not fetched")
+            out.append(f"    {slug:14} {bits:>7}   {'; '.join(extra)}")
+            continue
+        if (r.get("external") or {}).get("resolved") is False:
+            extra.append("truth not fetched")
         if r["missed"]:
             extra.append("missed " + ",".join(r["missed"]))
         if r["false_positives"]:
