@@ -443,6 +443,18 @@ def save(card, truth_dir):
     return path
 
 
+def _ids(ids, cap=6):
+    """Name a few misses, then count the rest.
+
+    Fine while the biggest target had four cases. xssmaze resolves to 1013, and
+    a run that misses 713 of them printed every id on one line, which is not a
+    report. The full list is in the JSON for whoever wants to diff two runs.
+    """
+    if len(ids) <= cap + 2:
+        return ",".join(ids)
+    return ",".join(ids[:cap]) + f" +{len(ids) - cap} more"
+
+
 def render(card):
     """Terminal summary. The numbers that matter, in the order they matter."""
     t = card["totals"]
@@ -488,7 +500,7 @@ def render(card):
         if (r.get("external") or {}).get("resolved") is False:
             extra.append("truth not fetched")
         if r["missed"]:
-            extra.append("missed " + ",".join(r["missed"]))
+            extra.append("missed " + _ids(r["missed"]))
         if r["false_positives"]:
             extra.append(f"{len(r['false_positives'])} FP")
         if r["location_flags"]:

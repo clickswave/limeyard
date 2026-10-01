@@ -34,10 +34,41 @@ negative:                    # things a scanner MUST NOT report.
 
 external:                    # for suites that serve their own ground truth
   type: http
-  url: http://vulnerableapp:9090/scanner/dast
-  format: vulnerableapp-dast # vulnerableapp-dast | owasp-benchmark-csv |
-                             # xssmaze-solutions | wavsep-paths | crawl-maze
+  url: http://xssmaze:3000/map/json
+  format: xssmaze-map        # see the table below
+  file: path/in/src.json     # optional: a committed copy, preferred over HTTP
+  solutions: http://...      # optional: a secondary source, see xssmaze-map
 ```
+
+## external
+
+A target that already publishes its own answer key should not have it copied
+into a truth.yml, because the copy drifts. `external` names where it lives and
+`control/limed/external.py` resolves it into ordinary `expected` / `negative`
+entries, which the scorer then handles exactly like a hand-written key.
+
+A committed `file` is preferred over `url`, because it resolves with the lab
+cold and it is the same bytes the target would serve.
+
+Two kinds, and the difference decides who scores:
+
+- **answer key.** The target says what *should* be found. Resolves into
+  `expected` and `negative`, scored locally. `crawl-maze`, `xssmaze-map`.
+- **self scored.** The target says what *was* found, because it hands out
+  markers linked from nowhere else and records who reached them. There is
+  nothing to match locally and the verdict is imported. `crawlground`.
+
+| format | adapter | notes |
+|---|---|---|
+| `crawl-maze` | yes | 91 paths, flat list, resolves from the committed copy |
+| `xssmaze-map` | yes | 1064 endpoints; `exploitable:false` becomes a negative, `reach: client` is scoped out, `solutions` fills `confirm` |
+| `crawlground` | no | self scored, needs the POST /set-tool handshake |
+| `vulnerableapp-dast` | no | the app serves its own list and a grader |
+| `owasp-benchmark-csv` | no | no target uses it yet |
+| `wavsep-paths` | no | no target uses it yet |
+
+A declared format with no adapter is reported as unresolved on the scorecard,
+never as a target with nothing to find.
 
 ## scope
 

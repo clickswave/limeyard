@@ -59,7 +59,7 @@ def file_json(path):
 
 # ----------------------------------------------------------------- adapters ---
 
-def adapt_crawl_maze(payload, _ext):
+def adapt_crawl_maze(payload, _ext, _extra):
     """Google's Security Crawl Maze: a flat list of 91 paths a crawler should
     reach, every one ending `.found` so a miss is identifiable by eye.
 
@@ -84,8 +84,116 @@ def adapt_crawl_maze(payload, _ext):
     }
 
 
+# XSSMaze's own vocabulary, onto truth/schema.md's class list. Mapped
+# explicitly rather than by prefix so that a class upstream adds later shows up
+# as unrecognised instead of being silently folded into xss-reflected and
+# quietly changing the denominator.
+XSSMAZE_CLASSES = {
+    "reflected-html": "xss-reflected",
+    "reflected-attr": "xss-reflected",
+    "reflected-js": "xss-reflected",
+    "dom": "xss-dom",
+    "stored": "xss-stored",
+    "prototype-pollution": "proto-pollution",
+    "csti": "ssti",
+    "non-xss-control": None,   # the precision controls, see below
+}
+
+# XSSMaze says where a payload is delivered; schema.md's `in` is narrower.
+# `fragment` has no equivalent on purpose: a fragment never leaves the browser,
+# so there is no request location to name.
+XSSMAZE_DELIVERY = {
+    "query": "query", "body": "body", "header": "header",
+    "cookie": "cookie", "path": "path", "referer": "header",
+}
+
+
+def adapt_xssmaze_map(payload, _ext, extra):
+    """XSSMaze serves /map/json: every endpoint with its class, delivery
+    channel, sources, sinks and an `exploitable` flag.
+
+    Two properties make it unusually fair to score against, and both are used
+    here rather than flattened away.
+
+    `exploitable: false` marks an endpoint that looks vulnerable and is not.
+    The one that makes the point is bugbounty-level10, whose body is HTML but
+    whose content type is application/json, so no browser sniffs it into a
+    document. Those become `negative` entries, with no class, so that reporting
+    anything at all there is a false positive. This is the half of the
+    benchmark that was missing: a precision figure needs somewhere to be wrong.
+
+    `reach: client` marks a flow that never touches an HTTP response, like
+    codeexec-level3 reading location.hash into script.text. A request-only
+    engine cannot see it, so it is scoped out rather than counted as a miss.
+    Scoring those as failures would measure the protocol, not the scanner.
+
+    Entry ids are upstream's `name`, which is unique across all 1064 and
+    survives upstream reordering, unlike a generated index. schema.md says ids
+    are referenced by scorecards forever, so they had better be stable.
+    """
+    eps = (payload or {}).get("endpoints")
+    if not isinstance(eps, list) or not eps:
+        return None
+
+    # /solutions.json is keyed by the same name and carries the payload that
+    # works plus the bypass it needs. Not required to match a finding, which
+    # only needs class and location, but it turns a missed id from a name into
+    # a reason, which is the difference between a scorecard and a to-do list.
+    sol = extra.get("solutions") if isinstance(extra, dict) else None
+    sol = sol if isinstance(sol, dict) else {}
+
+    expected, negative, unknown = [], [], set()
+    for e in eps:
+        if not isinstance(e, dict) or not e.get("name"):
+            continue
+        v = e.get("vuln") or {}
+        raw = (e.get("url") or "/").split("?")[0].split("#")[0] or "/"
+        where = {"path": raw}
+        if e.get("method"):
+            where["method"] = e["method"]
+        params = [x for x in (e.get("params") or []) if isinstance(x, str)]
+        # `#hash` and friends are pseudo-params naming a fragment, not a
+        # request parameter a scanner could inject into.
+        real = [x for x in params if not x.startswith("#")]
+        if real:
+            where["param"] = real[0]
+        delivery = (v.get("delivery") or [None])[0]
+        where_in = XSSMAZE_DELIVERY.get(delivery)
+        if where_in:
+            where["in"] = where_in
+
+        if not v.get("exploitable"):
+            negative.append({"id": e["name"], "where": where,
+                             "note": v.get("note") or e.get("desc")})
+            continue
+
+        cls = v.get("class")
+        mapped = XSSMAZE_CLASSES.get(cls, cls)
+        if cls not in XSSMAZE_CLASSES:
+            unknown.add(cls)
+        expected.append({
+            "id": e["name"],
+            "class": mapped,
+            "scope": "out-of-scope" if v.get("reach") == "client" else "black-box",
+            "where": where,
+            "confirm": ((sol.get(e["name"]) or {}).get("context")
+                        or v.get("note") or e.get("desc")),
+        })
+
+    out = {
+        "kind": ANSWER_KEY,
+        "expected": expected,
+        "negative": negative,
+        "resolved_count": len(expected) + len(negative),
+    }
+    if unknown:
+        out["unrecognised_classes"] = sorted(x for x in unknown if x)
+    return out
+
+
 ADAPTERS = {
     "crawl-maze": adapt_crawl_maze,
+    "xssmaze-map": adapt_xssmaze_map,
 }
 
 # Formats the schema names or a truth.yml declares, with no adapter yet. Listed
@@ -93,14 +201,10 @@ ADAPTERS = {
 # thought about. Each needs its live payload read before an adapter is written:
 # guessing a schema produces a converter that parses one invented shape.
 PENDING = {
-    "xssmaze-map": "1031 entries at /map/json plus the answer key at "
-                   "/solutions.json, with 27 exploitable:false precision controls",
     "crawlground": "self-scored: POST /set-tool, crawl, then read /results.json",
     "vulnerableapp-dast": "the app serves its own DAST list and a grader at "
                           "/scanner/benchmark",
     "owasp-benchmark-csv": "named in truth/schema.md, no target uses it yet",
-    "xssmaze-solutions": "named in truth/schema.md; xssmaze itself declares "
-                         "`xssmaze-map`, so one of the two names is wrong",
     "wavsep-paths": "named in truth/schema.md, no target uses it yet",
 }
 
@@ -152,7 +256,13 @@ def resolve(tr, target_dir=None, offline=False):
                          + (" (offline)" if offline else ""))
         return out
 
-    adapted = adapter(payload, ext)
+    # Secondary sources the block declares. Optional by design: a missing
+    # answer key costs detail in `confirm`, never the score itself.
+    extra = {}
+    if not offline and ext.get("solutions"):
+        extra["solutions"] = http_json(ext["solutions"])
+
+    adapted = adapter(payload, ext, extra)
     if not adapted:
         out["reason"] = f"{fmt} payload did not match the expected shape"
         return out
