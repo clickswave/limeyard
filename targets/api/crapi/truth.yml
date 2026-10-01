@@ -8,6 +8,11 @@ expected:
     scope: authed
     confirm: cross-identity replay
     where: {method: GET, path: "/identity/api/v2/vehicle/{vehicleId}/location", in: path}
+    # The engine reports `location: endpoint` here, meaning the whole endpoint is
+    # the object, where this says `in: path`, meaning the id sits in the URL.
+    # Both describe the same thing and `in` is advisory, so the match stands and
+    # the scorecard carries a location flag. Worth reconciling the vocabulary
+    # rather than loosening the check.
     note: >-
       Leaks GPS and owner email to a non-owner. The 2026-08-23 run recorded 8
       BOLA findings across vehicle location, mechanic_report, dashboard and the
@@ -25,6 +30,26 @@ expected:
     scope: black-box
     confirm: dotenv served
     where: {method: GET, path: /.env}
+  - id: CR6
+    class: bola
+    severity: critical
+    scope: authed
+    confirm: two identities receive byte-identical bodies, anonymous gets 401
+    where: {method: GET, path: /workshop/api/mechanic/mechanic_report, param: report_id, in: query}
+    note: >-
+      Any authenticated user reads any mechanic report. Promoted out of
+      `unmatched` on 2026-10-02 after the authz op reported it and it was then
+      verified by hand rather than taken on the engine's word: report_id 1 to 5
+      all answer 200 with byte-identical bodies to two fresh accounts that own
+      none of them, while an anonymous caller gets 401. So authentication works
+      and only the authorization is missing, which is what separates this from
+      CR4.
+
+      The 2026-08-23 note on CR1 already said mechanic_report was among the
+      eight BOLA findings that run produced. It was never written down as an
+      expected entry, so every run since has scored a real detection as
+      unmatched.
+
   - id: CR4
     class: auth-bypass
     severity: high
