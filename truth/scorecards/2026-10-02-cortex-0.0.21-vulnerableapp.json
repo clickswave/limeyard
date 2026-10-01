@@ -1,0 +1,479 @@
+{
+  "tool": "cortex-0.0.21",
+  "generated": "2026-10-01T21:00:48Z",
+  "totals": {
+    "expected": 117,
+    "detected": 4,
+    "missed": 113,
+    "false_positive": 0,
+    "unmatched": 32,
+    "out_of_scope": 37,
+    "unresolved_external": 0,
+    "precision": 1.0,
+    "recall": 0.0342,
+    "f1": 0.0661,
+    "seconds": 16.8,
+    "requests": 0,
+    "slowest_target": "vulnerableapp",
+    "slowest_seconds": 16.8
+  },
+  "by_class": {
+    "bola": {
+      "expected": 4,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "cache-poisoning": {
+      "expected": 4,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "cmdi": {
+      "expected": 5,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "crlf": {
+      "expected": 1,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "dos": {
+      "expected": 2,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "info-disclosure": {
+      "expected": 2,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "jwt": {
+      "expected": 19,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "misconfig": {
+      "expected": 5,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "open-redirect": {
+      "expected": 9,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "session": {
+      "expected": 4,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "sqli": {
+      "expected": 9,
+      "detected": 4,
+      "recall": 0.4444
+    },
+    "ssrf": {
+      "expected": 4,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "traversal": {
+      "expected": 15,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "xss-reflected": {
+      "expected": 18,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "xss-stored": {
+      "expected": 13,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "xxe": {
+      "expected": 3,
+      "detected": 0,
+      "recall": 0.0
+    }
+  },
+  "by_target": {
+    "vulnerableapp": {
+      "expected_in_scope": 117,
+      "detected": [
+        "errorbasedsqlinjectionvulnerability-level_1:error_based_sql_injection",
+        "errorbasedsqlinjectionvulnerability-level_2:error_based_sql_injection",
+        "unionbasedsqlinjectionvulnerability-level_1:union_based_sql_injection",
+        "unionbasedsqlinjectionvulnerability-level_2:union_based_sql_injection"
+      ],
+      "missed": [
+        "authenticationvulnerability-level_1:error_based_sql_injection",
+        "authenticationvulnerability-level_7:username_enumeration",
+        "cachepoisoning-level_1:web_cache_poisoning",
+        "cachepoisoning-level_1:reflected_xss",
+        "cachepoisoning-level_2:web_cache_poisoning",
+        "cachepoisoning-level_2:reflected_xss",
+        "cachepoisoning-level_3:web_cache_poisoning",
+        "cachepoisoning-level_3:reflected_xss",
+        "cachepoisoning-level_4:web_cache_poisoning",
+        "clickjackingvulnerability-level_1:clickjacking",
+        "clickjackingvulnerability-level_2:clickjacking",
+        "clickjackingvulnerability-level_3:clickjacking",
+        "clickjackingvulnerability-level_6:clickjacking",
+        "clickjackingvulnerability-level_7:clickjacking",
+        "commandinjection-level_1:command_injection",
+        "commandinjection-level_2:command_injection",
+        "commandinjection-level_3:command_injection",
+        "commandinjection-level_4:command_injection",
+        "commandinjection-level_5:command_injection",
+        "unrestrictedfileupload-level_1:persistent_xss",
+        "unrestrictedfileupload-level_1:reflected_xss",
+        "unrestrictedfileupload-level_1:path_traversal",
+        "unrestrictedfileupload-level_2:persistent_xss",
+        "unrestrictedfileupload-level_2:reflected_xss",
+        "unrestrictedfileupload-level_3:persistent_xss",
+        "unrestrictedfileupload-level_3:reflected_xss",
+        "unrestrictedfileupload-level_4:persistent_xss",
+        "unrestrictedfileupload-level_4:reflected_xss",
+        "unrestrictedfileupload-level_5:persistent_xss",
+        "unrestrictedfileupload-level_5:reflected_xss",
+        "unrestrictedfileupload-level_6:persistent_xss",
+        "unrestrictedfileupload-level_6:reflected_xss",
+        "unrestrictedfileupload-level_7:persistent_xss",
+        "unrestrictedfileupload-level_7:reflected_xss",
+        "unrestrictedfileupload-level_8:path_traversal",
+        "unrestrictedfileupload-level_9:uncontrolled_resource_consumption",
+        "unrestrictedfileupload-level_9:denial_of_service",
+        "unrestrictedfileupload-level_9:path_traversal",
+        "idorvulnerability-level_1:insecure_direct_object_reference",
+        "idorvulnerability-level_2:insecure_direct_object_reference",
+        "idorvulnerability-level_3:insecure_direct_object_reference",
+        "idorvulnerability-level_4:insecure_direct_object_reference",
+        "jwtvulnerability-level_1:client_side_vulnerable_jwt",
+        "jwtvulnerability-level_2:client_side_vulnerable_jwt",
+        "jwtvulnerability-level_3:client_side_vulnerable_jwt",
+        "jwtvulnerability-level_4:client_side_vulnerable_jwt",
+        "jwtvulnerability-level_4:insecure_configuration_jwt",
+        "jwtvulnerability-level_5:client_side_vulnerable_jwt",
+        "jwtvulnerability-level_5:server_side_vulnerable_jwt",
+        "jwtvulnerability-level_6:client_side_vulnerable_jwt",
+        "jwtvulnerability-level_6:server_side_vulnerable_jwt",
+        "jwtvulnerability-level_7:client_side_vulnerable_jwt",
+        "jwtvulnerability-level_8:client_side_vulnerable_jwt",
+        "jwtvulnerability-level_8:server_side_vulnerable_jwt",
+        "jwtvulnerability-level_9:client_side_vulnerable_jwt",
+        "jwtvulnerability-level_9:server_side_vulnerable_jwt",
+        "jwtvulnerability-level_10:client_side_vulnerable_jwt",
+        "jwtvulnerability-level_10:server_side_vulnerable_jwt",
+        "jwtvulnerability-level_13:header_injection",
+        "jwtvulnerability-level_14:insecure_configuration_jwt",
+        "jwtvulnerability-level_15:server_side_vulnerable_jwt",
+        "jwtvulnerability-level_16:insecure_configuration_jwt",
+        "http3xxstatuscodebasedinjection-level_1:open_redirect_3xx_status_code",
+        "http3xxstatuscodebasedinjection-level_2:open_redirect_3xx_status_code",
+        "http3xxstatuscodebasedinjection-level_3:open_redirect_3xx_status_code",
+        "http3xxstatuscodebasedinjection-level_4:open_redirect_3xx_status_code",
+        "http3xxstatuscodebasedinjection-level_5:open_redirect_3xx_status_code",
+        "http3xxstatuscodebasedinjection-level_6:open_redirect_3xx_status_code",
+        "http3xxstatuscodebasedinjection-level_7:open_redirect_3xx_status_code",
+        "http3xxstatuscodebasedinjection-level_9:open_redirect_3xx_status_code",
+        "http3xxstatuscodebasedinjection-level_10:open_redirect_3xx_status_code",
+        "passwordresetvulnerability-level_4:username_enumeration",
+        "pathtraversal-level_1:path_traversal",
+        "pathtraversal-level_2:path_traversal",
+        "pathtraversal-level_3:path_traversal",
+        "pathtraversal-level_4:path_traversal",
+        "pathtraversal-level_5:path_traversal",
+        "pathtraversal-level_6:path_traversal",
+        "pathtraversal-level_7:path_traversal",
+        "pathtraversal-level_8:path_traversal",
+        "pathtraversal-level_9:path_traversal",
+        "pathtraversal-level_10:path_traversal",
+        "pathtraversal-level_11:path_traversal",
+        "pathtraversal-level_12:path_traversal",
+        "sessionmanagementvulnerability-level_1:session_fixation",
+        "sessionmanagementvulnerability-level_2:predictable_session_id",
+        "sessionmanagementvulnerability-level_3:obscured_predictable_session_id",
+        "sessionmanagementvulnerability-level_4:missing_logout_invalidation",
+        "blindsqlinjectionvulnerability-level_1:blind_sql_injection",
+        "blindsqlinjectionvulnerability-level_2:blind_sql_injection",
+        "errorbasedsqlinjectionvulnerability-level_3:error_based_sql_injection",
+        "errorbasedsqlinjectionvulnerability-level_4:error_based_sql_injection",
+        "ssrfvulnerability-level_1:simple_ssrf",
+        "ssrfvulnerability-level_2:simple_ssrf",
+        "ssrfvulnerability-level_3:simple_ssrf",
+        "ssrfvulnerability-level_4:simple_ssrf",
+        "persistentxssinhtmltagvulnerability-level_1:persistent_xss",
+        "persistentxssinhtmltagvulnerability-level_2:persistent_xss",
+        "persistentxssinhtmltagvulnerability-level_3:persistent_xss",
+        "persistentxssinhtmltagvulnerability-level_4:persistent_xss",
+        "persistentxssinhtmltagvulnerability-level_5:persistent_xss",
+        "persistentxssinhtmltagvulnerability-level_6:persistent_xss",
+        "xssinimgtagattribute-level_1:reflected_xss",
+        "xssinimgtagattribute-level_2:reflected_xss",
+        "xssinimgtagattribute-level_3:reflected_xss",
+        "xssinimgtagattribute-level_4:reflected_xss",
+        "xssinimgtagattribute-level_5:reflected_xss",
+        "xsswithhtmltaginjection-level_1:reflected_xss",
+        "xsswithhtmltaginjection-level_2:reflected_xss",
+        "xsswithhtmltaginjection-level_3:reflected_xss",
+        "xxevulnerability-level_1:xxe",
+        "xxevulnerability-level_2:xxe",
+        "xxevulnerability-level_6:xxe"
+      ],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_3",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_5",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_1",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_2",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_4",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_6",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_7",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_8",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_9",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_10",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_1",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_2",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_1",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_3",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_4",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_2",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_4",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_3",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_5",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_5",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_6",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_6",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_7",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_7",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_8",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_8",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_9",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_9",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_1",
+          "param": "id",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_2",
+          "param": "id",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_3",
+          "param": "id",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_4",
+          "param": "id",
+          "severity": null
+        }
+      ],
+      "out_of_scope": [
+        "authenticationvulnerability-level_2:plaintext_password_storage",
+        "authenticationvulnerability-level_3:plaintext_password_storage",
+        "authenticationvulnerability-level_4:weak_password_hashing",
+        "authenticationvulnerability-level_5:weak_password_hashing",
+        "authenticationvulnerability-level_6:weak_password_hashing",
+        "authenticationvulnerability-level_8:weak_password_hashing",
+        "authenticationvulnerability-level_10:weak_password_hashing",
+        "cryptographicfailures-level_1:insecure_cryptographic_storage",
+        "cryptographicfailures-level_2:insecure_cryptographic_storage",
+        "cryptographicfailures-level_3:use_of_broken_cryptographic_algorithm",
+        "cryptographicfailures-level_4:use_of_broken_cryptographic_algorithm",
+        "cryptographicfailures-level_5:weak_cryptographic_hash",
+        "cryptographicfailures-level_6:weak_cryptographic_hash",
+        "cryptographicfailures-level_7:weak_cryptographic_hash",
+        "cryptographicfailures-level_8:weak_cryptographic_hash",
+        "cryptographicfailures-level_9:weak_cryptographic_hash",
+        "cryptographicfailures-level_10:use_of_broken_cryptographic_algorithm",
+        "unrestrictedfileupload-level_1:unrestricted_file_upload",
+        "unrestrictedfileupload-level_2:unrestricted_file_upload",
+        "unrestrictedfileupload-level_3:unrestricted_file_upload",
+        "unrestrictedfileupload-level_4:unrestricted_file_upload",
+        "unrestrictedfileupload-level_5:unrestricted_file_upload",
+        "unrestrictedfileupload-level_6:unrestricted_file_upload",
+        "unrestrictedfileupload-level_7:unrestricted_file_upload",
+        "ldapinjectionvulnerability-level_1:ldap_injection",
+        "ldapinjectionvulnerability-level_2:ldap_injection",
+        "ldapinjectionvulnerability-level_3:ldap_injection",
+        "ldapinjectionvulnerability-level_5:ldap_injection",
+        "passwordresetvulnerability-level_1:predictable_password_reset_token",
+        "passwordresetvulnerability-level_2:password_reset_token_without_expiry",
+        "passwordresetvulnerability-level_3:reusable_password_reset_token",
+        "passwordresetvulnerability-level_5:insecure_password_reset_link",
+        "passwordresetvulnerability-level_6:weak_random_number_generation",
+        "passwordresetvulnerability-level_7:password_reset_token_exposed_via_referrer",
+        "passwordresetvulnerability-level_8:predictable_password_reset_token",
+        "passwordresetvulnerability-level_9:no_login_rate_limiting",
+        "sessionmanagementvulnerability-level_5:no_login_rate_limiting"
+      ],
+      "location_flags": [],
+      "precision": 1.0,
+      "recall": 0.0342,
+      "f1": 0.0661,
+      "seconds": 16.8,
+      "requests": 0
+    }
+  },
+  "run": {
+    "engine": "cortex 0.0.21, debug build at 46dbfdc",
+    "op": "inject",
+    "endpoints": 145,
+    "seconds": 16.8,
+    "verdict": "This measures REACHABILITY, not detection. Read it as such.",
+    "why": "VulnerableApp's levels are JSON endpoints returning a bare object, with no HTML form. Their injection surface is undocumented query parameters, which appear in no spec and no page, so in no crawl or Web Tracer capture. cortex takes parameters from the asset graph's request_shape, so with none observed it has nothing to inject into and only the passive checks fire.",
+    "evidence": "With no parameters: 28 findings, every one passive (19 no-rate-limit, 9 excessive-exposure), 0 of 117. Supplying parameters found by differential probing took SQLi from 0/9 to 4/9 with no engine change.",
+    "gap": "cortex discover does calibrated brute-force for BODY fields only; DiscEndpoint carries method, url, content_type and known_fields. No query-parameter name discovery exists in the toolchain, and mach's fuzz_marker fuzzes paths rather than parameter names. A 68-word probe found `id` on ten SQLi levels, `username` on three LDAP levels and `password` on eleven crypto levels in seconds.",
+    "pitfall_for_whoever_builds_it": "Differential probing needs a determinism check first. The PersistentXSS levels store on every request, so identical input gives different responses and every candidate reads as a hit: the first version of my probe reported 35 parameters on each of them."
+  }
+}

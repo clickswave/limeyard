@@ -433,11 +433,31 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
 
 
 def save(card, truth_dir):
+    """Write a card, without ever silently replacing another one.
+
+    The name was date plus tool, which collides the moment two runs happen on
+    one day with one engine: scoring xssmaze and then VulnerableApp overwrote
+    the first card with the second, and only a commit made it recoverable. A
+    scorecard is a record, so a second run gets a second file.
+
+    A single-target run says which target in the name, because that is the
+    thing a reader wants to tell apart. Anything already there is suffixed
+    rather than touched.
+    """
     d = os.path.join(truth_dir, "scorecards")
     os.makedirs(d, exist_ok=True)
     stamp = time.strftime("%Y-%m-%d")
-    tool = re.sub(r"[^a-zA-Z0-9_.-]", "-", card.get("tool", "unknown"))
-    path = os.path.join(d, f"{stamp}-{tool}.json")
+    clean = lambda v: re.sub(r"[^a-zA-Z0-9_.-]", "-", str(v))
+    tool = clean(card.get("tool", "unknown"))
+    targets = list(card.get("by_target") or {})
+    stem = f"{stamp}-{tool}"
+    if len(targets) == 1:
+        stem = f"{stem}-{clean(targets[0])}"
+    path = os.path.join(d, f"{stem}.json")
+    n = 2
+    while os.path.exists(path):
+        path = os.path.join(d, f"{stem}-{n}.json")
+        n += 1
     with open(path, "w") as f:
         json.dump(card, f, indent=2, sort_keys=False)
         f.write("\n")
