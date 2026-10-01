@@ -3,12 +3,21 @@ scoring: findings
 
 note: >-
   This target serves its own answer key, so we do not restate it. `GET
-  /scanner/dast` returns 154 rows of (url, vulnerability type, variant), where
-  variant SECURE marks the 38 deliberately-safe endpoints. Those are the
-  false-positive controls, and they are why this target matters more than its
-  vulnerability count suggests.
+  /VulnerableApp/scanner/dast` returns a row per case of (url, vulnerability
+  type, variant), where variant SECURE marks the deliberately-safe twin of a
+  vulnerable level. Those are the false-positive controls, and they are why
+  this target matters more than its vulnerability count suggests.
 
-  It also grades: POST /scanner/benchmark with findings as
+  Read live on 2026-10-01: 155 rows, 138 UNSECURE and 17 SECURE, across 38
+  distinct vulnerability types. The counts move with the image, so resolve the
+  list rather than trusting them; an earlier version of this note said 154 rows
+  and 38 SECURE endpoints, and both had drifted.
+
+  Mind the context path. Spring Boot serves this app under `/VulnerableApp`,
+  not at the root, and both URLs here pointed at the root until 2026-10-01, so
+  the declared answer key was a 404.
+
+  It also grades: POST /VulnerableApp/scanner/benchmark with findings as
   {tool, scanType: "DAST", findings: [{url, type|cwe|wascId, method}]} returns
   coverage, missedItems and unmatchedItems. Intersect unmatchedItems with the
   SECURE url set and you have a measured false-positive count.
@@ -20,9 +29,11 @@ note: >-
 
 external:
   type: http
-  url: http://vulnerableapp:9090/scanner/dast
+  url: http://vulnerableapp:9090/VulnerableApp/scanner/dast
   format: vulnerableapp-dast
-  grader: http://vulnerableapp:9090/scanner/benchmark
+  # POST only, so it is not fetched during resolution. The answer key above is
+  # enough to score locally; this is here for a submit-and-grade comparison.
+  grader: http://vulnerableapp:9090/VulnerableApp/scanner/benchmark
 
 expected: []
 negative: []

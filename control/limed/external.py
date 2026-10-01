@@ -191,9 +191,169 @@ def adapt_xssmaze_map(payload, _ext, extra):
     return out
 
 
+# OWASP VulnerableApp's own vulnerability names, onto schema.md's class list.
+# Only where the meaning is the same: schema.md says to extend the class list
+# deliberately, not per target, so a type with no equivalent is recorded and
+# scoped out rather than wedged into the nearest-looking class.
+VULNERABLEAPP_CLASSES = {
+    "ERROR_BASED_SQL_INJECTION": "sqli",
+    "UNION_BASED_SQL_INJECTION": "sqli",
+    "BLIND_SQL_INJECTION": "sqli",
+    "REFLECTED_XSS": "xss-reflected",
+    "PERSISTENT_XSS": "xss-stored",
+    "PATH_TRAVERSAL": "traversal",
+    "COMMAND_INJECTION": "cmdi",
+    "XXE": "xxe",
+    "SIMPLE_SSRF": "ssrf",
+    "OPEN_REDIRECT_3XX_STATUS_CODE": "open-redirect",
+    "HEADER_INJECTION": "crlf",
+    "WEB_CACHE_POISONING": "cache-poisoning",
+    "CLIENT_SIDE_VULNERABLE_JWT": "jwt",
+    "SERVER_SIDE_VULNERABLE_JWT": "jwt",
+    "INSECURE_CONFIGURATION_JWT": "jwt",
+    "INSECURE_DIRECT_OBJECT_REFERENCE": "bola",
+    "USERNAME_ENUMERATION": "info-disclosure",
+    "CLICKJACKING": "misconfig",
+    "UNCONTROLLED_RESOURCE_CONSUMPTION": "dos",
+    "DENIAL_OF_SERVICE": "dos",
+    "SESSION_FIXATION": "session",
+    "PREDICTABLE_SESSION_ID": "session",
+    "OBSCURED_PREDICTABLE_SESSION_ID": "session",
+    "MISSING_LOGOUT_INVALIDATION": "session",
+}
+
+
+def _va_id(path, kind):
+    """A stable id from the module and level, because upstream gives no name.
+
+    VulnerableApp's paths are `/VulnerableApp/<Module>/LEVEL_<n>`, which is
+    exactly the identity of a case and does not move when the list is
+    reordered. The type is appended because one URL can carry several.
+    """
+    parts = [x for x in path.strip("/").split("/") if x and x != "VulnerableApp"]
+    stem = "-".join(parts[-2:]) if parts else "root"
+    return f"{stem}:{kind}".lower()
+
+
+def adapt_vulnerableapp_dast(payload, _ext, _extra):
+    """VulnerableApp serves /VulnerableApp/scanner/dast: every case as a URL, a
+    method, a variant and the vulnerability types it carries.
+
+    The `variant` field is why this target is worth resolving. 17 of the 155
+    cases are `SECURE`, the hardened twin of a vulnerable level, which is the
+    shape schema.md names when it says a target that ships a hardened twin
+    expresses it in `negative`. The twin keeps its class, so reporting that
+    class there is a false positive while a genuinely different finding at the
+    same URL is still just a finding.
+
+    Entries carry no parameter. The matcher treats an entry with no `param` as
+    matching any finding on that path, which is the right reading here: the
+    list says where the vulnerability is, not which input reaches it.
+
+    Of the 38 types upstream uses, the crypto and password-reset families have
+    no equivalent in schema.md's class list (WEAK_PASSWORD_HASHING,
+    PLAINTEXT_PASSWORD_STORAGE, PREDICTABLE_PASSWORD_RESET_TOKEN and so on).
+    Those are scoped out and reported, so extending the class list stays a
+    deliberate decision with the count in front of it, rather than a quiet
+    mapping into `misconfig` that would make recall look better than it is.
+    """
+    if not isinstance(payload, list) or not payload:
+        return None
+
+    expected, negative, unmapped = [], [], {}
+    for e in payload:
+        if not isinstance(e, dict) or not e.get("url"):
+            continue
+        raw = e["url"].split("?")[0].split("#")[0]
+        if "://" in raw:
+            raw = "/" + raw.split("://", 1)[1].split("/", 1)[1] if "/" in raw.split("://", 1)[1] else "/"
+        where = {"path": raw}
+        if e.get("method"):
+            where["method"] = e["method"]
+        secure = str(e.get("variant", "")).upper() == "SECURE"
+
+        for kind in (e.get("vulnerabilityTypes") or []):
+            cls = VULNERABLEAPP_CLASSES.get(kind)
+            if cls is None:
+                unmapped[kind] = unmapped.get(kind, 0) + 1
+            row = {"id": _va_id(raw, kind), "class": cls, "where": dict(where)}
+            if secure:
+                row["note"] = f"SECURE variant: the fixed twin of {kind}"
+                negative.append(row)
+            else:
+                row["scope"] = "black-box" if cls else "out-of-scope"
+                row["confirm"] = kind if cls else f"{kind}: no class in schema.md"
+                expected.append(row)
+
+    out = {
+        "kind": ANSWER_KEY,
+        "expected": expected,
+        "negative": negative,
+        "resolved_count": len(expected) + len(negative),
+    }
+    if unmapped:
+        out["unmapped_types"] = dict(sorted(unmapped.items()))
+    return out
+
+
+def adapt_crawlground(payload, _ext, _extra):
+    """ZAP's Crawlground: 59 tests, each with a page at /test/<cat>/<id> and a
+    marker at /score/<cat>/<id> linked from nowhere else, so the only way to
+    reach a marker is to operate the control that leads to it.
+
+    Resolved as an answer key rather than as the target's own verdict, which is
+    a deliberate choice and the opposite of what `set_tool` invites.
+
+    Crawlground records which named tool hit each marker, and reading that back
+    would be letting the benchmark grade itself: the store is mutable, keyed on
+    a name set by a POST, and shared by every run that forgot to reset. Every
+    other target in the lab is scored on what the scanner reported, and keeping
+    one model matters more than the small amount the target's own bookkeeping
+    adds. So `set_tool` stays unused and the markers become ordinary `crawl`
+    entries, scored exactly like crawl-maze's.
+
+    Marker paths are derived, because upstream does not publish them: the test
+    id is `<category>.<rest>` and the marker is `/score/<category>/<rest>`.
+    Verified against the live target on 2026-10-01, all 59 ids conform to that
+    shape and the derived paths answer 200.
+
+    One caveat worth stating. A scanner that extracted a marker URL without
+    following it would score here, and the measure assumes reporting implies
+    reaching. Crawlground's own design is what makes that safe: markers are
+    linked from nowhere, so for the JS-driven cases there is no href to lift.
+    """
+    tests = (payload or {}).get("tests")
+    if not isinstance(tests, list) or not tests:
+        return None
+
+    expected = []
+    for t in tests:
+        if not isinstance(t, dict):
+            continue
+        tid, cat = t.get("id"), t.get("category")
+        if not tid or not cat or "." not in tid:
+            continue
+        expected.append({
+            "id": tid,
+            "scope": "black-box",
+            "where": {"path": f"/score/{cat}/{tid.split('.', 1)[1]}"},
+            "confirm": t.get("name") or t.get("description"),
+        })
+    if not expected:
+        return None
+    return {
+        "kind": ANSWER_KEY,
+        "expected": expected,
+        "negative": [],
+        "resolved_count": len(expected),
+    }
+
+
 ADAPTERS = {
     "crawl-maze": adapt_crawl_maze,
     "xssmaze-map": adapt_xssmaze_map,
+    "vulnerableapp-dast": adapt_vulnerableapp_dast,
+    "crawlground": adapt_crawlground,
 }
 
 # Formats the schema names or a truth.yml declares, with no adapter yet. Listed
@@ -201,9 +361,6 @@ ADAPTERS = {
 # thought about. Each needs its live payload read before an adapter is written:
 # guessing a schema produces a converter that parses one invented shape.
 PENDING = {
-    "crawlground": "self-scored: POST /set-tool, crawl, then read /results.json",
-    "vulnerableapp-dast": "the app serves its own DAST list and a grader at "
-                          "/scanner/benchmark",
     "owasp-benchmark-csv": "named in truth/schema.md, no target uses it yet",
     "wavsep-paths": "named in truth/schema.md, no target uses it yet",
 }
