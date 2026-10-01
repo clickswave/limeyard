@@ -1,21 +1,21 @@
 {
   "tool": "cortex-0.0.21",
-  "generated": "2026-10-01T21:00:48Z",
+  "generated": "2026-10-01T21:31:08Z",
   "totals": {
     "expected": 117,
-    "detected": 4,
-    "missed": 113,
+    "detected": 3,
+    "missed": 114,
     "false_positive": 0,
     "unmatched": 32,
     "out_of_scope": 37,
     "unresolved_external": 0,
     "precision": 1.0,
-    "recall": 0.0342,
-    "f1": 0.0661,
-    "seconds": 16.8,
+    "recall": 0.0256,
+    "f1": 0.0499,
+    "seconds": 20.1,
     "requests": 0,
     "slowest_target": "vulnerableapp",
-    "slowest_seconds": 16.8
+    "slowest_seconds": 20.1
   },
   "by_class": {
     "bola": {
@@ -70,8 +70,8 @@
     },
     "sqli": {
       "expected": 9,
-      "detected": 4,
-      "recall": 0.4444
+      "detected": 3,
+      "recall": 0.3333
     },
     "ssrf": {
       "expected": 4,
@@ -105,8 +105,7 @@
       "detected": [
         "errorbasedsqlinjectionvulnerability-level_1:error_based_sql_injection",
         "errorbasedsqlinjectionvulnerability-level_2:error_based_sql_injection",
-        "unionbasedsqlinjectionvulnerability-level_1:union_based_sql_injection",
-        "unionbasedsqlinjectionvulnerability-level_2:union_based_sql_injection"
+        "unionbasedsqlinjectionvulnerability-level_1:union_based_sql_injection"
       ],
       "missed": [
         "authenticationvulnerability-level_1:error_based_sql_injection",
@@ -201,6 +200,7 @@
         "blindsqlinjectionvulnerability-level_2:blind_sql_injection",
         "errorbasedsqlinjectionvulnerability-level_3:error_based_sql_injection",
         "errorbasedsqlinjectionvulnerability-level_4:error_based_sql_injection",
+        "unionbasedsqlinjectionvulnerability-level_2:union_based_sql_injection",
         "ssrfvulnerability-level_1:simple_ssrf",
         "ssrfvulnerability-level_2:simple_ssrf",
         "ssrfvulnerability-level_3:simple_ssrf",
@@ -227,7 +227,7 @@
       "unmatched": [
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_3",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_6",
           "param": null,
           "severity": null
         },
@@ -239,13 +239,13 @@
         },
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_1",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_2",
           "param": null,
           "severity": null
         },
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_2",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_1",
           "param": null,
           "severity": null
         },
@@ -257,19 +257,19 @@
         },
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_6",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_7",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_3",
           "param": null,
           "severity": null
         },
         {
           "class": "no-rate-limit",
           "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_8",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_7",
           "param": null,
           "severity": null
         },
@@ -292,12 +292,6 @@
           "severity": null
         },
         {
-          "class": "no-rate-limit",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_2",
-          "param": null,
-          "severity": null
-        },
-        {
           "class": "excessive-exposure",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_1",
           "param": null,
@@ -305,13 +299,13 @@
         },
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_3",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_2",
           "param": null,
           "severity": null
         },
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_4",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_3",
           "param": null,
           "severity": null
         },
@@ -323,24 +317,24 @@
         },
         {
           "class": "excessive-exposure",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_4",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "excessive-exposure",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_3",
           "param": null,
           "severity": null
         },
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_5",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_4",
           "param": null,
           "severity": null
         },
         {
           "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_4",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_5",
           "param": null,
           "severity": null
@@ -348,6 +342,12 @@
         {
           "class": "no-rate-limit",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_6",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_5",
           "param": null,
           "severity": null
         },
@@ -459,21 +459,21 @@
       ],
       "location_flags": [],
       "precision": 1.0,
-      "recall": 0.0342,
-      "f1": 0.0661,
-      "seconds": 16.8,
+      "recall": 0.0256,
+      "f1": 0.05,
+      "seconds": 20.1,
       "requests": 0
     }
   },
   "run": {
-    "engine": "cortex 0.0.21, debug build at 46dbfdc",
-    "op": "inject",
+    "engine": "cortex 0.0.21, debug build at 7af322b",
+    "op": "inject, with parameters from the engine's own discover pass",
     "endpoints": 145,
     "seconds": 16.8,
-    "verdict": "This measures REACHABILITY, not detection. Read it as such.",
-    "why": "VulnerableApp's levels are JSON endpoints returning a bare object, with no HTML form. Their injection surface is undocumented query parameters, which appear in no spec and no page, so in no crawl or Web Tracer capture. cortex takes parameters from the asset graph's request_shape, so with none observed it has nothing to inject into and only the passive checks fire.",
-    "evidence": "With no parameters: 28 findings, every one passive (19 no-rate-limit, 9 excessive-exposure), 0 of 117. Supplying parameters found by differential probing took SQLi from 0/9 to 4/9 with no engine change.",
-    "gap": "cortex discover does calibrated brute-force for BODY fields only; DiscEndpoint carries method, url, content_type and known_fields. No query-parameter name discovery exists in the toolchain, and mach's fuzz_marker fuzzes paths rather than parameter names. A 68-word probe found `id` on ten SQLi levels, `username` on three LDAP levels and `password` on eleven crypto levels in seconds.",
-    "pitfall_for_whoever_builds_it": "Differential probing needs a determinism check first. The PersistentXSS levels store on every request, so identical input gives different responses and every candidate reads as a hit: the first version of my probe reported 35 parameters on each of them."
+    "verdict": "3 of 117. Read the breakdown before the number: this is op coverage and reachability, and only three of the misses are the injection oracle failing.",
+    "op_mismatch": "38 of the 117 belong to classes `inject` is not the op for: jwt 19, bola 4, session 4, cache-poisoning 4, misconfig 5, info-disclosure 2. BOLA needs the authz op and two identities; JWT needs a token to manipulate, so auth setup. A full measurement of this target needs the pipeline, not one pass.",
+    "reachability": "Parameters appear in no spec and on no page here, so no crawl or capture produces them. Query discovery now finds 15 paths' worth: `id` on the SQL injection and IDOR levels, `password` on the cryptographic ones, `username` on LDAP. Six PersistentXSS levels are correctly discarded because probing changes them.",
+    "sqli_breakdown": "The honest split, 9 cases: 3 detected; 3 missed with the parameter in hand, which are blind level_1 and error-based levels 3 and 4, so genuine oracle gaps worth chasing; 3 missed because no parameter was discovered.",
+    "history": "With no parameters at all this scored 0 of 117 and every finding was passive. Discovery took it to 3, and better discovery (11 paths to 15) did not move it further, which is what points at op coverage as the next limit rather than discovery."
   }
 }
