@@ -358,6 +358,22 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
             }
             totals["unresolved_external"] += 1
             totals.setdefault("unresolved_external_targets", []).append(slug)
+        elif ext:
+            # A resolved target used to record nothing, so the card said why a
+            # score was partial but never how the denominator was built. For a
+            # target whose key is external and whose scope was corrected by
+            # measurement that is the difference between a figure a reader can
+            # audit and one they have to take on faith.
+            per_target[slug]["external"] = {
+                k: v for k, v in (
+                    ("resolved", True),
+                    ("format", ext.get("format")),
+                    ("via", ext.get("via")),
+                    ("count", ext.get("count")),
+                    ("reach_scoped_out", ext.get("reach_scoped_out")),
+                    ("reach_measured", ext.get("reach_measured")),
+                ) if v is not None
+            }
         totals["expected"] += len(in_scope)
         totals["detected"] += tp
         totals["missed"] += fn
@@ -520,6 +536,13 @@ def render(card):
             continue
         if (r.get("external") or {}).get("resolved") is False:
             extra.append("truth not fetched")
+        # A corrected denominator has to be visible on the card. A scope change
+        # that only shows up as a smaller number is a scope change nobody can
+        # audit, and this one moves recall by tens of points.
+        ext = r.get("external") or {}
+        if ext.get("reach_scoped_out"):
+            extra.append(f"{ext['reach_scoped_out']} unreachable, measured "
+                         f"{ext.get('reach_measured') or 'date unknown'}")
         if r["missed"]:
             extra.append("missed " + _ids(r["missed"]))
         if r["false_positives"]:

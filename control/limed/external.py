@@ -145,6 +145,15 @@ def adapt_xssmaze_map(payload, _ext, extra):
     sol = extra.get("solutions") if isinstance(extra, dict) else None
     sol = sol if isinstance(sol, dict) else {}
 
+    # The measured half of the scope decision. Empty unless the target has a
+    # committed reach.json, so every other target is unaffected.
+    try:
+        import reach
+        unreach, unreach_on = reach.unreachable(
+            (extra or {}).get("target_dir"), eps)
+    except Exception:
+        unreach, unreach_on = set(), None
+
     expected, negative, unknown = [], [], set()
     for e in eps:
         if not isinstance(e, dict) or not e.get("name"):
@@ -174,10 +183,15 @@ def adapt_xssmaze_map(payload, _ext, extra):
         mapped = XSSMAZE_CLASSES.get(cls, cls)
         if cls not in XSSMAZE_CLASSES:
             unknown.add(cls)
+        # `reach: client` is upstream's own flag. `unreach` is the measured
+        # correction to it: endpoints upstream calls server-reaching whose
+        # bytes provably never appear in a response. Both mean the same thing
+        # to a request-only engine, so both score the same way.
+        unreachable = v.get("reach") == "client" or e["name"] in unreach
         expected.append({
             "id": e["name"],
             "class": mapped,
-            "scope": "out-of-scope" if v.get("reach") == "client" else "black-box",
+            "scope": "out-of-scope" if unreachable else "black-box",
             "where": where,
             "confirm": ((sol.get(e["name"]) or {}).get("context")
                         or v.get("note") or e.get("desc")),
@@ -191,6 +205,11 @@ def adapt_xssmaze_map(payload, _ext, extra):
     }
     if unknown:
         out["unrecognised_classes"] = sorted(x for x in unknown if x)
+    # Say that a denominator was corrected and on what date. A scope change
+    # nobody can see on the card is a scope change that flatters the scanner.
+    if unreach:
+        out["reach_scoped_out"] = len(unreach)
+        out["reach_measured"] = unreach_on
     return out
 
 
@@ -418,7 +437,7 @@ def resolve(tr, target_dir=None, offline=False):
 
     # Secondary sources the block declares. Optional by design: a missing
     # answer key costs detail in `confirm`, never the score itself.
-    extra = {}
+    extra = {"target_dir": target_dir}
     if not offline and ext.get("solutions"):
         extra["solutions"] = http_json(ext["solutions"])
 

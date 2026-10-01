@@ -23,6 +23,7 @@ import signal
 import subprocess
 import sys
 import time
+import urllib.parse
 
 try:
     import yaml
@@ -174,7 +175,8 @@ def load_truth(t, resolve_external=True):
                 tr["external"] = {**tr["external"], "resolved": True,
                                   "via": res.get("via"),
                                   "count": res.get("resolved_count")}
-                for k in ("unmapped_types", "unrecognised_classes"):
+                for k in ("unmapped_types", "unrecognised_classes",
+                          "reach_scoped_out", "reach_measured"):
                     if res.get(k):
                         tr["external"][k] = res[k]
             else:
@@ -1125,6 +1127,71 @@ def cmd_audit(targets, args):
     return 0
 
 
+def cmd_reach(targets, args):
+    """Measure a target's declared reach metadata against what it actually does.
+
+    Only runs against a target whose `external:` block declares a format that
+    carries reach, which today is xssmaze alone. The result is committed next
+    to the truth so the correction it drives is reviewable as data rather than
+    asserted in a note, and re-runnable when upstream moves.
+    """
+    import external
+    import reach as reachmod
+
+    t = targets.get(args.name)
+    if not t:
+        die(f"unknown target {args.name!r}")
+    tr = load_truth(t, resolve_external=False) or {}
+    ext = tr.get("external") or {}
+    if ext.get("format") != "xssmaze-map":
+        die(f"{args.name} declares no reach metadata to measure "
+            f"(format {ext.get('format')!r})")
+    url = ext.get("url")
+    if not url:
+        die(f"{args.name} has no external url to probe")
+
+    payload = external.http_json(url, timeout=reachmod.TIMEOUT)
+    if not payload or not (payload.get("endpoints")):
+        die(f"could not read {url} (is the target up?)")
+    parts = urllib.parse.urlsplit(url)
+    base = f"{parts.scheme}://{parts.netloc}"
+
+    eps = payload["endpoints"]
+    todo = [e for e in eps if isinstance(e, dict)
+            and (e.get("vuln") or {}).get("exploitable")
+            and (e.get("vuln") or {}).get("reach") == "server"]
+    print(f"probing {len(todo)} endpoints declaring reach: server at {base}")
+
+    seen = [0]
+
+    def tick(name, verdict):
+        seen[0] += 1
+        if seen[0] % 50 == 0 or seen[0] == len(todo):
+            print(f"  {seen[0]}/{len(todo)}", file=sys.stderr)
+
+    out = reachmod.measure(eps, base, progress=tick)
+    out["target"] = args.name
+    out["source"] = url
+
+    tt = out["totals"]
+    print(f"\n  reflects in a response : {tt['reflects']}")
+    print(f"  never reaches one     : {tt['absent']}")
+    print(f"  unprobed              : {tt['unprobed']}")
+    print(f"  errored               : {tt['errors']}")
+    print(col(f"  scoped out of recall  : {tt['scoped_out']}"
+              f"  (absent AND a client-side source)", "y"))
+
+    dest = os.path.join(t["dir"], "reach.json")
+    if args.write:
+        with open(dest, "w") as f:
+            json.dump(out, f, indent=2, sort_keys=True)
+            f.write("\n")
+        print(f"\nwrote {dest}")
+    else:
+        print(f"\n{col('dry run', 'y')}: pass --write to update {dest}")
+    return 0
+
+
 def cmd_truth(targets, args):
     """Dump the merged answer key. This is what a scan harness should read."""
     merged = {}
@@ -1226,6 +1293,9 @@ def build_parser():
     pn = sub.add_parser("pin", help="pin images to the digest we verified")
     pn.add_argument("--apply", action="store_true", help="rewrite the compose files")
     sub.add_parser("truth", help="dump the merged answer key as JSON")
+    rc = sub.add_parser("reach", help="measure declared reach metadata against observed behaviour")
+    rc.add_argument("name")
+    rc.add_argument("--write", action="store_true", help="update the target's reach.json")
     lp = sub.add_parser("logs", help="tail a target's logs")
     lp.add_argument("name")
     lp.add_argument("-f", "--follow", action="store_true")
@@ -1247,7 +1317,7 @@ SCENARIO_CMDS = {"scenarios": cmd_scenarios, "scenario-up": cmd_scn_up,
 DISPATCH = {
     "start": cmd_start, "stop": cmd_stop, "restart": cmd_restart, "pull": cmd_pull,
     "list": cmd_list, "status": cmd_status, "credits": cmd_credits,
-    "ports": cmd_ports, "setup": cmd_setup, "measure": cmd_measure, "doctor": cmd_doctor, "audit": cmd_audit, "truth": cmd_truth, "pin": cmd_pin,
+    "ports": cmd_ports, "setup": cmd_setup, "measure": cmd_measure, "doctor": cmd_doctor, "audit": cmd_audit, "truth": cmd_truth, "reach": cmd_reach, "pin": cmd_pin,
     "logs": cmd_logs, "serve": cmd_serve, "monitor": cmd_monitor,
 }
 

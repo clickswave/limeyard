@@ -61,7 +61,7 @@ Two kinds, and the difference decides who scores:
 | format | adapter | notes |
 |---|---|---|
 | `crawl-maze` | yes | 91 paths, flat list, resolves from the committed copy |
-| `xssmaze-map` | yes | 1064 endpoints; `exploitable:false` becomes a negative, `reach: client` is scoped out, `solutions` fills `confirm` |
+| `xssmaze-map` | yes | 1064 endpoints; `exploitable:false` becomes a negative, `reach: client` and a measured `reach.json` are scoped out, `solutions` fills `confirm` |
 | `crawlground` | no | self scored, needs the POST /set-tool handshake |
 | `vulnerableapp-dast` | no | the app serves its own list and a grader |
 | `owasp-benchmark-csv` | no | no target uses it yet |
@@ -69,6 +69,64 @@ Two kinds, and the difference decides who scores:
 
 A declared format with no adapter is reported as unresolved on the scorecard,
 never as a target with nothing to find.
+
+## reach.json
+
+A target that tells the lab, per endpoint, whether a flow touches an HTTP
+response is handing over the one fact that decides whether a request-only
+scanner had anything to see. Only xssmaze does, with a `reach` of server or
+client, and the adapter scopes the client ones out rather than counting them as
+misses.
+
+Measured 2026-10-01T23:25Z, the flag is wrong in one direction: 95 endpoints
+xssmaze declares `reach: server` never put the request bytes in any response.
+The value is read back on the client out of `location.search` (52 of them),
+`localStorage`, `document.referrer`, `history.state` or a message event. 93 are
+DOM cases and 2 are prototype pollution. They behave exactly like the 24
+declared `reach: client`, and left in the denominator they read as 95 scanner
+misses that no request-only engine could convert. On cortex that one
+correction moves the DOM class from 76/174 to 76/81.
+
+Trusting the flag and trusting its negation are the same mistake, so `lime
+reach <target> --write` measures it and commits the result to `reach.json`
+beside the truth. The adapter reads it, the scorecard reports
+`reach_scoped_out` and the date, and the file is reviewable as data instead of
+the correction being asserted in a note.
+
+Three rules stop the correction from flattering the scanner, and all three
+exist because the first version of the probe got it wrong:
+
+- **Only `absent` is consumed.** A probe that errored or had nowhere to put its
+  marker scopes nothing out.
+- **Absence is checked against a control.** For an endpoint with a server-side
+  source, an unchanged response means the parameter was ignored and the probe
+  never arrived, so it is recorded `unprobed`. Thirteen endpoints that wanted
+  double base64, a JSON body or an `Accept` header sat in `absent` reading as
+  measurement. Eight are still unprobed for that reason and stay in the
+  denominator, which costs the scanner rather than flatters it.
+- **Absence is necessary, not sufficient.** An endpoint is scoped out only when
+  the marker provably never appeared *and* every declared taint source is read
+  client side, *and* its class is not one whose exploitation spans requests.
+  Stored XSS is the case that matters: the payload is meant to come back on a
+  later request, so absence from the immediate reply is the expected result.
+  `stored-level4` and `storedpat-level6` declare a `fetch-response` source and
+  were scoped out by an earlier version of this, which would have deleted two
+  of the ten stored cases while calling it a measurement.
+
+Every channel an endpoint declares is tried, not the first. `dom-level1` and
+`dom-level26` declare `['fragment', 'query']`, and taking the first filed both
+unprobed on the strength of a channel nobody can probe: RFC 3986 section 3.5
+leaves the fragment to the user agent, so it never reaches the server at all.
+A `:path` parameter means the last path segment is the injection point and is
+probed by replacing it, which is how six endpoints moved out of `unprobed` and
+proved they do reflect.
+
+The marker is digits only. A mixed-case marker was tried first, on the theory
+that mixed case survives a target that lowercases input. It does not: a
+transform defeats an exact match whichever case it starts from, and xssmaze has
+a `casemanip` family that upper-cases, swaps and strips by case. Six endpoints
+came back absent while the body plainly held the marker. Digits are fixed
+points of every one of those transforms.
 
 ## scope
 
@@ -81,7 +139,9 @@ The field that keeps the accounting honest.
 - `out-of-scope` never counts. It documents a real vulnerability that needs a
   human or a step a scanner is not meant to take: brute force, OTP flows,
   business logic, lesson progression, code-level issues with no black-box
-  oracle. It is recorded so nobody re-litigates it every quarter.
+  oracle. It is recorded so nobody re-litigates it every quarter. A flow that
+  never touches an HTTP response is this case, whether the target declares it
+  or `reach.json` measures it.
 
 ## negative
 

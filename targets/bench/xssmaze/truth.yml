@@ -18,6 +18,31 @@ note: >-
   server or client, so DOM-only flows that never touch an HTTP response can be
   excluded from a request-only denominator instead of counting as misses.
 
+  The `reach` flag is wrong in one direction, and reach.json is the measured
+  correction. Probed 2026-10-01T23:25Z, 95 endpoints declaring `reach: server`
+  never put the request bytes in any response: the value is read back on the
+  client out of location.search (52 of them), localStorage, document.referrer,
+  history.state or a message event. 93 are DOM cases and 2 are prototype
+  pollution, and they behave exactly like the 24 declared `reach: client`. Left
+  in the denominator they read as 95 scanner misses that no request-only engine
+  could ever convert, which is measuring the protocol rather than the scanner.
+  `lime reach xssmaze --write` reproduces the file; truth/schema.md has the
+  rules that keep the correction conservative, and 8 endpoints the probe could
+  not deliver to stay in the denominator rather than being assumed either way.
+
+  On the 81 DOM endpoints whose bytes do reach a response, cortex finds 76. Of
+  the five it misses, four are cases where what it sees is genuinely inert and
+  suppressing it is correct: percent-encoded inside a `<script src>` URL
+  (domsource-level4) or inside a JS string literal with no breakout
+  (modern-level1), entity-encoded as an explicit decoy (modern-level4), and a
+  stripped handler whose real path is DOM clobbering (modern-bypass-level2).
+  Those four need the page's JavaScript read, not another payload, so they
+  belong to a browser-backed tier rather than to a request-only recall figure.
+  The fifth, dom-level28, is a real engine gap: the injection point is a path
+  segment, the server does reflect it, and cortex only tests named parameters.
+  path-level1 through level4, edge-level2 and realworld_input-level7 are the
+  same gap in the reflected-html class.
+
   27 endpoints are marked exploitable:false. Those are the precision controls,
   and reporting one is a false positive. They resolve into `negative` with no
   class, so reporting anything at all on one counts against precision.
