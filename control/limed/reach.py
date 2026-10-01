@@ -330,6 +330,13 @@ def measure(endpoints, base, timeout=TIMEOUT, progress=None):
         "reflects": [],
         "unprobed": {},
         "errors": {},
+        # Which channel actually carried the marker. The map says `delivery:
+        # ['body']` without saying whether the body is form encoded or JSON,
+        # and an injection engine needs that to build a request the target
+        # accepts. Measuring it once here beats every caller guessing, and a
+        # caller that guesses `form` tests six /postmethod endpoints and all
+        # six /querymethod endpoints with the payload in the wrong place.
+        "channel": {},
         "client_source": [],
         "multi_request": [],
     }
@@ -386,6 +393,8 @@ def measure(endpoints, base, timeout=TIMEOUT, progress=None):
         for _d, channel in channels:
             verdict, detail = _probe(base, ep, channel, param, timeout)
             if verdict == REFLECTS:
+                out["channel"][name] = {"channel": channel, "param": param,
+                                        "method": ep.get("method") or "GET"}
                 break
         channel = channels[0][1]
 

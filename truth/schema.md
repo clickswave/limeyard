@@ -162,11 +162,19 @@ calls them. Extend deliberately, not per-target.
 
 ```
 sqli  nosqli  xss-reflected  xss-stored  xss-dom  cmdi  lfi  traversal  rfi
-ssrf  ssti  xxe  crlf  open-redirect  deserialization  race  smuggling
+ssrf  ssti  csti  xxe  crlf  open-redirect  deserialization  race  smuggling
 cache-poisoning  proto-pollution  jwt  mass-assignment  bola  bfla  bopla
 excessive-exposure  cors  auth-bypass  session  info-disclosure  default-creds
 exposure  panel  tech  cve  misconfig  dos
 ```
+
+`csti` is separate from `ssti` on purpose, and was added because folding it in
+was wrong. xssmaze's five `csti` endpoints are AngularJS and Vue `{{ }}`
+expressions evaluated in the browser; the adapter mapped them to `ssti`, which
+put a row reading "ssti 0/5" on every scorecard for a target that has no
+server-side template injection in it at all, and meant an engine would have had
+to report the wrong class to score. The impact is XSS and the oracle is a
+template evaluating, so it shares neither class's detection path.
 
 ## matching
 

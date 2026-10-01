@@ -99,6 +99,4548 @@
     "websocket-xss-level7"
   ],
   "base": "http://xssmaze:3000",
+  "channel": {
+    "advanced-xss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "advanced-xss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "advanced-xss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "advanced-xss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "advanced-xss-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "advanced-xss-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "api-response-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "api-response-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "api-response-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "api-response-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "api-response-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "api-response-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ariaattr-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ariaattr-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ariaattr-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ariaattr-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ariaattr-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ariaattr-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attr-event-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attr-event-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attr-event-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attr-event-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attr-event-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attr-event-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attrctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attrctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attrctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attrctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attrctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attrctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attrname-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attrname-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attrname-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "attrname-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "basic-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "basic-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "basic-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "basic-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "basic-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "basic-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "basic-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "booleanattr-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "booleanattr-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "booleanattr-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "booleanattr-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "booleanattr-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "booleanattr-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "bugbounty-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "redirect_uri"
+    },
+    "bugbounty-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "error"
+    },
+    "bugbounty-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "q"
+    },
+    "bugbounty-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "token"
+    },
+    "bugbounty-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "filename"
+    },
+    "bugbounty-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "shortname"
+    },
+    "bugbounty-level7": {
+      "channel": "header",
+      "method": "GET",
+      "param": "X-Forwarded-Host"
+    },
+    "bugbounty-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "ref"
+    },
+    "bugbounty-level9": {
+      "channel": "query",
+      "method": "GET",
+      "param": "email"
+    },
+    "callback-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "callback"
+    },
+    "callback-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "callback"
+    },
+    "callback-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "fn"
+    },
+    "callback-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "handler"
+    },
+    "casemanip-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "casemanip-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "casemanip-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "casemanip-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "casemanip-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "casemanip-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "chain-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "chain-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "chain-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "chain-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "chain-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "chain-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "charlimit-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "charlimit-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "charlimit-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "charlimit-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "charlimit-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "charlimit-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "clipboard-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "clipboard-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "clipboard-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "clipboard-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cmspattern-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cmspattern-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cmspattern-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cmspattern-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cmspattern-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cmspattern-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "codeexec-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "codeexec-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "codeexec-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "codeexec-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "commentinj-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "commentinj-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "commentinj-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "commentinj-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "commentinj-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "commentinj-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "complexpage-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "complexpage-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "complexpage-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "complexpage-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "complexpage-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "complexpage-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "condreflect-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "condreflect-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "condreflect-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "condreflect-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "condreflect-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "condreflect-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "csp-bypass-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "csp-bypass-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "csp-bypass-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cspbypass-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cspbypass-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cspbypass-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cspbypass-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "cspbypass-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "css-injection-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "css-injection-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "css-injection-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "css-injection-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "css-injection-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "css-injection-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "csti-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "csti-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "csti-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "csti-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "csti-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxescape-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxescape-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxescape-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxescape-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxescape-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxescape-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxescape-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxescape-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxv2-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxv2-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxv2-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxv2-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxv2-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctxv2-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctype-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctype-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctype-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctype-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "callback"
+    },
+    "ctype-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ctype-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "customtag-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "customtag-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "customtag-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "customtag-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "customtag-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "customtag-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dashboard-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dashboard-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dashboard-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dashboard-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dashboard-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dashboard-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dataattr-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dataattr-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dataattr-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dataattr-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dataattr-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dataattr-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dataurl-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dataurl-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dataurl-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dataurl-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dblenc-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dblenc-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dblenc-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dblenc-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "decode-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "decode-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dialog-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dialog-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dialog-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dialog-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dialog-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dom-level28": {
+      "channel": "path",
+      "method": "GET",
+      "param": "query"
+    },
+    "domctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "domctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "domctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "domctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "domctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "domctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "domsource-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "doublereflect-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "doublereflect-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "doublereflect-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "doublereflect-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "doublereflect-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "doublereflect-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dragdrop-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dragdrop-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dragdrop-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "dragdrop-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ecommerce-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ecommerce-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ecommerce-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ecommerce-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ecommerce-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "ecommerce-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edge-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edge-level2": {
+      "channel": "path",
+      "method": "GET",
+      "param": ":path"
+    },
+    "edge-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edge-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edge-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "q1"
+    },
+    "edge-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edge-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "a"
+    },
+    "edge-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edgefilter-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edgefilter-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edgefilter-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edgefilter-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edgefilter-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "edgefilter-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "email-template-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "email-template-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "email-template-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "email-template-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "email-template-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "email-template-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "embedctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "embedctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "embedctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "embedctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "embedctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "embedctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encmix-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encmix-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encmix-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encmix-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encmix-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encoding-bypass-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encoding-bypass-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encoding-bypass-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encoding-bypass-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encoding-bypass-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encoding-bypass-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encoding-bypass-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encodingedge-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encodingedge-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encodingedge-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encodingedge-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encodingedge-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "encodingedge-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errhandling-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errhandling-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errhandling-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errhandling-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errhandling-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errhandling-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errpage-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errpage-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errpage-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errpage-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errpage-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "errpage-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "eventhandler-xss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "eventhandler-xss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "eventhandler-xss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "eventhandler-xss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "eventhandler-xss-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "filterchain-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "filterchain-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "filterchain-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "filterchain-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "filterchain-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "filterchain-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "filterchain-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "filterchain-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "formaction-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "formaction-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "formaction-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "formaction-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "formelement-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "formelement-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "formelement-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "formelement-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "formelement-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "formelement-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fragment-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fragment-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fragment-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fragment-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fragment-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fragment-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fwoutput-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fwoutput-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fwoutput-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fwoutput-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fwoutput-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "fwoutput-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "globalattr-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "globalattr-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "globalattr-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "globalattr-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "globalattr-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "globalattr-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "header-level1": {
+      "channel": "referer",
+      "method": "GET",
+      "param": "Referer"
+    },
+    "header-level2": {
+      "channel": "header",
+      "method": "GET",
+      "param": "User-Agent"
+    },
+    "header-level4": {
+      "channel": "cookie",
+      "method": "GET",
+      "param": "Cookie"
+    },
+    "headerinj-level1": {
+      "channel": "referer",
+      "method": "GET",
+      "param": "Referer"
+    },
+    "headerinj-level2": {
+      "channel": "header",
+      "method": "GET",
+      "param": "User-Agent"
+    },
+    "headerinj-level3": {
+      "channel": "header",
+      "method": "GET",
+      "param": "X-Forwarded-For"
+    },
+    "headerinj-level4": {
+      "channel": "cookie",
+      "method": "GET",
+      "param": "Cookie"
+    },
+    "headerinj-level5": {
+      "channel": "header",
+      "method": "GET",
+      "param": "Accept-Language"
+    },
+    "headerinj-level6": {
+      "channel": "header",
+      "method": "GET",
+      "param": "X-Debug"
+    },
+    "headless-generator-level1": {
+      "channel": "form",
+      "method": "POST",
+      "param": "html"
+    },
+    "headless-generator-level2": {
+      "channel": "form",
+      "method": "POST",
+      "param": "svg"
+    },
+    "headless-generator-level3": {
+      "channel": "form",
+      "method": "POST",
+      "param": "html"
+    },
+    "headless-generator-level4": {
+      "channel": "form",
+      "method": "POST",
+      "param": "html"
+    },
+    "headless-generator-level5": {
+      "channel": "form",
+      "method": "POST",
+      "param": "html"
+    },
+    "headless-generator-level6": {
+      "channel": "form",
+      "method": "POST",
+      "param": "content"
+    },
+    "hidden-reflection-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hidden-reflection-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hidden-reflection-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hidden-reflection-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hidden-reflection-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hidden-reflection-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hidden-xss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hidden-xss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hidden-xss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hpp-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hpp-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "hpp-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "items[]"
+    },
+    "hpp-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "config.theme"
+    },
+    "html5-sanitizer-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "html5-sanitizer-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "html5-sanitizer-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "html5-sanitizer-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "html5-sanitizer-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "html5-sanitizer-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "html5-sanitizer-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "html5-sanitizer-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "htmlunsafe-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "import-map-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "import-map-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "import-map-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "import-map-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "import-map-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "import-map-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inattr-xss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inattr-xss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inattr-xss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inattr-xss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inattr-xss-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inattr-xss-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inframe-xss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "url"
+    },
+    "inframe-xss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "url"
+    },
+    "inframe-xss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "url"
+    },
+    "inframe-xss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "url"
+    },
+    "injs-xss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "injs-xss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "injs-xss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "injs-xss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "injs-xss-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "injs-xss-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inlinestyle-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inlinestyle-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inlinestyle-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inlinestyle-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inlinestyle-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inlinestyle-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inputtransform-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inputtransform-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inputtransform-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inputtransform-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inputtransform-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "inputtransform-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jf-xss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jquery-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jquery-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jquery-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jquery-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsescape-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsescape-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsescape-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsescape-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsescape-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsescape-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "json-xss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "json-xss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "json-xss-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "json-xss-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsonctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsonctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsonctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsonctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsonctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "jsonctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "latereflect-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "latereflect-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "latereflect-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "latereflect-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "latereflect-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "latereflect-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "linkcontext-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "linkcontext-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "linkcontext-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "linkcontext-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "linkcontext-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "linkcontext-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "listiteration-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "listiteration-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "listiteration-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "listiteration-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "listiteration-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "listiteration-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "manifest-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "markdown-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "url"
+    },
+    "markdown-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "src"
+    },
+    "markdown-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "markdown-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "url"
+    },
+    "markdown-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "ref_url"
+    },
+    "markdown-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "title"
+    },
+    "mathml-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mathml-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mathml-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mediacontext-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mediacontext-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mediacontext-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mediacontext-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mediacontext-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mediacontext-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "metarefresh-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "url"
+    },
+    "metarefresh-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "url"
+    },
+    "metarefresh-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "url"
+    },
+    "microdata-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "microdata-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "microdata-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "microdata-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "microdata-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "microdata-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "misc-context-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "misc-context-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "misc-context-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "misc-context-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "misc-context-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "misc-context-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mixedmethod-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mixedmethod-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "input"
+    },
+    "mixedmethod-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "search"
+    },
+    "mixedmethod-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "q"
+    },
+    "mixedmethod-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "callback"
+    },
+    "mixedmethod-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "redirect_url"
+    },
+    "mobserver-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mobserver-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mobserver-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mobserver-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level10": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level11": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level12": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level13": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level14": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level15": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level16": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level20": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level21": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level22": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level23": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level24": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level25": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "svg"
+    },
+    "modern-bypass-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-bypass-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "callback_url"
+    },
+    "modern-bypass-level9": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "modern-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "wsurl"
+    },
+    "multicontext-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multicontext-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multicontext-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multicontext-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multicontext-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multicontext-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "q1"
+    },
+    "multiline-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multiline-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multiline-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multiline-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multiline-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multiline-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multiparam-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "q1"
+    },
+    "multiparam-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multiparam-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "search"
+    },
+    "multiparam-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multiparam-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "prefix"
+    },
+    "multiparam-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "a"
+    },
+    "multipart-level1": {
+      "channel": "form",
+      "method": "POST",
+      "param": "filename"
+    },
+    "multipart-level2": {
+      "channel": "form",
+      "method": "POST",
+      "param": "query"
+    },
+    "multipart-level4": {
+      "channel": "header",
+      "method": "GET",
+      "param": "User-Agent"
+    },
+    "multipleoutput-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multipleoutput-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multipleoutput-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multipleoutput-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multipleoutput-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multipleoutput-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multireflect-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "q"
+    },
+    "multireflect-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "q"
+    },
+    "multireflect-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "name"
+    },
+    "multireflect-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "slug"
+    },
+    "multireflect-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "tag"
+    },
+    "multireflect-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "msg"
+    },
+    "multireflect-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "name"
+    },
+    "multireflect-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "value"
+    },
+    "multivector-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multivector-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multivector-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multivector-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multivector-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "multivector-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mutfilter-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mutfilter-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mutfilter-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mutfilter-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mutfilter-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mxss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mxss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mxss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mxss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "mxss-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "navsink-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "navsink-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedfilter-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedfilter-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedfilter-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedfilter-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedfilter-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nestedfilter-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nonce-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nonce-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "nonce-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "noscript-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "noscript-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "noscript-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "noscript-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "numericcontext-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "numericcontext-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "numericcontext-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "numericcontext-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "numericcontext-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "numericcontext-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "obfuscation-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "obfuscation-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "obfuscation-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "obfuscation-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "obfuscation-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "obfuscation-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "partialencode-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "partialencode-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "partialencode-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "partialencode-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "partialencode-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "partialencode-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "path-level1": {
+      "channel": "path",
+      "method": "GET",
+      "param": ":path"
+    },
+    "path-level2": {
+      "channel": "path",
+      "method": "GET",
+      "param": ":path"
+    },
+    "path-level3": {
+      "channel": "path",
+      "method": "GET",
+      "param": ":path"
+    },
+    "path-level4": {
+      "channel": "path",
+      "method": "GET",
+      "param": ":path"
+    },
+    "pathxss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pathxss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pathxss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pathxss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pathxss-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pathxss-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "payloadfilt-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "payloadfilt-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "payloadfilt-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "payloadfilt-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "payloadfilt-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "payloadfilt-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pdiff-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pdiff-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pdiff-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pdiff-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pdiff-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "pdiff-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "polyctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "polyctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "polyctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "polyctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "polyctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "polyctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "polyglot-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "polyglot-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "polyglot-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "popover-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "popover-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "popover-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "post-level1": {
+      "channel": "form",
+      "method": "POST",
+      "param": "query"
+    },
+    "post-level2": {
+      "channel": "json",
+      "method": "POST",
+      "param": "query"
+    },
+    "postmethod-level1": {
+      "channel": "form",
+      "method": "POST",
+      "param": "query"
+    },
+    "postmethod-level2": {
+      "channel": "form",
+      "method": "POST",
+      "param": "query"
+    },
+    "postmethod-level3": {
+      "channel": "json",
+      "method": "POST",
+      "param": "query"
+    },
+    "postmethod-level4": {
+      "channel": "form",
+      "method": "POST",
+      "param": "query"
+    },
+    "postmethod-level5": {
+      "channel": "form",
+      "method": "POST",
+      "param": "name"
+    },
+    "postmethod-level6": {
+      "channel": "form",
+      "method": "POST",
+      "param": "query"
+    },
+    "prototype-pattern-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "prototype-pattern-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "prototype-pattern-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "prototype-pattern-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "prototype-pattern-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "prototype-pattern-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "prototype-pollution-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "prototype-pollution-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "prototype-pollution-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "querymethod-level1": {
+      "channel": "form",
+      "method": "QUERY",
+      "param": "query"
+    },
+    "querymethod-level2": {
+      "channel": "json",
+      "method": "QUERY",
+      "param": "query"
+    },
+    "querymethod-level3": {
+      "channel": "form",
+      "method": "QUERY",
+      "param": "query"
+    },
+    "querymethod-level4": {
+      "channel": "form",
+      "method": "QUERY",
+      "param": "query"
+    },
+    "querymethod-level5": {
+      "channel": "form",
+      "method": "QUERY",
+      "param": "query"
+    },
+    "racecon-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "racecon-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "racecon-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "racecon-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-encoding-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-encoding-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-encoding-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-encoding-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-encoding-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-encoding-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-encoding-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "tag"
+    },
+    "realworld-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "realworld-level8": {
+      "channel": "referer",
+      "method": "GET",
+      "param": "Referer"
+    },
+    "realworld_input-level1": {
+      "channel": "header",
+      "method": "GET",
+      "param": "X-Forwarded-For"
+    },
+    "realworld_input-level2": {
+      "channel": "json",
+      "method": "POST",
+      "param": "name"
+    },
+    "realworld_input-level3": {
+      "channel": "form",
+      "method": "POST",
+      "param": "username"
+    },
+    "realworld_input-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "url"
+    },
+    "realworld_input-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "lang"
+    },
+    "realworld_input-level7": {
+      "channel": "path",
+      "method": "GET",
+      "param": ":path"
+    },
+    "realworld_input-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "callback"
+    },
+    "recfilt-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "recfilt-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "recfilt-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "recfilt-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "recfilt-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "recfilt-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "redirectxss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "redirectxss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "redirectxss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "redirectxss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "redirectxss-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "redirectxss-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexbypass-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexbypass-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexbypass-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexbypass-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexbypass-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexbypass-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexbypass-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexbypass-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexfilt-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexfilt-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexfilt-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexfilt-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexfilt-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "regexfilt-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "replacementfilter-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "replacementfilter-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "replacementfilter-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "replacementfilter-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "replacementfilter-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "replacementfilter-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "respheader-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "respheader-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "respheader-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "respheader-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "respheader-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "respheader-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "rsplit-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "rsplit-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "name"
+    },
+    "rsplit-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "page"
+    },
+    "rsplit-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "pref"
+    },
+    "rwpattern-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "rwpattern-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "rwpattern-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "rwpattern-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "rwpattern-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "rwpattern-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-edge-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-edge-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-edge-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-edge-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-edge-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-edge-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sanitizer-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "scanbounty-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "title"
+    },
+    "scanbounty-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "page"
+    },
+    "scanbounty-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "lang"
+    },
+    "scanbounty-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "name"
+    },
+    "scanbounty-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "return_to"
+    },
+    "scanbounty-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "embed"
+    },
+    "scanbounty-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "tag"
+    },
+    "scanbounty-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "color"
+    },
+    "scriptgadget-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "scriptgadget-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "scriptgadget-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "scriptgadget-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "scriptgadget-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "scriptgadget-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "semantictag-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "semantictag-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "semantictag-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "semantictag-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "semantictag-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "semantictag-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "seoctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "seoctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "seoctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "seoctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "seoctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "seoctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "shadow-dom-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "shadow-dom-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "shadow-dom-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "shadow-dom-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "shadow-dom-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sink-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sink-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sink-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sink-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sink-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sink-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sink-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "sink-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "callback"
+    },
+    "slot-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "slot-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "slot-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "slot-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "social-media-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "social-media-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "social-media-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "social-media-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "social-media-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "social-media-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialchar-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialchar-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialchar-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialchar-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialchar-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialchar-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialtag-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialtag-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialtag-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialtag-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialtag-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialtag-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialtag-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "specialtag-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "srcdoc-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "srcdoc-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "srcdoc-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "srcdoc-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "srcdoc-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "srcset-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "srcset-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "srcset-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "srcset-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "stored-level1": {
+      "channel": "form",
+      "method": "POST",
+      "param": "query"
+    },
+    "stored-level3": {
+      "channel": "form",
+      "method": "POST",
+      "param": "query"
+    },
+    "storedpat-level1": {
+      "channel": "form",
+      "method": "POST",
+      "param": "body"
+    },
+    "storedpat-level2": {
+      "channel": "form",
+      "method": "POST",
+      "param": "bio"
+    },
+    "storedpat-level3": {
+      "channel": "form",
+      "method": "POST",
+      "param": "review"
+    },
+    "storedpat-level4": {
+      "channel": "form",
+      "method": "POST",
+      "param": "msg"
+    },
+    "storedpat-level5": {
+      "channel": "form",
+      "method": "POST",
+      "param": "subject"
+    },
+    "svg-xss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svg-xss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svg-xss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svg-xss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svg-xss-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svg-xss-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svgctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svgctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svgctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svgctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svgctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "svgctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tablecontext-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tablecontext-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tablecontext-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tablecontext-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tablecontext-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tablecontext-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tagattrmix-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tagattrmix-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tagattrmix-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tagattrmix-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tagattrmix-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tagattrmix-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "template-injection-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "template-injection-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "template-injection-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "template-injection-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "template-injection-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "template-injection-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "timing-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "timing-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "timing-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "timing-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "timing-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "timing-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tplel-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tplel-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tplel-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tplel-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tplinject-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tplinject-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tplinject-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tplinject-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tplinject-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "tplinject-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "truncation-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "truncation-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "truncation-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "truncation-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "truncation-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "truncation-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "trustedtypes-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "trustedtypes-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "trustedtypes-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "trustedtypes-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "trustedtypes-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "unicode-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "unicode-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "unicode-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "unicode-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "unicode-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "unicode-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "url-param-ctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "url-param-ctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "url-param-ctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "url-param-ctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "url-param-ctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "url-param-ctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-bypass-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-bypass-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-bypass-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-bypass-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-bypass-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-bypass-level8": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-facade-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-facade-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-facade-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-facade-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-facade-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "waf-facade-level7": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wafv2-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wafv2-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wafv2-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wafv2-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wafv2-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wafv2-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "websocket-xss-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "websocket-xss-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "websocket-xss-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "websocket-xss-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "websocket-xss-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "whitespace-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "whitespace-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "whitespace-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "whitespace-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "whitespace-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "whitespace-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "worker-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "worker-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "worker-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "worker-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wrappercontext-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wrappercontext-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wrappercontext-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wrappercontext-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wrappercontext-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "wrappercontext-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "xmlctx-level1": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "xmlctx-level2": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "xmlctx-level3": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "xmlctx-level4": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "xmlctx-level5": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    },
+    "xmlctx-level6": {
+      "channel": "query",
+      "method": "GET",
+      "param": "query"
+    }
+  },
   "client_source": [
     "apidom-level1",
     "apidom-level2",
@@ -208,7 +4750,7 @@
   ],
   "errors": {},
   "marker": "479105382617",
-  "measured": "2026-10-01T23:25:50Z",
+  "measured": "2026-10-01T23:44:44Z",
   "method": "send the marker through the endpoint's declared delivery channel, then look for it anywhere in the response body",
   "multi_request": [
     "modern-bypass-level1",

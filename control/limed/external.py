@@ -28,6 +28,7 @@ py3-yaml, so HTTP is `urllib` and nothing here may grow a dependency.
 import json
 import os
 import urllib.error
+import urllib.parse
 import urllib.request
 
 ANSWER_KEY = "answer_key"
@@ -98,7 +99,9 @@ XSSMAZE_CLASSES = {
     "dom": "xss-dom",
     "stored": "xss-stored",
     "prototype-pollution": "proto-pollution",
-    "csti": "ssti",
+    # Not ssti: these are AngularJS and Vue `{{ }}` expressions evaluated in
+    # the browser. See schema.md's class list.
+    "csti": "csti",
     "non-xss-control": None,   # the precision controls, see below
 }
 
@@ -108,7 +111,59 @@ XSSMAZE_CLASSES = {
 XSSMAZE_DELIVERY = {
     "query": "query", "body": "body", "header": "header",
     "cookie": "cookie", "path": "path", "referer": "header",
+    "fragment": "fragment",
 }
+
+
+def xssmaze_param(ep, solution):
+    """Which parameter the answer key certifies, not the first one declared.
+
+    The adapter used to take params[0], and on a multi-parameter endpoint that
+    is frequently the wrong one. xssmaze says so itself: multiparam-level5 is
+    "only name is exploitable" against params ['prefix', 'name', 'suffix'],
+    hpp-level2 is "the injectable parameter is q" against ['query', 'q'], and
+    multireflect-level7 is "only email is reflected raw" against
+    ['name', 'email']. Each of those scored a correct detection as a miss and
+    filed the engine's answer under unmatched at the same time, so one truth
+    bug cost two entries.
+
+    The note says which, but prose is not something to parse. /solutions.json
+    carries a working exploit URL per maze, and diffing its query against the
+    baseline query in the endpoint's own url names the parameter the payload
+    goes in. That is upstream's certification, expressed as data.
+
+    A scanner that finds a different parameter that also works lands in
+    `unmatched`, which is what unmatched is for: a finding to promote or
+    investigate, never recall the engine did not earn.
+    """
+    real = [x for x in (ep.get("params") or [])
+            if isinstance(x, str) and x and not x.startswith("#")]
+    if not real:
+        return None
+    # `:path` and friends name a channel, not a request parameter. Dropping it
+    # lets path+class carry the match, since the path is the location.
+    if all(x.startswith(":") for x in real):
+        return None
+    plain = [x for x in real if not x.startswith(":")]
+    if len(plain) < 2:
+        return plain[0] if plain else None
+
+    want = (solution or {}).get("url")
+    if not isinstance(want, str) or "?" not in want:
+        return plain[0]
+    try:
+        base = dict(urllib.parse.parse_qsl(
+            urllib.parse.urlsplit(ep.get("url") or "").query, keep_blank_values=True))
+        sol = dict(urllib.parse.parse_qsl(
+            urllib.parse.urlsplit(want).query, keep_blank_values=True))
+    except ValueError:
+        return plain[0]
+    changed = [k for k in plain if k in sol and sol.get(k) != base.get(k)]
+    if len(changed) == 1:
+        return changed[0]
+    # Nothing changed, or several did and the key does not single one out.
+    # Keep the declared order rather than inventing a preference.
+    return changed[0] if changed else plain[0]
 
 
 def adapt_xssmaze_map(payload, _ext, extra):
@@ -163,12 +218,9 @@ def adapt_xssmaze_map(payload, _ext, extra):
         where = {"path": raw}
         if e.get("method"):
             where["method"] = e["method"]
-        params = [x for x in (e.get("params") or []) if isinstance(x, str)]
-        # `#hash` and friends are pseudo-params naming a fragment, not a
-        # request parameter a scanner could inject into.
-        real = [x for x in params if not x.startswith("#")]
-        if real:
-            where["param"] = real[0]
+        chosen = xssmaze_param(e, sol.get(e["name"]))
+        if chosen:
+            where["param"] = chosen
         delivery = (v.get("delivery") or [None])[0]
         where_in = XSSMAZE_DELIVERY.get(delivery)
         if where_in:

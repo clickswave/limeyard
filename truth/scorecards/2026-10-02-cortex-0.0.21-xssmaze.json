@@ -1,30 +1,30 @@
 {
   "tool": "cortex-0.0.21",
-  "generated": "2026-10-01T23:41:38Z",
+  "generated": "2026-10-01T23:56:31Z",
   "totals": {
     "expected": 918,
-    "detected": 727,
-    "missed": 191,
+    "detected": 752,
+    "missed": 166,
     "false_positive": 4,
-    "unmatched": 24,
+    "unmatched": 27,
     "out_of_scope": 119,
     "unresolved_external": 0,
-    "precision": 0.9945,
-    "recall": 0.7919,
-    "f1": 0.8817,
-    "seconds": 408.6,
+    "precision": 0.9947,
+    "recall": 0.8192,
+    "f1": 0.8985,
+    "seconds": 409.1,
     "requests": 0,
     "slowest_target": "xssmaze",
-    "slowest_seconds": 408.6
+    "slowest_seconds": 409.1
   },
   "by_class": {
-    "proto-pollution": {
-      "expected": 3,
+    "csti": {
+      "expected": 5,
       "detected": 0,
       "recall": 0.0
     },
-    "ssti": {
-      "expected": 5,
+    "proto-pollution": {
+      "expected": 3,
       "detected": 0,
       "recall": 0.0
     },
@@ -35,8 +35,8 @@
     },
     "xss-reflected": {
       "expected": 819,
-      "detected": 651,
-      "recall": 0.7949
+      "detected": 676,
+      "recall": 0.8254
     },
     "xss-stored": {
       "expected": 10,
@@ -228,6 +228,7 @@
         "ecommerce-level4",
         "ecommerce-level5",
         "ecommerce-level6",
+        "edge-level2",
         "edge-level3",
         "edge-level5",
         "edge-level6",
@@ -304,6 +305,12 @@
         "headerinj-level1",
         "headerinj-level2",
         "headerinj-level3",
+        "headless-generator-level1",
+        "headless-generator-level2",
+        "headless-generator-level3",
+        "headless-generator-level4",
+        "headless-generator-level5",
+        "headless-generator-level6",
         "hidden-reflection-level1",
         "hidden-reflection-level2",
         "hidden-reflection-level3",
@@ -311,6 +318,7 @@
         "hidden-reflection-level5",
         "hidden-reflection-level6",
         "hidden-xss-level1",
+        "hpp-level2",
         "hpp-level3",
         "hpp-level4",
         "html5-sanitizer-level5",
@@ -448,6 +456,7 @@
         "multicontext-level2",
         "multicontext-level3",
         "multicontext-level5",
+        "multicontext-level6",
         "multiline-level1",
         "multiline-level2",
         "multiline-level3",
@@ -458,7 +467,9 @@
         "multiparam-level2",
         "multiparam-level3",
         "multiparam-level4",
+        "multiparam-level5",
         "multiparam-level6",
+        "multipart-level1",
         "multipart-level4",
         "multipleoutput-level1",
         "multipleoutput-level2",
@@ -472,6 +483,7 @@
         "multireflect-level4",
         "multireflect-level5",
         "multireflect-level6",
+        "multireflect-level7",
         "multireflect-level8",
         "multivector-level1",
         "multivector-level2",
@@ -517,6 +529,9 @@
         "partialencode-level3",
         "partialencode-level4",
         "partialencode-level6",
+        "path-level1",
+        "path-level2",
+        "path-level4",
         "pathxss-level1",
         "pathxss-level2",
         "pathxss-level3",
@@ -541,6 +556,13 @@
         "polyglot-level2",
         "popover-level1",
         "popover-level3",
+        "post-level1",
+        "post-level2",
+        "postmethod-level1",
+        "postmethod-level2",
+        "postmethod-level3",
+        "postmethod-level4",
+        "postmethod-level5",
         "prototype-pattern-level1",
         "prototype-pattern-level2",
         "prototype-pattern-level3",
@@ -560,8 +582,11 @@
         "realworld-level7",
         "realworld-level8",
         "realworld_input-level1",
+        "realworld_input-level2",
+        "realworld_input-level3",
         "realworld_input-level5",
         "realworld_input-level6",
+        "realworld_input-level7",
         "realworld_input-level8",
         "recfilt-level1",
         "recfilt-level4",
@@ -806,7 +831,6 @@
         "dom-level28",
         "domsource-level4",
         "edge-level1",
-        "edge-level2",
         "edge-level4",
         "edgefilter-level2",
         "edgefilter-level3",
@@ -836,16 +860,9 @@
         "headerinj-level4",
         "headerinj-level5",
         "headerinj-level6",
-        "headless-generator-level1",
-        "headless-generator-level2",
-        "headless-generator-level3",
-        "headless-generator-level4",
-        "headless-generator-level5",
-        "headless-generator-level6",
         "hidden-xss-level2",
         "hidden-xss-level3",
         "hpp-level1",
-        "hpp-level2",
         "html5-sanitizer-level1",
         "html5-sanitizer-level2",
         "html5-sanitizer-level3",
@@ -872,12 +889,8 @@
         "modern-level1",
         "modern-level4",
         "multicontext-level4",
-        "multicontext-level6",
-        "multiparam-level5",
-        "multipart-level1",
         "multipart-level2",
         "multipart-level3",
-        "multireflect-level7",
         "mutfilter-level3",
         "mutfilter-level6",
         "nestedfilter-level4",
@@ -889,23 +902,13 @@
         "partialencode-level1",
         "partialencode-level2",
         "partialencode-level5",
-        "path-level1",
-        "path-level2",
         "path-level3",
-        "path-level4",
         "payloadfilt-level1",
         "payloadfilt-level4",
         "payloadfilt-level5",
         "payloadfilt-level6",
         "polyglot-level3",
         "popover-level2",
-        "post-level1",
-        "post-level2",
-        "postmethod-level1",
-        "postmethod-level2",
-        "postmethod-level3",
-        "postmethod-level4",
-        "postmethod-level5",
         "postmethod-level6",
         "prototype-pollution-level1",
         "prototype-pollution-level2",
@@ -922,9 +925,6 @@
         "realworld-encoding-level7",
         "realworld-level3",
         "realworld-level5",
-        "realworld_input-level2",
-        "realworld_input-level3",
-        "realworld_input-level7",
         "recfilt-level2",
         "recfilt-level3",
         "recfilt-level6",
@@ -1048,26 +1048,14 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/hpp/level2",
-          "param": "q",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
           "path": "/json/level1",
-          "param": "callback",
+          "param": "query",
           "severity": null
         },
         {
           "class": "xss-reflected",
           "path": "/jsonctx/level3",
           "param": "callback",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/multicontext/level6",
-          "param": "q2",
           "severity": null
         },
         {
@@ -1090,12 +1078,6 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/multiparam/level5",
-          "param": "name",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
           "path": "/multiparam/level6",
           "param": "b",
           "severity": null
@@ -1104,12 +1086,6 @@
           "class": "xss-reflected",
           "path": "/multiparam/level6",
           "param": "c",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/multireflect/level7",
-          "param": "email",
           "severity": null
         },
         {
@@ -1140,6 +1116,48 @@
           "class": "xss-reflected",
           "path": "/rsplit/level2",
           "param": "color",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/stored/level1",
+          "param": "query",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/stored/level3",
+          "param": "query",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/storedpat/level1",
+          "param": "body",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/storedpat/level2",
+          "param": "bio",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/storedpat/level3",
+          "param": "review",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/storedpat/level4",
+          "param": "msg",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/storedpat/level5",
+          "param": "subject",
           "severity": null
         },
         {
@@ -1271,18 +1289,18 @@
         "websocket-xss-level7"
       ],
       "location_flags": [],
-      "precision": 0.9945,
-      "recall": 0.7919,
-      "f1": 0.8817,
+      "precision": 0.9947,
+      "recall": 0.8192,
+      "f1": 0.8984,
       "external": {
         "resolved": true,
         "format": "xssmaze-map",
         "via": "http://127.0.0.1:7102/map/json",
         "count": 1064,
         "reach_scoped_out": 95,
-        "reach_measured": "2026-10-01T23:25:50Z"
+        "reach_measured": "2026-10-01T23:44:44Z"
       },
-      "seconds": 408.6,
+      "seconds": 409.1,
       "requests": 0
     }
   }
