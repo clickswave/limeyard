@@ -33,7 +33,10 @@ import urllib.request
 ANSWER_KEY = "answer_key"
 SELF_SCORED = "self_scored"
 
-TIMEOUT = 10
+# Every declared source is on the lab network or loopback, so it answers in
+# milliseconds or it is not running. A long timeout only means a cold lab makes
+# `lime truth` hang for four targets in a row.
+TIMEOUT = 4
 
 
 # ----------------------------------------------------------------- fetching ---

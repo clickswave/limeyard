@@ -143,16 +143,49 @@ def load_scenarios():
     return out
 
 
-def load_truth(t):
+def load_truth(t, resolve_external=True):
+    """Load a target's truth.yml, resolving an `external:` block if it has one.
+
+    Resolution happens here rather than in the scorer so that the scorer stays
+    pure: it takes findings and truth and does arithmetic. Everything that
+    touches a socket or the filesystem lives on this side of the line.
+
+    A target that cannot be reached keeps its empty `expected`, which is what
+    the scorecard reports as unresolved. The reason is attached so the card can
+    say why rather than just that.
+    """
     p = t.get("truth_path")
     if not (p and os.path.exists(p) and yaml):
         return None
     try:
         with open(p) as f:
-            return yaml.safe_load(f) or {}
+            tr = yaml.safe_load(f) or {}
     except Exception as e:
         print(col(f"warning: {p} parse error: {e}", "y"), file=sys.stderr)
         return None
+
+    if resolve_external and tr.get("external"):
+        try:
+            import external
+            res = external.resolve(tr, target_dir=os.path.dirname(p))
+            if res.get("resolved"):
+                tr["expected"] = res.get("expected") or []
+                tr["negative"] = res.get("negative") or []
+                tr["external"] = {**tr["external"], "resolved": True,
+                                  "via": res.get("via"),
+                                  "count": res.get("resolved_count")}
+                for k in ("unmapped_types", "unrecognised_classes"):
+                    if res.get(k):
+                        tr["external"][k] = res[k]
+            else:
+                tr["external"] = {**tr["external"], "resolved": False,
+                                  "reason": res.get("reason")}
+        except Exception as e:
+            # Never let a benchmark target being down break a scoring run that
+            # has already happened.
+            tr["external"] = {**tr["external"], "resolved": False,
+                              "reason": f"resolution failed: {e}"}
+    return tr
 
 
 # ------------------------------------------------------------------ docker ---

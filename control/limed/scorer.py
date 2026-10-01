@@ -286,7 +286,7 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
             row = score_crawl(tr, fs, scopes)
             if unresolved:
                 row["external"] = {"resolved": False, "format": ext.get("format"),
-                                   "url": ext.get("url")}
+                                   "url": ext.get("url"), "reason": ext.get("reason")}
                 totals["unresolved_external"] += 1
                 totals.setdefault("unresolved_external_targets", []).append(slug)
             per_target[slug] = row
@@ -354,6 +354,7 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
                 "resolved": False,
                 "format": ext.get("format"),
                 "url": ext.get("url"),
+                "reason": ext.get("reason"),
             }
             totals["unresolved_external"] += 1
             totals.setdefault("unresolved_external_targets", []).append(slug)
