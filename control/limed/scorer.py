@@ -198,7 +198,8 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
     A scanner nobody can afford to run is not accurate, it is theoretical.
     """
     per_target, totals = {}, {"expected": 0, "detected": 0, "missed": 0,
-                              "false_positive": 0, "unmatched": 0, "out_of_scope": 0}
+                              "false_positive": 0, "unmatched": 0, "out_of_scope": 0,
+                              "unresolved_external": 0}
     by_class = {}
 
     grouped = {}
@@ -213,6 +214,16 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
         in_scope = [e for e in expected if e.get("scope", "black-box") in scopes]
         oos = [e for e in expected if e.get("scope") not in scopes]
         negative = tr.get("negative") or []
+
+        # Four targets declare that their truth lives in the target itself:
+        # xssmaze serves 1031 entries plus an answer key, crawl-maze and
+        # crawlground serve their expected URL sets, VulnerableApp serves its
+        # own grader. Nothing resolves that declaration yet, so these score
+        # 0 of 0 and every finding against them lands in `unmatched`, which
+        # reads as "we do not document this" when in fact the target does.
+        # Record the difference so a reader can see the score is partial.
+        ext = tr.get("external") or {}
+        unresolved = bool(ext) and not expected and not negative
 
         used, detected, notes = set(), [], []
         for e in in_scope:
@@ -263,6 +274,14 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
             "recall": round(rec_, 4) if rec_ is not None else None,
             "f1": round(f1, 4) if f1 is not None else None,
         }
+        if unresolved:
+            per_target[slug]["external"] = {
+                "resolved": False,
+                "format": ext.get("format"),
+                "url": ext.get("url"),
+            }
+            totals["unresolved_external"] += 1
+            totals.setdefault("unresolved_external_targets", []).append(slug)
         totals["expected"] += len(in_scope)
         totals["detected"] += tp
         totals["missed"] += fn
@@ -355,6 +374,12 @@ def render(card):
     out.append(f"  precision  {pct(t['precision'])}   {t['false_positive']} false positives")
     out.append(f"  f1         {pct(t['f1'])}")
     out.append(f"  unmatched  {t['unmatched']:5d}     findings we do not document (promote or investigate)")
+    if t.get("unresolved_external"):
+        names = ", ".join(t.get("unresolved_external_targets") or [])
+        out.append(f"  unscored   {t['unresolved_external']:5d}     "
+                   f"targets whose truth is external and was not fetched: {names}")
+        out.append("                       their findings sit in unmatched, so the figures "
+                   "above are a partial score")
     out.append(f"  skipped    {t['out_of_scope']:5d}     out-of-scope, never counted")
     out.append("")
     out.append("  by class")
