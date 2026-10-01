@@ -42,6 +42,22 @@ note: >-
   store on every request, so identical input gives a different response and
   every candidate looks like a hit.
 
+  Two of its SQL injection entries are not injectable, checked 2026-10-02.
+  ErrorBasedSQLInjection levels 3 and 4 quote the value and strip the single
+  quote: `1' OR '1'='1` arrives as `id='1 OR 1=1'`, with the payload's own
+  quotes removed, so nothing escapes the string literal and every payload ends
+  as an H2 data-conversion error. The SQL statement is leaked in that error,
+  which is a real information disclosure, but the key labels both
+  ERROR_BASED_SQL_INJECTION and they are not. Level 1 concatenates unquoted and
+  level 2 quotes without escaping, so those two are genuinely injectable and
+  are detected.
+
+  So a perfect score against this key is not achievable and should not be
+  chased. Of its nine SQL injection cases: four detected, two not injectable as
+  above, two unreachable because no parameter was discovered on those paths, and
+  BlindSQLInjection level 2 answers 500 to every value containing a space,
+  including `1 AND 1=1`, so there is no oracle to read.
+
   Calibration: upstream commits ZAP's own results, which sit at 3.9% coverage
   on the legacy UI and 0.0% on the React one. A low score here is normal and is
   not by itself evidence of an engine bug; check URL normalisation and seed the
