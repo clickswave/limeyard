@@ -53,6 +53,22 @@ note: >-
   path-level1 through level4, edge-level2 and realworld_input-level7 are the
   same gap in the reflected-html class.
 
+  What the 76 remaining misses are, grouped 2026-10-02 so the next reader does
+  not re-derive them from a list of ids. 32 want a tag payload the filter
+  family in front of them blocks, and that bucket has the worst return of
+  anything here: sixteen candidate payloads were measured against it and
+  fourteen recovered nothing the other two did not, so the next one is per
+  family rather than general. 7 want an encoding layer beyond the three the
+  engine tries and 4 want base64, sometimes twice. 6 want a handler name
+  outside the one unlisted handler the engine carries. 6 put an HTML entity
+  inside the payload. 5 are DOM flows that need the page's JavaScript read and
+  4 are JS-string breakouts the oracle will not claim without it, which is the
+  same browser-tier boundary. 3 are prototype pollution, where the engine has
+  no oracle and reports the reflected XSS beside it instead. 3 are stored
+  through a separate JSON API or behind a session. The rest are single cases:
+  fullwidth lookalike characters, a javascript: URL, a template literal, and
+  one payload with no alphanumerics in it.
+
   27 endpoints are marked exploitable:false. Those are the precision controls,
   and reporting one is a false positive. They resolve into `negative` with no
   class, so reporting anything at all on one counts against precision.
