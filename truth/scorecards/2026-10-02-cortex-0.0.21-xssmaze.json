@@ -1,28 +1,28 @@
 {
   "tool": "cortex-0.0.21",
-  "generated": "2026-10-02T02:28:37Z",
+  "generated": "2026-10-02T02:41:21Z",
   "totals": {
     "expected": 918,
-    "detected": 837,
-    "missed": 81,
+    "detected": 842,
+    "missed": 76,
     "false_positive": 4,
-    "unmatched": 21,
+    "unmatched": 23,
     "out_of_scope": 119,
     "needs_credentials": 0,
     "unresolved_external": 0,
-    "precision": 0.9952,
-    "recall": 0.9118,
-    "f1": 0.9517,
-    "seconds": 43.0,
+    "precision": 0.9953,
+    "recall": 0.9172,
+    "f1": 0.9547,
+    "seconds": 43.8,
     "requests": 0,
     "slowest_target": "xssmaze",
-    "slowest_seconds": 43.0
+    "slowest_seconds": 43.8
   },
   "by_class": {
     "csti": {
       "expected": 5,
-      "detected": 0,
-      "recall": 0.0
+      "detected": 5,
+      "recall": 1.0
     },
     "proto-pollution": {
       "expected": 3,
@@ -170,7 +170,10 @@
         "css-injection-level4",
         "css-injection-level5",
         "css-injection-level6",
+        "csti-level1",
+        "csti-level2",
         "csti-level3",
+        "csti-level4",
         "csti-level5",
         "ctxescape-level1",
         "ctxescape-level2",
@@ -481,7 +484,9 @@
         "modern-bypass-level21",
         "modern-bypass-level22",
         "modern-bypass-level23",
+        "modern-bypass-level24",
         "modern-bypass-level25",
+        "modern-bypass-level3",
         "modern-bypass-level5",
         "modern-bypass-level7",
         "modern-bypass-level8",
@@ -891,9 +896,6 @@
         "bugbounty-level7",
         "chain-level3",
         "cspbypass-level5",
-        "csti-level1",
-        "csti-level2",
-        "csti-level4",
         "dblenc-level3",
         "decode-level1",
         "decode-level4",
@@ -932,8 +934,6 @@
         "modern-bypass-level1",
         "modern-bypass-level2",
         "modern-bypass-level20",
-        "modern-bypass-level24",
-        "modern-bypass-level3",
         "modern-bypass-level6",
         "modern-level1",
         "modern-level4",
@@ -1024,6 +1024,12 @@
           "severity": null
         },
         {
+          "class": "csti",
+          "path": "/csti/level3",
+          "param": "query",
+          "severity": null
+        },
+        {
           "class": "xss-reflected",
           "path": "/csti/level4",
           "param": "query",
@@ -1093,6 +1099,12 @@
           "class": "xss-reflected",
           "path": "/multiparam/level6",
           "param": "c",
+          "severity": null
+        },
+        {
+          "class": "csti",
+          "path": "/prototype-pattern/level4",
+          "param": "query",
           "severity": null
         },
         {
@@ -1255,9 +1267,9 @@
       ],
       "needs_credentials": [],
       "location_flags": [],
-      "precision": 0.9952,
-      "recall": 0.9118,
-      "f1": 0.9517,
+      "precision": 0.9953,
+      "recall": 0.9172,
+      "f1": 0.9546,
       "external": {
         "resolved": true,
         "format": "xssmaze-map",
@@ -1266,7 +1278,7 @@
         "reach_scoped_out": 95,
         "reach_measured": "2026-10-01T23:44:44Z"
       },
-      "seconds": 43.0,
+      "seconds": 43.8,
       "requests": 0
     }
   }
