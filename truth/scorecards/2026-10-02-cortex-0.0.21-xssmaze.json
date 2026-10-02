@@ -1,6 +1,6 @@
 {
   "tool": "cortex-0.0.21",
-  "generated": "2026-10-02T03:10:02Z",
+  "generated": "2026-10-02T03:18:56Z",
   "totals": {
     "expected": 921,
     "detected": 845,
@@ -13,10 +13,10 @@
     "precision": 0.9953,
     "recall": 0.9175,
     "f1": 0.9548,
-    "seconds": 44.1,
+    "seconds": 507.7,
     "requests": 0,
     "slowest_target": "xssmaze",
-    "slowest_seconds": 44.1
+    "slowest_seconds": 507.7
   },
   "by_class": {
     "csti": {
@@ -1027,14 +1027,14 @@
           "severity": null
         },
         {
-          "class": "csti",
-          "path": "/csti/level3",
+          "class": "xss-reflected",
+          "path": "/csti/level4",
           "param": "query",
           "severity": null
         },
         {
-          "class": "xss-reflected",
-          "path": "/csti/level4",
+          "class": "csti",
+          "path": "/csti/level3",
           "param": "query",
           "severity": null
         },
@@ -1082,14 +1082,14 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/multiparam/level3",
-          "param": "sort",
+          "path": "/multiparam/level2",
+          "param": "page",
           "severity": null
         },
         {
           "class": "xss-reflected",
-          "path": "/multiparam/level2",
-          "param": "page",
+          "path": "/multiparam/level3",
+          "param": "sort",
           "severity": null
         },
         {
@@ -1261,9 +1261,10 @@
         "via": "http://127.0.0.1:7102/map/json",
         "count": 1067,
         "reach_scoped_out": 95,
-        "reach_measured": "2026-10-01T23:44:44Z"
+        "reach_measured": "2026-10-01T23:44:44Z",
+        "expected_local": 3
       },
-      "seconds": 44.1,
+      "seconds": 507.7,
       "requests": 0
     }
   }
