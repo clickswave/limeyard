@@ -1,0 +1,19 @@
+{
+  "checked": "2026-10-02T01:49:12Z",
+  "disagrees": [],
+  "gated": {},
+  "host": "http://log4shell:8080",
+  "method": "request each entry's path with no credentials and a browser Accept header, following redirects",
+  "open": {
+    "LS1": "answered 400 with no credentials",
+    "LS2": "answered 400 with no credentials"
+  },
+  "target": "log4shell",
+  "totals": {
+    "disagrees": 0,
+    "gated": 0,
+    "open": 2,
+    "unknown": 0
+  },
+  "unknown": {}
+}

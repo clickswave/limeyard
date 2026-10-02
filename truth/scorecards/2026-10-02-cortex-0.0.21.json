@@ -1,0 +1,263 @@
+{
+  "tool": "cortex-0.0.21",
+  "generated": "2026-10-02T02:04:28Z",
+  "totals": {
+    "expected": 14,
+    "detected": 7,
+    "missed": 7,
+    "false_positive": 0,
+    "unmatched": 2,
+    "out_of_scope": 10,
+    "needs_credentials": 13,
+    "unresolved_external": 0,
+    "precision": 1.0,
+    "recall": 0.5,
+    "f1": 0.6667,
+    "seconds": 419.8,
+    "requests": 0,
+    "slowest_target": "mutillidae",
+    "slowest_seconds": 394.9
+  },
+  "by_class": {
+    "cors": {
+      "expected": 1,
+      "detected": 1,
+      "recall": 1.0
+    },
+    "cve": {
+      "expected": 1,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "deserialization": {
+      "expected": 1,
+      "detected": 1,
+      "recall": 1.0
+    },
+    "excessive-exposure": {
+      "expected": 2,
+      "detected": 2,
+      "recall": 1.0
+    },
+    "exposure": {
+      "expected": 3,
+      "detected": 1,
+      "recall": 0.3333
+    },
+    "info-disclosure": {
+      "expected": 1,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "lfi": {
+      "expected": 1,
+      "detected": 0,
+      "recall": 0.0
+    },
+    "sqli": {
+      "expected": 2,
+      "detected": 2,
+      "recall": 1.0
+    },
+    "tech": {
+      "expected": 2,
+      "detected": 0,
+      "recall": 0.0
+    }
+  },
+  "by_target": {
+    "bwapp": {
+      "expected_in_scope": 1,
+      "detected": [],
+      "missed": [
+        "BW5"
+      ],
+      "false_positives": [],
+      "unmatched": [],
+      "out_of_scope": [
+        "BW6"
+      ],
+      "needs_credentials": [
+        "BW1",
+        "BW2",
+        "BW3",
+        "BW4"
+      ],
+      "location_flags": [],
+      "precision": null,
+      "recall": 0.0,
+      "f1": null,
+      "seconds": 0.9,
+      "requests": 0
+    },
+    "faultline": {
+      "expected_in_scope": 1,
+      "detected": [
+        "FL1"
+      ],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [],
+      "out_of_scope": [
+        "FL4",
+        "FL5"
+      ],
+      "needs_credentials": [
+        "FL2",
+        "FL3"
+      ],
+      "location_flags": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "seconds": 0.0,
+      "requests": 0
+    },
+    "juice-shop": {
+      "expected_in_scope": 2,
+      "detected": [
+        "JS1"
+      ],
+      "missed": [
+        "JS3"
+      ],
+      "false_positives": [],
+      "unmatched": [],
+      "out_of_scope": [
+        "JS4",
+        "JS5"
+      ],
+      "needs_credentials": [
+        "JS2"
+      ],
+      "location_flags": [],
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "seconds": 2.3,
+      "requests": 0
+    },
+    "log4shell": {
+      "expected_in_scope": 2,
+      "detected": [],
+      "missed": [
+        "LS1",
+        "LS2"
+      ],
+      "false_positives": [],
+      "unmatched": [],
+      "out_of_scope": [],
+      "needs_credentials": [],
+      "location_flags": [],
+      "precision": null,
+      "recall": 0.0,
+      "f1": null,
+      "seconds": 0.3,
+      "requests": 0
+    },
+    "modsec": {
+      "expected_in_scope": 1,
+      "detected": [],
+      "missed": [
+        "WAF2"
+      ],
+      "false_positives": [],
+      "unmatched": [],
+      "out_of_scope": [
+        "WAF1"
+      ],
+      "needs_credentials": [],
+      "location_flags": [],
+      "precision": null,
+      "recall": 0.0,
+      "f1": null,
+      "seconds": 1.1,
+      "requests": 0
+    },
+    "mutillidae": {
+      "expected_in_scope": 2,
+      "detected": [
+        "MU6"
+      ],
+      "missed": [
+        "MU3"
+      ],
+      "false_positives": [],
+      "unmatched": [],
+      "out_of_scope": [
+        "MU7",
+        "MU8"
+      ],
+      "needs_credentials": [
+        "MU1",
+        "MU2",
+        "MU4",
+        "MU5"
+      ],
+      "location_flags": [],
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "seconds": 394.9,
+      "requests": 0
+    },
+    "railsgoat": {
+      "expected_in_scope": 1,
+      "detected": [
+        "RG1"
+      ],
+      "missed": [],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "no-rate-limit",
+          "path": "/password_resets",
+          "param": null,
+          "severity": null
+        }
+      ],
+      "out_of_scope": [
+        "RG4",
+        "RG5"
+      ],
+      "needs_credentials": [
+        "RG2",
+        "RG3"
+      ],
+      "location_flags": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "seconds": 17.1,
+      "requests": 0
+    },
+    "vampi": {
+      "expected_in_scope": 4,
+      "detected": [
+        "VP1",
+        "VP2",
+        "VP3"
+      ],
+      "missed": [
+        "VP4"
+      ],
+      "false_positives": [],
+      "unmatched": [
+        {
+          "class": "sqli",
+          "path": "/users/v1/{username}",
+          "param": "{username}",
+          "severity": null
+        }
+      ],
+      "out_of_scope": [],
+      "needs_credentials": [],
+      "location_flags": [],
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1": 0.8571,
+      "seconds": 3.2,
+      "requests": 0
+    }
+  }
+}

@@ -1,23 +1,35 @@
 target: dvwa
 scoring: findings
 
+note: >-
+  Everything under /vulnerabilities/ needs a session. DV1, DV2 and DV3 were
+  labelled black-box and every one of them answers a redirect to /login.php
+  without credentials, so an unauthenticated run was scored three misses for
+  endpoints it never saw. Measured 2026-10-02 by `lime gated dvwa`, evidence
+  in gated.json beside this file. They are `authed` now, which counts when a
+  run seeds credentials and is skipped otherwise rather than counted against
+  recall.
+
+  The credentials and the security=low cookie are in target.yml, so a run that
+  seeds them scores these four for real. Nothing about the cases changed.
+
 expected:
   - id: DV1
     class: sqli
     severity: high
-    scope: black-box
+    scope: authed
     confirm: error-based and time-based blind
     where: {method: GET, path: /vulnerabilities/sqli/, param: id, in: query}
   - id: DV2
     class: xss-reflected
     severity: medium
-    scope: black-box
+    scope: authed
     confirm: unencoded reflection
     where: {method: GET, path: /vulnerabilities/xss_r/, param: name, in: query}
   - id: DV3
     class: lfi
     severity: high
-    scope: black-box
+    scope: authed
     confirm: file read
     where: {method: GET, path: /vulnerabilities/fi/, param: page, in: query}
   - id: DV4

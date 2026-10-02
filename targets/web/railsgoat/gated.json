@@ -1,0 +1,23 @@
+{
+  "checked": "2026-10-02T01:49:12Z",
+  "disagrees": [],
+  "gated": {
+    "RG2": "the server answered 403",
+    "RG4": "the server answered 403",
+    "RG5": "the server answered 403"
+  },
+  "host": "http://railsgoat:3000",
+  "method": "request each entry's path with no credentials and a browser Accept header, following redirects",
+  "open": {},
+  "target": "railsgoat",
+  "totals": {
+    "disagrees": 0,
+    "gated": 3,
+    "open": 0,
+    "unknown": 2
+  },
+  "unknown": {
+    "RG1": "POST only, not probed",
+    "RG3": "POST only, not probed"
+  }
+}

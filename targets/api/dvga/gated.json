@@ -1,0 +1,24 @@
+{
+  "checked": "2026-10-02T01:49:11Z",
+  "disagrees": [],
+  "gated": {},
+  "host": "http://dvga:5013",
+  "method": "request each entry's path with no credentials and a browser Accept header, following redirects",
+  "open": {},
+  "target": "dvga",
+  "totals": {
+    "disagrees": 0,
+    "gated": 0,
+    "open": 0,
+    "unknown": 7
+  },
+  "unknown": {
+    "DG1": "POST only, not probed",
+    "DG2": "POST only, not probed",
+    "DG3": "POST only, not probed",
+    "DG4": "POST only, not probed",
+    "DG5": "POST only, not probed",
+    "DG6": "POST only, not probed",
+    "DG7": "POST only, not probed"
+  }
+}

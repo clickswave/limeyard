@@ -1,0 +1,20 @@
+{
+  "checked": "2026-10-02T01:49:12Z",
+  "disagrees": [],
+  "gated": {},
+  "host": "http://blocking:8080",
+  "method": "request each entry's path with no credentials and a browser Accept header, following redirects",
+  "open": {
+    "WAF-N1": "answered 200 with no credentials",
+    "WAF1": "answered 200 with no credentials",
+    "WAF2": "answered 200 with no credentials"
+  },
+  "target": "modsec",
+  "totals": {
+    "disagrees": 0,
+    "gated": 0,
+    "open": 3,
+    "unknown": 0
+  },
+  "unknown": {}
+}

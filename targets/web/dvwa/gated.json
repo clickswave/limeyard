@@ -1,0 +1,41 @@
+{
+  "checked": "2026-10-02T01:49:11Z",
+  "disagrees": [
+    {
+      "id": "DV1",
+      "path": "/vulnerabilities/sqli/",
+      "why": "redirected to /login.php"
+    },
+    {
+      "id": "DV2",
+      "path": "/vulnerabilities/xss_r/",
+      "why": "redirected to /login.php"
+    },
+    {
+      "id": "DV3",
+      "path": "/vulnerabilities/fi/",
+      "why": "redirected to /login.php"
+    }
+  ],
+  "gated": {
+    "DV1": "redirected to /login.php",
+    "DV2": "redirected to /login.php",
+    "DV3": "redirected to /login.php",
+    "DV5": "redirected to /login.php",
+    "DV6": "redirected to /login.php",
+    "DV7": "redirected to /login.php"
+  },
+  "host": "http://dvwa:80",
+  "method": "request each entry's path with no credentials and a browser Accept header, following redirects",
+  "open": {},
+  "target": "dvwa",
+  "totals": {
+    "disagrees": 3,
+    "gated": 6,
+    "open": 0,
+    "unknown": 1
+  },
+  "unknown": {
+    "DV4": "POST only, not probed"
+  }
+}

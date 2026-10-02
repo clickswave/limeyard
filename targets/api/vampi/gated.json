@@ -1,0 +1,21 @@
+{
+  "checked": "2026-10-02T01:49:12Z",
+  "disagrees": [],
+  "gated": {},
+  "host": "http://vampi:5000",
+  "method": "request each entry's path with no credentials and a browser Accept header, following redirects",
+  "open": {
+    "VP1": "answered 200 with no credentials",
+    "VP2": "answered 404 with no credentials",
+    "VP3": "answered 404 with no credentials",
+    "VP4": "answered 200 with no credentials"
+  },
+  "target": "vampi",
+  "totals": {
+    "disagrees": 0,
+    "gated": 0,
+    "open": 4,
+    "unknown": 0
+  },
+  "unknown": {}
+}

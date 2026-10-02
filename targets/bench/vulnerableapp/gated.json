@@ -1,0 +1,21 @@
+{
+  "checked": "2026-10-02T01:49:12Z",
+  "disagrees": [],
+  "gated": {},
+  "host": "http://vulnerableapp:9090",
+  "method": "request each entry's path with no credentials and a browser Accept header, following redirects",
+  "open": {
+    "errorbasedsqlinjectionvulnerability-level_1:reflected_xss": "answered 200 with no credentials",
+    "errorbasedsqlinjectionvulnerability-level_2:reflected_xss": "answered 200 with no credentials",
+    "errorbasedsqlinjectionvulnerability-level_3:reflected_xss": "answered 500 with no credentials",
+    "errorbasedsqlinjectionvulnerability-level_4:reflected_xss": "answered 500 with no credentials"
+  },
+  "target": "vulnerableapp",
+  "totals": {
+    "disagrees": 0,
+    "gated": 0,
+    "open": 4,
+    "unknown": 0
+  },
+  "unknown": {}
+}

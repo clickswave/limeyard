@@ -145,6 +145,24 @@ The field that keeps the accounting honest.
   expected to find it.
 - `authed` counts toward recall only when the run seeded credentials for this
   target. Skipped otherwise, never counted as a miss.
+
+  A label is only worth something if it is true, and six of them were not.
+  DVWA's DV1 to DV3 and bWAPP's BW1, BW2 and BW4 all said `black-box` and all
+  six answer a redirect to /login.php with no credentials, so an
+  unauthenticated run was scored six misses for endpoints it never saw.
+  `lime gated [target]` is the lint for that: it requests each entry's path
+  with no credentials and a browser Accept header, and names any entry the
+  truth calls black-box that the application will not serve. Evidence goes to
+  `gated.json` beside the truth.
+
+  It is a lint and not a resolver on purpose. `scope` is this lab's own
+  judgement about what a scanner is expected to do, unlike `reach.json` which
+  records a fact about the target, so the label stays hand-written and a
+  person moves it and says why. Three signals count: a 401 or 403, a response
+  carrying a password input where the path asked for was not itself a login
+  path, and a redirect that landed somewhere login-shaped. A body that merely
+  mentions "login" does not, because every application has a login link in its
+  navigation and counting that would relabel the whole fleet.
 - `out-of-scope` never counts. It documents a real vulnerability that needs a
   human or a step a scanner is not meant to take: brute force, OTP flows,
   business logic, lesson progression, code-level issues with no black-box

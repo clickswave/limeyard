@@ -812,6 +812,38 @@ def host_ports(t):
     return out
 
 
+def lab_urls(t):
+    """Base URLs for reaching a target from inside the control container.
+
+    `target.yml`'s `url` is host-facing (127.0.0.1 and the published port) and
+    is the right thing to print for a person, but from in here 127.0.0.1 is
+    this container. On the lab network a target answers on its compose service
+    name and its *container* port, so `127.0.0.1:7301->8080` is
+    `http://mirage:8080`. Candidates rather than one answer, because a target
+    can publish more than one service.
+    """
+    if not (yaml and os.path.exists(t["compose_path"])):
+        return []
+    try:
+        with open(t["compose_path"]) as f:
+            doc = yaml.safe_load(f) or {}
+    except Exception:
+        return []
+    out = []
+    for sname, svc in (doc.get("services") or {}).items():
+        for p in (svc.get("ports") or []):
+            cport = None
+            if isinstance(p, dict):
+                cport = p.get("target")
+            else:
+                parts = str(p).split(":")
+                if len(parts) >= 2:
+                    cport = parts[-1]
+            if cport:
+                out.append(f"http://{sname}:{str(cport).split('/')[0]}")
+    return out
+
+
 def cmd_ports(targets, args):
     seen, exposed = {}, []
     for t in targets.values():
@@ -1193,6 +1225,81 @@ def cmd_reach(targets, args):
     return 0
 
 
+def cmd_gated(targets, args):
+    """Lint `scope` against what the target actually serves.
+
+    Reports an entry the truth calls black-box whose endpoint does not answer
+    without credentials. Does not move the label: `scope` is this lab's own
+    judgement about what a scanner is expected to do and belongs in the
+    hand-written truth, so this says where that judgement disagrees with the
+    application and leaves the edit, and the reason, to a person.
+    """
+    import gated as gatedmod
+
+    chosen = {args.name: targets[args.name]} if args.name else dict(targets)
+    if args.name and args.name not in targets:
+        die(f"unknown target {args.name!r}")
+
+    any_dis = any_unknown = checked = 0
+    for slug, t in sorted(chosen.items()):
+        tr = load_truth(t, resolve_external=False) or {}
+        entries = (tr.get("expected") or []) + (tr.get("negative") or [])
+        if not entries:
+            continue
+        # In-lab names first, because that is where this runs. The host-facing
+        # url is the fallback for running the module directly on the host.
+        cands = lab_urls(t)
+        if t.get("url"):
+            cands.append(t["url"])
+        host = next((c for c in cands if gatedmod.reachable(c)), None)
+        if not host:
+            tried = ", ".join(cands) or "nothing declared"
+            print(col(f"{slug:16} no reachable base url (tried {tried}); "
+                      f"is it started?", "y"))
+            continue
+        out = gatedmod.check(entries, host)
+        out["target"] = slug
+        tt = out["totals"]
+        any_unknown += tt["unknown"]
+        checked += tt["open"] + tt["gated"]
+        line = (f"{slug:16} open={tt['open']:3} gated={tt['gated']:3} "
+                f"unknown={tt['unknown']:3}")
+        if tt["disagrees"]:
+            any_dis += tt["disagrees"]
+            print(col(f"{line}   {tt['disagrees']} labelled black-box but "
+                      f"gated", "y"))
+            for d in out["disagrees"]:
+                print(f"{'':18} {d['id']:8} {d['path']:40} {d['why']}")
+        else:
+            print(line)
+        if args.write:
+            dest = os.path.join(t["dir"], "gated.json")
+            with open(dest, "w") as f:
+                json.dump(out, f, indent=2, sort_keys=True)
+                f.write("\n")
+
+    print()
+    if any_dis:
+        print(col(f"{any_dis} entries claim black-box scope and need "
+                  f"credentials. schema.md's `authed` is the value for those: "
+                  f"it counts when a run seeds credentials and is skipped "
+                  f"otherwise, never scored as a miss.", "y"))
+    if any_unknown:
+        # The first version of this printed "every black-box entry answers
+        # without credentials" while every single entry had come back unknown,
+        # because it was probing 127.0.0.1 from inside a container. A check
+        # that could not check anything reporting all clear is worse than no
+        # check.
+        print(col(f"{any_unknown} entries were not probed and are not "
+                  f"covered by the line above.", "y"))
+    if not any_dis and not any_unknown and checked:
+        print(col(f"all {checked} black-box entries answer without "
+                  f"credentials", "g"))
+    if not checked:
+        print(col("nothing was probed, so this says nothing", "y"))
+    return 0
+
+
 def cmd_truth(targets, args):
     """Dump the merged answer key. This is what a scan harness should read."""
     merged = {}
@@ -1294,6 +1401,9 @@ def build_parser():
     pn = sub.add_parser("pin", help="pin images to the digest we verified")
     pn.add_argument("--apply", action="store_true", help="rewrite the compose files")
     sub.add_parser("truth", help="dump the merged answer key as JSON")
+    gt = sub.add_parser("gated", help="lint truth `scope` against what the target serves unauthenticated")
+    gt.add_argument("name", nargs="?")
+    gt.add_argument("--write", action="store_true", help="write each target's gated.json")
     rc = sub.add_parser("reach", help="measure declared reach metadata against observed behaviour")
     rc.add_argument("name")
     rc.add_argument("--write", action="store_true", help="update the target's reach.json")
@@ -1318,7 +1428,7 @@ SCENARIO_CMDS = {"scenarios": cmd_scenarios, "scenario-up": cmd_scn_up,
 DISPATCH = {
     "start": cmd_start, "stop": cmd_stop, "restart": cmd_restart, "pull": cmd_pull,
     "list": cmd_list, "status": cmd_status, "credits": cmd_credits,
-    "ports": cmd_ports, "setup": cmd_setup, "measure": cmd_measure, "doctor": cmd_doctor, "audit": cmd_audit, "truth": cmd_truth, "reach": cmd_reach, "pin": cmd_pin,
+    "ports": cmd_ports, "setup": cmd_setup, "measure": cmd_measure, "doctor": cmd_doctor, "audit": cmd_audit, "truth": cmd_truth, "reach": cmd_reach, "gated": cmd_gated, "pin": cmd_pin,
     "logs": cmd_logs, "serve": cmd_serve, "monitor": cmd_monitor,
 }
 

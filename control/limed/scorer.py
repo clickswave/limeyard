@@ -235,8 +235,20 @@ def score_crawl(tr, fs, scopes=("black-box", "authed")):
 
 
 def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "authed"),
-          cost=None):
+          cost=None, seeded=()):
     """findings: [{target, class, path, method?, param?, in?, severity?}]
+
+    `seeded` is the targets whose run seeded credentials, and without it an
+    `authed` entry is skipped rather than counted as a miss. schema.md has
+    said that is what the label means from the beginning and this did not do
+    it: `scopes` defaulted to both and no caller ever passed anything, so
+    every run was scored against entries behind a login it never logged into.
+    DVWA and bWAPP are nine such entries between them.
+
+    Skipped this way they are reported on their own line, not folded into
+    out-of-scope. "Nine cases are out of scope" and "nine cases need
+    credentials this run did not seed" are different statements, and only the
+    second one tells you to go and seed them.
 
     `cost` is what the run spent, per target:
     {target: {seconds, requests, truncated}}. A target marked `truncated` had
@@ -248,6 +260,7 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
     """
     per_target, totals = {}, {"expected": 0, "detected": 0, "missed": 0,
                               "false_positive": 0, "unmatched": 0, "out_of_scope": 0,
+                              "needs_credentials": 0,
                               "unresolved_external": 0}
     by_class = {}
 
@@ -260,8 +273,14 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
             continue
         fs = grouped.get(slug, [])
         expected = [e for e in (tr.get("expected") or [])]
-        in_scope = [e for e in expected if e.get("scope", "black-box") in scopes]
-        oos = [e for e in expected if e.get("scope") not in scopes]
+        allowed = set(scopes)
+        if slug not in set(seeded):
+            allowed.discard("authed")
+        in_scope = [e for e in expected if e.get("scope", "black-box") in allowed]
+        unseeded = [e for e in expected
+                    if e.get("scope") == "authed" and "authed" not in allowed]
+        oos = [e for e in expected
+               if e.get("scope") not in allowed and e not in unseeded]
         negative = tr.get("negative") or []
 
         # Four targets declare that their truth lives in the target itself:
@@ -283,7 +302,7 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
         # findings matcher handles that correctly already.
         mode = tr.get("scoring") or "findings"
         if mode == "crawl":
-            row = score_crawl(tr, fs, scopes)
+            row = score_crawl(tr, fs, tuple(allowed))
             if unresolved:
                 row["external"] = {"resolved": False, "format": ext.get("format"),
                                    "url": ext.get("url"), "reason": ext.get("reason")}
@@ -344,6 +363,7 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
             "false_positives": fps,
             "unmatched": unmatched,
             "out_of_scope": [e["id"] for e in oos],
+            "needs_credentials": [e["id"] for e in unseeded],
             "location_flags": notes,
             "precision": round(prec, 4) if prec is not None else None,
             "recall": round(rec_, 4) if rec_ is not None else None,
@@ -382,6 +402,7 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
         totals["false_positive"] += fp
         totals["unmatched"] += len(unmatched)
         totals["out_of_scope"] += len(oos)
+        totals["needs_credentials"] += len(unseeded)
 
         for e in in_scope:
             c = norm_class(e.get("class"))
@@ -511,6 +532,12 @@ def render(card):
         out.append("                       their findings sit in unmatched, so the figures "
                    "above are a partial score")
     out.append(f"  skipped    {t['out_of_scope']:5d}     out-of-scope, never counted")
+    if t.get("needs_credentials"):
+        # Distinct from out-of-scope on purpose. These are cases a scanner is
+        # expected to find, behind a login this run did not seed, so the number
+        # is an instruction rather than an exclusion.
+        out.append(f"  unseeded   {t['needs_credentials']:5d}     authed, and this run "
+                   f"seeded no credentials for them")
     if t.get("crawl"):
         c = t["crawl"]
         cov = "  -  " if c.get("coverage") is None else f"{c['coverage'] * 100:5.1f}%"

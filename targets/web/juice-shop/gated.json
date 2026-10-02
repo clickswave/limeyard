@@ -1,0 +1,23 @@
+{
+  "checked": "2026-10-02T01:49:12Z",
+  "disagrees": [],
+  "gated": {
+    "JS2": "the server answered 401"
+  },
+  "host": "http://juiceshop:3000",
+  "method": "request each entry's path with no credentials and a browser Accept header, following redirects",
+  "open": {
+    "JS1": "answered 200 with no credentials",
+    "JS3": "answered 200 with no credentials",
+    "JS4": "answered 200 with no credentials",
+    "JS5": "answered 500 with no credentials"
+  },
+  "target": "juice-shop",
+  "totals": {
+    "disagrees": 0,
+    "gated": 1,
+    "open": 4,
+    "unknown": 0
+  },
+  "unknown": {}
+}

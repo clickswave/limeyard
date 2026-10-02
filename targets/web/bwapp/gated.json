@@ -1,0 +1,41 @@
+{
+  "checked": "2026-10-02T01:49:11Z",
+  "disagrees": [
+    {
+      "id": "BW1",
+      "path": "/sqli_1.php",
+      "why": "redirected to /login.php"
+    },
+    {
+      "id": "BW2",
+      "path": "/xss_get.php",
+      "why": "redirected to /login.php"
+    },
+    {
+      "id": "BW4",
+      "path": "/rlfi.php",
+      "why": "redirected to /login.php"
+    }
+  ],
+  "gated": {
+    "BW1": "redirected to /login.php",
+    "BW2": "redirected to /login.php",
+    "BW4": "redirected to /login.php",
+    "BW6": "redirected to /login.php"
+  },
+  "host": "http://bwapp:80",
+  "method": "request each entry's path with no credentials and a browser Accept header, following redirects",
+  "open": {
+    "BW5": "answered 200 with no credentials"
+  },
+  "target": "bwapp",
+  "totals": {
+    "disagrees": 3,
+    "gated": 4,
+    "open": 1,
+    "unknown": 1
+  },
+  "unknown": {
+    "BW3": "POST only, not probed"
+  }
+}

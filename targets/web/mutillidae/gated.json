@@ -1,0 +1,26 @@
+{
+  "checked": "2026-10-02T01:49:12Z",
+  "disagrees": [],
+  "gated": {},
+  "host": "http://mutillidae:80",
+  "method": "request each entry's path with no credentials and a browser Accept header, following redirects",
+  "open": {
+    "MU1": "answered 200 with no credentials",
+    "MU2": "answered 200 with no credentials",
+    "MU3": "answered 200 with no credentials",
+    "MU6": "answered 200 with no credentials",
+    "MU8": "answered 200 with no credentials"
+  },
+  "target": "mutillidae",
+  "totals": {
+    "disagrees": 0,
+    "gated": 0,
+    "open": 5,
+    "unknown": 3
+  },
+  "unknown": {
+    "MU4": "POST only, not probed",
+    "MU5": "POST only, not probed",
+    "MU7": "POST only, not probed"
+  }
+}

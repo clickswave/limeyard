@@ -1,17 +1,24 @@
 target: bwapp
 scoring: findings
 
+note: >-
+  bWAPP gates every vulnerability page behind login.php. BW1, BW2 and BW4 were
+  labelled black-box and all three redirect there without credentials, so an
+  unauthenticated run was scored three misses for endpoints it never saw.
+  Measured 2026-10-02 by `lime gated bwapp`, evidence in gated.json beside
+  this file. They are `authed` now.
+
 expected:
   - id: BW1
     class: sqli
     severity: high
-    scope: black-box
+    scope: authed
     confirm: error-based
     where: {method: GET, path: /sqli_1.php, param: title, in: query}
   - id: BW2
     class: xss-reflected
     severity: medium
-    scope: black-box
+    scope: authed
     confirm: unencoded reflection
     where: {method: GET, path: /xss_get.php, param: firstname, in: query}
   - id: BW3
@@ -24,7 +31,7 @@ expected:
   - id: BW4
     class: lfi
     severity: high
-    scope: black-box
+    scope: authed
     confirm: file read
     where: {method: GET, path: /rlfi.php, param: language, in: query}
   - id: BW5
