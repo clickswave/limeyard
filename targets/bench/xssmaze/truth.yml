@@ -30,6 +30,16 @@ note: >-
   rules that keep the correction conservative, and 8 endpoints the probe could
   not deliver to stay in the denominator rather than being assumed either way.
 
+  Three reflected XSS the map does not document, promoted into `expected`
+  above and hand-checked 2026-10-02. prototype-pollution levels 1 to 3 reflect
+  the query value raw inside `JSON.parse('HERE')` in an inline script, so a
+  `</script>` in the payload closes the script element at the tokenizer and
+  whatever follows is parsed as markup. The map documents the pollution gadget
+  on each of those endpoints, which is a different and also real bug, and
+  cortex has no prototype-pollution oracle: it reports the XSS, which was
+  landing in `unmatched` on every run while proto-pollution scored 0 of 3. Both
+  statements are now true on the card at once, which is the point.
+
   On the 81 DOM endpoints whose bytes do reach a response, cortex finds 76. Of
   the five it misses, four are cases where what it sees is genuinely inert and
   suppressing it is correct: percent-encoded inside a `<script src>` URL
@@ -53,5 +63,31 @@ external:
   format: xssmaze-map
   solutions: http://xssmaze:3000/solutions.json
 
-expected: []
+# Entries the upstream map does not carry, merged with it rather than replacing
+# it (truth/schema.md, "reach.json" and the external section). The ids are
+# deliberately not upstream's endpoint names: a local entry wins on id, so
+# reusing one would delete the case it was meant to sit beside.
+expected:
+  - id: prototype-pollution-level1:reflected_xss
+    class: xss-reflected
+    scope: black-box
+    where: {method: GET, path: /prototype-pollution/level1, param: query, in: query}
+    confirm: >-
+      Hand-checked 2026-10-02. The query value is reflected raw inside
+      `JSON.parse('HERE')` in an inline script, so `</script><svg onload=...>`
+      closes the script element at the tokenizer and the svg is parsed as
+      markup and runs. text/html, no CSP. Upstream documents the prototype
+      pollution gadget on this endpoint and not this, which is why cortex's
+      finding was landing in `unmatched` on every run.
+  - id: prototype-pollution-level2:reflected_xss
+    class: xss-reflected
+    scope: black-box
+    where: {method: GET, path: /prototype-pollution/level2, param: query, in: query}
+    confirm: as level 1, reflected into `JSON.parse('HERE')` in an inline script.
+  - id: prototype-pollution-level3:reflected_xss
+    class: xss-reflected
+    scope: black-box
+    where: {method: GET, path: /prototype-pollution/level3, param: query, in: query}
+    confirm: as level 1, reflected into `JSON.parse('HERE')` in an inline script.
+
 negative: []

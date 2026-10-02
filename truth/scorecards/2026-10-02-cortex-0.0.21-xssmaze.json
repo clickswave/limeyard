@@ -1,22 +1,22 @@
 {
   "tool": "cortex-0.0.21",
-  "generated": "2026-10-02T02:41:21Z",
+  "generated": "2026-10-02T03:10:02Z",
   "totals": {
-    "expected": 918,
-    "detected": 842,
+    "expected": 921,
+    "detected": 845,
     "missed": 76,
     "false_positive": 4,
-    "unmatched": 23,
+    "unmatched": 20,
     "out_of_scope": 119,
     "needs_credentials": 0,
     "unresolved_external": 0,
     "precision": 0.9953,
-    "recall": 0.9172,
-    "f1": 0.9547,
-    "seconds": 43.8,
+    "recall": 0.9175,
+    "f1": 0.9548,
+    "seconds": 44.1,
     "requests": 0,
     "slowest_target": "xssmaze",
-    "slowest_seconds": 43.8
+    "slowest_seconds": 44.1
   },
   "by_class": {
     "csti": {
@@ -35,9 +35,9 @@
       "recall": 0.9383
     },
     "xss-reflected": {
-      "expected": 819,
-      "detected": 754,
-      "recall": 0.9206
+      "expected": 822,
+      "detected": 757,
+      "recall": 0.9209
     },
     "xss-stored": {
       "expected": 10,
@@ -47,8 +47,11 @@
   },
   "by_target": {
     "xssmaze": {
-      "expected_in_scope": 918,
+      "expected_in_scope": 921,
       "detected": [
+        "prototype-pollution-level1:reflected_xss",
+        "prototype-pollution-level2:reflected_xss",
+        "prototype-pollution-level3:reflected_xss",
         "advanced-xss-level1",
         "advanced-xss-level2",
         "advanced-xss-level3",
@@ -1079,14 +1082,14 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/multiparam/level2",
-          "param": "page",
+          "path": "/multiparam/level3",
+          "param": "sort",
           "severity": null
         },
         {
           "class": "xss-reflected",
-          "path": "/multiparam/level3",
-          "param": "sort",
+          "path": "/multiparam/level2",
+          "param": "page",
           "severity": null
         },
         {
@@ -1104,24 +1107,6 @@
         {
           "class": "csti",
           "path": "/prototype-pattern/level4",
-          "param": "query",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/prototype-pollution/level1",
-          "param": "query",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/prototype-pollution/level2",
-          "param": "query",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/prototype-pollution/level3",
           "param": "query",
           "severity": null
         },
@@ -1268,17 +1253,17 @@
       "needs_credentials": [],
       "location_flags": [],
       "precision": 0.9953,
-      "recall": 0.9172,
-      "f1": 0.9546,
+      "recall": 0.9175,
+      "f1": 0.9548,
       "external": {
         "resolved": true,
         "format": "xssmaze-map",
         "via": "http://127.0.0.1:7102/map/json",
-        "count": 1064,
+        "count": 1067,
         "reach_scoped_out": 95,
         "reach_measured": "2026-10-01T23:44:44Z"
       },
-      "seconds": 43.8,
+      "seconds": 44.1,
       "requests": 0
     }
   }
