@@ -1,22 +1,22 @@
 {
   "tool": "pipeline-mach+cortex-0.0.21",
-  "generated": "2026-10-02T16:53:50Z",
+  "generated": "2026-10-02T17:53:37Z",
   "totals": {
     "expected": 921,
-    "detected": 830,
-    "missed": 91,
+    "detected": 829,
+    "missed": 92,
     "false_positive": 4,
     "unmatched": 23,
     "out_of_scope": 119,
     "needs_credentials": 0,
     "unresolved_external": 0,
     "precision": 0.9952,
-    "recall": 0.9012,
-    "f1": 0.9459,
-    "seconds": 512.2,
+    "recall": 0.9001,
+    "f1": 0.9453,
+    "seconds": 209.4,
     "requests": 0,
     "slowest_target": "xssmaze",
-    "slowest_seconds": 512.2
+    "slowest_seconds": 209.4
   },
   "by_class": {
     "csti": {
@@ -36,8 +36,8 @@
     },
     "xss-reflected": {
       "expected": 822,
-      "detected": 742,
-      "recall": 0.9027
+      "detected": 741,
+      "recall": 0.9015
     },
     "xss-stored": {
       "expected": 10,
@@ -317,7 +317,6 @@
         "formelement-level4",
         "formelement-level5",
         "formelement-level6",
-        "fragment-level1",
         "fragment-level3",
         "fragment-level4",
         "fragment-level5",
@@ -903,6 +902,7 @@
         "eventhandler-xss-level5",
         "filterchain-level2",
         "filterchain-level5",
+        "fragment-level1",
         "fragment-level2",
         "header-level3",
         "header-level4",
@@ -1016,7 +1016,7 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/csti/level4",
+          "path": "/csti/level1",
           "param": "query",
           "severity": null
         },
@@ -1034,14 +1034,8 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/csti/level1",
+          "path": "/csti/level4",
           "param": "query",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/edge/level5",
-          "param": "q2",
           "severity": null
         },
         {
@@ -1058,14 +1052,26 @@
         },
         {
           "class": "xss-reflected",
+          "path": "/edge/level5",
+          "param": "q2",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
           "path": "/json/level1",
           "param": "query",
           "severity": null
         },
         {
           "class": "xss-reflected",
-          "path": "/multiparam/level3",
-          "param": "sort",
+          "path": "/multicontext/level6",
+          "param": "q1",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/multiparam/level1",
+          "param": "q2",
           "severity": null
         },
         {
@@ -1088,14 +1094,8 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/multiparam/level1",
-          "param": "q2",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/multicontext/level6",
-          "param": "q1",
+          "path": "/multiparam/level3",
+          "param": "sort",
           "severity": null
         },
         {
@@ -1271,8 +1271,8 @@
       "needs_credentials": [],
       "location_flags": [],
       "precision": 0.9952,
-      "recall": 0.9012,
-      "f1": 0.9459,
+      "recall": 0.9001,
+      "f1": 0.9453,
       "external": {
         "resolved": true,
         "format": "xssmaze-map",
@@ -1282,7 +1282,7 @@
         "reach_measured": "2026-10-01T23:44:44Z",
         "expected_local": 3
       },
-      "seconds": 512.2,
+      "seconds": 209.4,
       "requests": 0
     }
   }

@@ -79,14 +79,23 @@ note: >-
   cannot infer without a spec; 5 are the querymethod family, which only answer
   HTTP QUERY; 3 need a JSON body where the crawl reports a form; 1 is JSONP.
 
-  Do not read wall-clock scan time off this target. A 300-endpoint pass sends
-  about 22,000 requests, and the engine's own pass log attributes 65 of its 95
-  seconds to pacing back-off with 0 seconds spent waiting on the target. The
-  same 300 endpoints also completed three times in a row in under a second on
-  a fresh daemon, so the figure swings by around 100x between passes with no
-  change to the work. Something in the pacer decides differently on identical
-  input and that is worth chasing, but until it is, any timing measured here is
-  a measurement of the pacer.
+  Scan time off this target used to be a measurement of the pacer rather than
+  of the engine, and chasing that found the reason. A 300-endpoint pass sends
+  about 22,000 requests, and the engine's own log attributed 65 of its 95
+  seconds to pacing back-off while reporting 0 seconds waiting on the target
+  and 0 requests that never answered. Every one of the nine progress lines in
+  that pass matched 3ms times its request count to within a second, because
+  the pacer's decay was `d - d / 4` and integer division makes that subtract
+  nothing once the delay is 3ms or less. From the 1500ms ceiling it converged
+  on exactly 3 and stayed, so a host braked once paid 3ms on every request for
+  the life of the daemon.
+
+  Fixed by taking at least 1ms off. Staged through a proxy that refuses its
+  first 60 connections and then forwards here, the same 300 endpoints went from
+  246s to 1.1s, and a second pass with the brake already installed went from
+  58s to 0.56s. The pre-fix run also returned 6 fewer findings, because 54 of
+  its requests timed out while waiting on its own delay. End to end the full
+  crawl-and-inject pass went from 511s to 208s with the same recall.
 
   27 endpoints are marked exploitable:false. Those are the precision controls,
   and reporting one is a false positive. They resolve into `negative` with no
