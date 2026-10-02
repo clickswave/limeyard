@@ -1,21 +1,22 @@
 {
   "tool": "cortex-0.0.21",
-  "generated": "2026-10-02T00:25:30Z",
+  "generated": "2026-10-02T02:29:01Z",
   "totals": {
     "expected": 121,
-    "detected": 13,
-    "missed": 108,
+    "detected": 18,
+    "missed": 103,
     "false_positive": 0,
-    "unmatched": 28,
+    "unmatched": 33,
     "out_of_scope": 37,
+    "needs_credentials": 0,
     "unresolved_external": 0,
     "precision": 1.0,
-    "recall": 0.1074,
-    "f1": 0.194,
-    "seconds": 15.4,
+    "recall": 0.1488,
+    "f1": 0.2591,
+    "seconds": 15.8,
     "requests": 0,
     "slowest_target": "vulnerableapp",
-    "slowest_seconds": 15.4
+    "slowest_seconds": 15.8
   },
   "by_class": {
     "bola": {
@@ -90,8 +91,8 @@
     },
     "xss-stored": {
       "expected": 13,
-      "detected": 0,
-      "recall": 0.0
+      "detected": 5,
+      "recall": 0.3846
     },
     "xxe": {
       "expected": 3,
@@ -111,6 +112,11 @@
         "errorbasedsqlinjectionvulnerability-level_1:error_based_sql_injection",
         "errorbasedsqlinjectionvulnerability-level_2:error_based_sql_injection",
         "unionbasedsqlinjectionvulnerability-level_1:union_based_sql_injection",
+        "persistentxssinhtmltagvulnerability-level_1:persistent_xss",
+        "persistentxssinhtmltagvulnerability-level_2:persistent_xss",
+        "persistentxssinhtmltagvulnerability-level_3:persistent_xss",
+        "persistentxssinhtmltagvulnerability-level_4:persistent_xss",
+        "persistentxssinhtmltagvulnerability-level_5:persistent_xss",
         "xssinimgtagattribute-level_1:reflected_xss",
         "xssinimgtagattribute-level_2:reflected_xss",
         "xssinimgtagattribute-level_3:reflected_xss",
@@ -214,11 +220,6 @@
         "ssrfvulnerability-level_2:simple_ssrf",
         "ssrfvulnerability-level_3:simple_ssrf",
         "ssrfvulnerability-level_4:simple_ssrf",
-        "persistentxssinhtmltagvulnerability-level_1:persistent_xss",
-        "persistentxssinhtmltagvulnerability-level_2:persistent_xss",
-        "persistentxssinhtmltagvulnerability-level_3:persistent_xss",
-        "persistentxssinhtmltagvulnerability-level_4:persistent_xss",
-        "persistentxssinhtmltagvulnerability-level_5:persistent_xss",
         "persistentxssinhtmltagvulnerability-level_6:persistent_xss",
         "xssinimgtagattribute-level_4:reflected_xss",
         "xssinimgtagattribute-level_5:reflected_xss",
@@ -231,7 +232,25 @@
       "unmatched": [
         {
           "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_8",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
           "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_6",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_7",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_1",
           "param": null,
           "severity": null
         },
@@ -255,31 +274,7 @@
         },
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_8",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_7",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_1",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "no-rate-limit",
           "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_2",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_9",
           "param": null,
           "severity": null
         },
@@ -291,6 +286,12 @@
         },
         {
           "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_9",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_1",
           "param": null,
           "severity": null
@@ -315,13 +316,13 @@
         },
         {
           "class": "excessive-exposure",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_3",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_2",
           "param": null,
           "severity": null
         },
         {
           "class": "excessive-exposure",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_2",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_3",
           "param": null,
           "severity": null
         },
@@ -356,30 +357,30 @@
           "severity": null
         },
         {
-          "class": "no-rate-limit",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_7",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "excessive-exposure",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_7",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "no-rate-limit",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_8",
-          "param": null,
-          "severity": null
-        },
-        {
           "class": "excessive-exposure",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_6",
           "param": null,
           "severity": null
         },
         {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_7",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_7",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_8",
+          "param": null,
+          "severity": null
+        },
+        {
           "class": "excessive-exposure",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_8",
           "param": null,
@@ -395,6 +396,36 @@
           "class": "excessive-exposure",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_9",
           "param": null,
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_1",
+          "param": "Referer",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_3",
+          "param": "Referer",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_2",
+          "param": "Referer",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_4",
+          "param": "Referer",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_5",
+          "param": "Referer",
           "severity": null
         }
       ],
@@ -437,10 +468,11 @@
         "passwordresetvulnerability-level_9:no_login_rate_limiting",
         "sessionmanagementvulnerability-level_5:no_login_rate_limiting"
       ],
+      "needs_credentials": [],
       "location_flags": [],
       "precision": 1.0,
-      "recall": 0.1074,
-      "f1": 0.194,
+      "recall": 0.1488,
+      "f1": 0.259,
       "external": {
         "resolved": true,
         "format": "vulnerableapp-dast",
@@ -448,7 +480,7 @@
         "count": 176,
         "expected_local": 4
       },
-      "seconds": 15.4,
+      "seconds": 15.8,
       "requests": 0
     }
   }

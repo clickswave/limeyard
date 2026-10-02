@@ -1,0 +1,95 @@
+{
+ "/VulnerableApp/CryptographicFailures/LEVEL_1": [
+  "password"
+ ],
+ "/VulnerableApp/CryptographicFailures/LEVEL_3": [
+  "password"
+ ],
+ "/VulnerableApp/CryptographicFailures/LEVEL_10": [
+  "password"
+ ],
+ "/VulnerableApp/CryptographicFailures/LEVEL_11": [
+  "password"
+ ],
+ "/VulnerableApp/IDORVulnerability/LEVEL_1": [
+  "id"
+ ],
+ "/VulnerableApp/IDORVulnerability/LEVEL_3": [
+  "id"
+ ],
+ "/VulnerableApp/IDORVulnerability/LEVEL_4": [
+  "id"
+ ],
+ "/VulnerableApp/IDORVulnerability/LEVEL_5": [
+  "id"
+ ],
+ "/VulnerableApp/LDAPInjectionVulnerability/LEVEL_4": [
+  "username"
+ ],
+ "/VulnerableApp/BlindSQLInjectionVulnerability/LEVEL_1": [
+  "id"
+ ],
+ "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_1": [
+  "id"
+ ],
+ "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_2": [
+  "id"
+ ],
+ "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_3": [
+  "id"
+ ],
+ "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_4": [
+  "id"
+ ],
+ "/VulnerableApp/UnionBasedSQLInjectionVulnerability/LEVEL_1": [
+  "id"
+ ],
+ "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_1": [
+  "comment"
+ ],
+ "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_2": [
+  "comment"
+ ],
+ "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_3": [
+  "comment"
+ ],
+ "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_4": [
+  "comment"
+ ],
+ "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_5": [
+  "comment"
+ ],
+ "/VulnerableApp/PersistentXSSInHTMLTagVulnerability/LEVEL_6": [
+  "comment"
+ ],
+ "/VulnerableApp/XSSInImgTagAttribute/LEVEL_1": [
+  "src"
+ ],
+ "/VulnerableApp/XSSInImgTagAttribute/LEVEL_2": [
+  "src"
+ ],
+ "/VulnerableApp/XSSInImgTagAttribute/LEVEL_3": [
+  "src"
+ ],
+ "/VulnerableApp/XSSInImgTagAttribute/LEVEL_4": [
+  "src"
+ ],
+ "/VulnerableApp/XSSInImgTagAttribute/LEVEL_5": [
+  "src"
+ ],
+ "/VulnerableApp/XSSWithHtmlTagInjection/LEVEL_1": [
+  "q"
+ ],
+ "/VulnerableApp/XSSWithHtmlTagInjection/LEVEL_2": [
+  "q"
+ ],
+ "/VulnerableApp/XSSWithHtmlTagInjection/LEVEL_3": [
+  "q"
+ ],
+ "/VulnerableApp/XSSWithHtmlTagInjection/LEVEL_4": [
+  "q"
+ ],
+ "/VulnerableApp/XSSWithHtmlTagInjection/LEVEL_5": [
+  "q"
+ ]
+}

@@ -1,21 +1,22 @@
 {
   "tool": "cortex-0.0.21",
-  "generated": "2026-10-02T00:25:03Z",
+  "generated": "2026-10-02T02:28:37Z",
   "totals": {
     "expected": 918,
-    "detected": 830,
-    "missed": 88,
+    "detected": 837,
+    "missed": 81,
     "false_positive": 4,
-    "unmatched": 28,
+    "unmatched": 21,
     "out_of_scope": 119,
+    "needs_credentials": 0,
     "unresolved_external": 0,
     "precision": 0.9952,
-    "recall": 0.9041,
-    "f1": 0.9475,
-    "seconds": 42.3,
+    "recall": 0.9118,
+    "f1": 0.9517,
+    "seconds": 43.0,
     "requests": 0,
     "slowest_target": "xssmaze",
-    "slowest_seconds": 42.3
+    "slowest_seconds": 43.0
   },
   "by_class": {
     "csti": {
@@ -40,8 +41,8 @@
     },
     "xss-stored": {
       "expected": 10,
-      "detected": 0,
-      "recall": 0.0
+      "detected": 7,
+      "recall": 0.7
     }
   },
   "by_target": {
@@ -770,6 +771,13 @@
         "srcset-level2",
         "srcset-level3",
         "srcset-level4",
+        "stored-level1",
+        "stored-level3",
+        "storedpat-level1",
+        "storedpat-level2",
+        "storedpat-level3",
+        "storedpat-level4",
+        "storedpat-level5",
         "svg-xss-level1",
         "svg-xss-level2",
         "svg-xss-level3",
@@ -952,14 +960,7 @@
         "sanitizer-edge-level4",
         "sanitizer-level3",
         "sanitizer-level6",
-        "stored-level1",
-        "stored-level3",
         "stored-level4",
-        "storedpat-level1",
-        "storedpat-level2",
-        "storedpat-level3",
-        "storedpat-level4",
-        "storedpat-level5",
         "storedpat-level6",
         "truncation-level4",
         "unicode-level2",
@@ -1126,48 +1127,6 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/stored/level1",
-          "param": "query",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/stored/level3",
-          "param": "query",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/storedpat/level1",
-          "param": "body",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/storedpat/level3",
-          "param": "review",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/storedpat/level5",
-          "param": "subject",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/storedpat/level2",
-          "param": "bio",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/storedpat/level4",
-          "param": "msg",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
           "path": "/waf-facade/level4",
           "param": "User-Agent",
           "severity": null
@@ -1294,10 +1253,11 @@
         "websocket-xss-level6",
         "websocket-xss-level7"
       ],
+      "needs_credentials": [],
       "location_flags": [],
       "precision": 0.9952,
-      "recall": 0.9041,
-      "f1": 0.9475,
+      "recall": 0.9118,
+      "f1": 0.9517,
       "external": {
         "resolved": true,
         "format": "xssmaze-map",
@@ -1306,7 +1266,7 @@
         "reach_scoped_out": 95,
         "reach_measured": "2026-10-01T23:44:44Z"
       },
-      "seconds": 42.3,
+      "seconds": 43.0,
       "requests": 0
     }
   }
