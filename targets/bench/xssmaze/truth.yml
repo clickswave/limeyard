@@ -70,14 +70,28 @@ note: >-
   one payload with no alphanumerics in it.
 
   Measured end to end on 2026-10-02, mach crawl into cortex inject rather than
-  handing cortex this map's endpoint list. The crawl returns 2328 endpoints and
+  handing cortex this map's endpoint list. The crawl returns 2331 endpoints and
   reaches 918 of the 918 paths this key expects a finding on, so discovery is
   not the limit on this target: it links everything from its index, which a
-  real application does not. End-to-end recall is 830 of 921 against 845 when
-  cortex is handed the key's own list, and all 15 of the difference are channel
-  fidelity rather than discovery. 6 are path-segment injections, which a crawl
-  cannot infer without a spec; 5 are the querymethod family, which only answer
-  HTTP QUERY; 3 need a JSON body where the crawl reports a form; 1 is JSONP.
+  real application does not. End-to-end recall is 833 of 921 against 845 when
+  cortex is handed the key's own list, and every one of the 12 remaining
+  differences is channel fidelity rather than discovery, and out of a crawl's
+  reach for a reason:
+
+  6 are path-segment injections, which need a spec to infer and this target
+  publishes none. 5 are the querymethod family, which answer only HTTP QUERY,
+  and nothing on the page says so. 1 is JSONP. 1 is realworld_input-level2,
+  which serves no form and no script and says "POST JSON with {"name":
+  "value"}" in a paragraph, which is not a signal a crawler can be asked to
+  read.
+
+  Two of the losses were ours and are closed. postmethod-level3 and
+  post-level2 set up their call with XMLHttpRequest, and mach only mined the
+  method-name shapes (`axios.post`, `http.put`), so a verb passed as the first
+  argument to `open()` matched nothing at all. The crawler now mines XHR and
+  carries the body encoding with the call, because a field sent as JSON and
+  fuzzed as a form encoding never reaches the handler and the endpoint reads as
+  clean.
 
   Scan time off this target used to be a measurement of the pacer rather than
   of the engine, and chasing that found the reason. A 300-endpoint pass sends

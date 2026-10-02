@@ -1,22 +1,22 @@
 {
   "tool": "pipeline-mach+cortex-0.0.21",
-  "generated": "2026-10-02T17:53:37Z",
+  "generated": "2026-10-02T18:43:29Z",
   "totals": {
     "expected": 921,
-    "detected": 829,
-    "missed": 92,
+    "detected": 833,
+    "missed": 88,
     "false_positive": 4,
     "unmatched": 23,
     "out_of_scope": 119,
     "needs_credentials": 0,
     "unresolved_external": 0,
     "precision": 0.9952,
-    "recall": 0.9001,
-    "f1": 0.9453,
-    "seconds": 209.4,
+    "recall": 0.9045,
+    "f1": 0.9477,
+    "seconds": 223.5,
     "requests": 0,
     "slowest_target": "xssmaze",
-    "slowest_seconds": 209.4
+    "slowest_seconds": 223.5
   },
   "by_class": {
     "csti": {
@@ -36,8 +36,8 @@
     },
     "xss-reflected": {
       "expected": 822,
-      "detected": 741,
-      "recall": 0.9015
+      "detected": 745,
+      "recall": 0.9063
     },
     "xss-stored": {
       "expected": 10,
@@ -317,6 +317,7 @@
         "formelement-level4",
         "formelement-level5",
         "formelement-level6",
+        "fragment-level1",
         "fragment-level3",
         "fragment-level4",
         "fragment-level5",
@@ -514,6 +515,7 @@
         "multiparam-level5",
         "multiparam-level6",
         "multipart-level1",
+        "multipart-level2",
         "multipart-level4",
         "multipleoutput-level1",
         "multipleoutput-level2",
@@ -611,8 +613,10 @@
         "popover-level2",
         "popover-level3",
         "post-level1",
+        "post-level2",
         "postmethod-level1",
         "postmethod-level2",
+        "postmethod-level3",
         "postmethod-level4",
         "postmethod-level5",
         "postmethod-level6",
@@ -902,7 +906,6 @@
         "eventhandler-xss-level5",
         "filterchain-level2",
         "filterchain-level5",
-        "fragment-level1",
         "fragment-level2",
         "header-level3",
         "header-level4",
@@ -927,7 +930,6 @@
         "modern-bypass-level6",
         "modern-level1",
         "modern-level4",
-        "multipart-level2",
         "multipart-level3",
         "nestedfilter-level6",
         "partialencode-level1",
@@ -937,8 +939,6 @@
         "path-level3",
         "path-level4",
         "polyglot-level3",
-        "post-level2",
-        "postmethod-level3",
         "prototype-pollution-level1",
         "prototype-pollution-level2",
         "prototype-pollution-level3",
@@ -976,19 +976,19 @@
       "false_positives": [
         {
           "class": "xss-reflected",
-          "path": "/csp/level4",
-          "param": "query",
-          "severity": null,
-          "negative_id": "csp-bypass-level4",
-          "note": "default-src 'self' blocks the data: iframe that would carry the payload and script-src 'self' blocks the inline listener that would render it, so neither half of the postMessage round-trip executes"
-        },
-        {
-          "class": "xss-reflected",
           "path": "/cspbypass/level3",
           "param": "query",
           "severity": null,
           "negative_id": "cspbypass-level3",
           "note": "script-src 'self' 'unsafe-eval' carries no 'unsafe-inline', so the inline <script> holding the reflection never executes and an injected script or event handler is blocked as well; reporting no XSS here is the correct result"
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/csp/level4",
+          "param": "query",
+          "severity": null,
+          "negative_id": "csp-bypass-level4",
+          "note": "default-src 'self' blocks the data: iframe that would carry the payload and script-src 'self' blocks the inline listener that would render it, so neither half of the postMessage round-trip executes"
         },
         {
           "class": "xss-reflected",
@@ -1016,13 +1016,7 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/csti/level1",
-          "param": "query",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/csti/level2",
+          "path": "/csti/level4",
           "param": "query",
           "severity": null
         },
@@ -1034,7 +1028,13 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/csti/level4",
+          "path": "/csti/level2",
+          "param": "query",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/csti/level1",
           "param": "query",
           "severity": null
         },
@@ -1064,14 +1064,26 @@
         },
         {
           "class": "xss-reflected",
-          "path": "/multicontext/level6",
-          "param": "q1",
+          "path": "/multiparam/level2",
+          "param": "page",
           "severity": null
         },
         {
           "class": "xss-reflected",
           "path": "/multiparam/level1",
           "param": "q2",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/multicontext/level6",
+          "param": "q1",
+          "severity": null
+        },
+        {
+          "class": "xss-reflected",
+          "path": "/multiparam/level3",
+          "param": "sort",
           "severity": null
         },
         {
@@ -1084,18 +1096,6 @@
           "class": "xss-reflected",
           "path": "/multiparam/level6",
           "param": "c",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/multiparam/level2",
-          "param": "page",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/multiparam/level3",
-          "param": "sort",
           "severity": null
         },
         {
@@ -1271,8 +1271,8 @@
       "needs_credentials": [],
       "location_flags": [],
       "precision": 0.9952,
-      "recall": 0.9001,
-      "f1": 0.9453,
+      "recall": 0.9045,
+      "f1": 0.9477,
       "external": {
         "resolved": true,
         "format": "xssmaze-map",
@@ -1282,7 +1282,7 @@
         "reach_measured": "2026-10-01T23:44:44Z",
         "expected_local": 3
       },
-      "seconds": 209.4,
+      "seconds": 223.5,
       "requests": 0
     }
   }
