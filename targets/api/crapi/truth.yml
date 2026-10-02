@@ -8,11 +8,15 @@ expected:
     scope: authed
     confirm: cross-identity replay
     where: {method: GET, path: "/identity/api/v2/vehicle/{vehicleId}/location", in: path}
-    # The engine reports `location: endpoint` here, meaning the whole endpoint is
-    # the object, where this says `in: path`, meaning the id sits in the URL.
-    # Both describe the same thing and `in` is advisory, so the match stands and
-    # the scorecard carries a location flag. Worth reconciling the vocabulary
-    # rather than loosening the check.
+    # Reconciled 2026-10-02, and the answer was that neither side was wrong.
+    # The engine reports `location: endpoint` because the probe that found this
+    # compared what two identities get back from one endpoint, and what it
+    # proved is that the endpoint is the object. This entry says `in: path`
+    # because that is where the object's id lives, which is a fact about the
+    # vulnerability rather than about the measurement. `endpoint` is the less
+    # specific of two true answers, so the scorer no longer flags it; the
+    # engine's other BOLA probe, the one that substitutes an id into the path,
+    # does report `path`, because there the location is the evidence.
     note: >-
       Leaks GPS and owner email to a non-owner. The 2026-08-23 run recorded 8
       BOLA findings across vehicle location, mechanic_report, dashboard and the

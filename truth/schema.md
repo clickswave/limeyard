@@ -170,6 +170,23 @@ The field that keeps the accounting honest.
   never touches an HTTP response is this case, whether the target declares it
   or `reach.json` measures it.
 
+### `in`, and what an authorization finding reports
+
+`in` names where the input sits: query, body, header, cookie, path, fragment.
+It is advisory, so a mismatch flags rather than fails, and one mismatch is
+expected often enough to be worth writing down.
+
+An authorization probe that compares what two identities get back from one
+endpoint reports `endpoint`, because that is what it proved: the endpoint is
+the object and it is not scoped to its owner. The truth entry for the same
+case says `path` or `query`, because that is where the object's id lives,
+which is a fact about the vulnerability rather than about the measurement.
+Both are right and `endpoint` is the less specific one, so it no longer raises
+a flag. crAPI's CR1 carried one on every run and it was noise.
+
+A probe that did substitute an id into the path says `path`, because there the
+location is the evidence.
+
 ## negative
 
 The reason limeyard exists. A fleet where every target is vulnerable can only

@@ -180,7 +180,15 @@ def entry_matches(entry, finding):
         flags.append(f"matched on class and path; the finding named no parameter "
                      f"(the answer key names '{p}')")
     wi, fi = where.get("in"), _f(finding, "in", "location")
-    if wi and fi and str(wi).lower() != str(fi).lower():
+    # `endpoint` is not a mismatch, it is a less specific answer that is true.
+    # An authorization probe that compares what two roles get from one endpoint
+    # has proved the endpoint is the object; where the object's id happens to
+    # sit is something the truth knows and the probe did not need. crAPI's CR1
+    # carried a location flag on every run for that reason, and the flag was
+    # noise: the detection was right and so was the entry.
+    if wi and fi and str(fi).lower() == "endpoint":
+        pass
+    elif wi and fi and str(wi).lower() != str(fi).lower():
         flags.append(f"location mismatch: expected {wi}, reported {fi}")
     return flags
 
