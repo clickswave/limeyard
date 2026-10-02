@@ -27,9 +27,10 @@ note: >-
   object and expose no HTML form, and their injection surface is undocumented
   query parameters. Those appear in no spec and on no page, so a crawl and a
   Web Tracer capture both yield nothing, and cortex takes its parameters from
-  the asset graph. With none observed, only the passive checks fire: a pass over
-  145 endpoints returned 28 findings, all of them no-rate-limit or
-  excessive-exposure, and none of the key's cases.
+  the asset graph. With none observed, only the passive checks fire, and that
+  was the whole score for a while: a pass over 145 endpoints returned 28
+  findings, all of them no-rate-limit or excessive-exposure, and none of the
+  key's cases. Discovery supplies those parameters now, see below.
 
   Those 28 stay in `unmatched` and are not a scoring bug. Both are verified by
   construction rather than inferred: the rate-limit check sends 20 requests to
@@ -39,15 +40,23 @@ note: >-
   being re-derived every time somebody reads a card from this target.
 
   Handing it parameters found by differential probing took SQLi from 0/9 to 4/9
-  with no engine change. So a low number here is a statement about parameter
-  discovery, not about detection, and the honest fix is query-parameter name
-  discovery: `cortex discover` does calibrated brute-force for body fields only.
-  A 68-word probe found `id` on ten SQLi levels, `username` on three LDAP levels
-  and `password` on eleven crypto levels in seconds.
+  with no engine change, which is why a low number here was a statement about
+  parameter discovery rather than about detection.
 
-  If you build that, calibrate for determinism first. The PersistentXSS levels
-  store on every request, so identical input gives a different response and
-  every candidate looks like a hit.
+  Query-parameter name discovery is built, so that is no longer the gate.
+  `cortex discover` finds 31 parameters across these 145 endpoints on its own:
+  `id` on ten levels, `comment` on six, `src` and `q` on five each, `password`
+  on four. discovered-params.json beside this file is what it found, committed
+  so a run is reproducible and so the endpoints that still have no parameter,
+  and therefore no injection point at all, are visible rather than inferred.
+
+  The determinism warning was right and cost three defects to get past. The
+  PersistentXSS levels store on every request, so a single shared marker makes
+  every candidate probed after the first real hit look like a hit, a baseline
+  taken before the pass is stale the moment anything lands, and the drift guard
+  then correctly discards all 40 candidates and finds nothing. A marker derived
+  from each candidate's own name and a re-baseline after each confirmed hit are
+  what got `comment` out of it.
 
   Four reflected XSS the key does not document, hand-checked 2026-10-02 and
   promoted into `expected` below. ErrorBasedSQLInjection levels 1 to 4 echo the
