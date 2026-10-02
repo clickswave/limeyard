@@ -176,7 +176,8 @@ def load_truth(t, resolve_external=True):
                                   "via": res.get("via"),
                                   "count": res.get("resolved_count")}
                 for k in ("unmapped_types", "unrecognised_classes",
-                          "reach_scoped_out", "reach_measured"):
+                          "reach_scoped_out", "reach_measured",
+                          "expected_local", "negative_local"):
                     if res.get(k):
                         tr["external"][k] = res[k]
             else:

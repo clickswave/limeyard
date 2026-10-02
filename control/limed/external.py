@@ -499,6 +499,29 @@ def resolve(tr, target_dir=None, offline=False):
         return out
 
     out.update(adapted)
+
+    # Hand-written entries survive. `resolve` used to hand back only what the
+    # adapter built and every caller assigned it over `tr["expected"]`, so an
+    # entry written into a truth.yml beside an `external:` block was silently
+    # discarded. That is the one place a locally verified finding has to live:
+    # upstream's key is upstream's, and a real vulnerability the key does not
+    # document cannot be added to it. Four reflected XSS on VulnerableApp's
+    # ErrorBasedSQLInjection levels are exactly that case.
+    #
+    # Local entries come first and win on id, so a truth.yml can also correct
+    # an upstream entry rather than only add to it.
+    for key in ("expected", "negative"):
+        local = [x for x in (tr.get(key) or []) if isinstance(x, dict)]
+        if not local:
+            continue
+        seen = {x.get("id") for x in local if x.get("id")}
+        merged = list(local)
+        merged += [x for x in (out.get(key) or [])
+                   if not (x.get("id") and x["id"] in seen)]
+        out[key] = merged
+        out[f"{key}_local"] = len(local)
+    out["resolved_count"] = len(out.get("expected") or []) + len(out.get("negative") or [])
+
     out["resolved"] = True
     out["via"] = via
     return out

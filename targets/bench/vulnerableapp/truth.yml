@@ -29,7 +29,14 @@ note: >-
   Web Tracer capture both yield nothing, and cortex takes its parameters from
   the asset graph. With none observed, only the passive checks fire: a pass over
   145 endpoints returned 28 findings, all of them no-rate-limit or
-  excessive-exposure, and 0 of 117.
+  excessive-exposure, and none of the key's cases.
+
+  Those 28 stay in `unmatched` and are not a scoring bug. Both are verified by
+  construction rather than inferred: the rate-limit check sends 20 requests to
+  a sensitive path under an identity that cannot exist and reports only when
+  none of them is throttled. The key documents neither class, and limeyard's
+  class list has no name for the first, so they are recorded here instead of
+  being re-derived every time somebody reads a card from this target.
 
   Handing it parameters found by differential probing took SQLi from 0/9 to 4/9
   with no engine change. So a low number here is a statement about parameter
@@ -41,6 +48,20 @@ note: >-
   If you build that, calibrate for determinism first. The PersistentXSS levels
   store on every request, so identical input gives a different response and
   every candidate looks like a hit.
+
+  Four reflected XSS the key does not document, hand-checked 2026-10-02 and
+  promoted into `expected` below. ErrorBasedSQLInjection levels 1 to 4 echo the
+  `id` parameter into the H2 error message with `<`, `>` and the tag intact, so
+  `<img src=x onerror=...>` comes back raw and runs.
+
+  They are worth reading closely, because a careless check calls them false
+  positives. Asked with no Accept header the response is
+  `text/plain;charset=UTF-8`, which a browser renders as text and never
+  executes, so a curl check says inert. Asked the way a browser asks, with
+  `Accept: text/html,...`, the same request answers `text/html;charset=UTF-8`
+  and the tag is live. The content type is a property of the request, and the
+  question an XSS oracle has to ask is the one a victim's browser asks. cortex
+  sends a browser Accept header and was right; the hand check was wrong.
 
   Two of its SQL injection entries are not injectable, checked 2026-10-02.
   ErrorBasedSQLInjection levels 3 and 4 quote the value and strip the single
@@ -71,5 +92,54 @@ external:
   # enough to score locally; this is here for a submit-and-grade comparison.
   grader: http://vulnerableapp:9090/VulnerableApp/scanner/benchmark
 
-expected: []
+# Entries the upstream key does not carry. Kept here because upstream's key is
+# upstream's, and schema.md says a local entry beside an `external:` block is
+# merged rather than replaced. Every one is hand-checked, with the evidence in
+# the note above.
+expected:
+  - id: errorbasedsqlinjectionvulnerability-level_1:reflected_xss
+    class: xss-reflected
+    scope: black-box
+    where:
+      path: /VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_1
+      method: GET
+      param: id
+      in: query
+    confirm: >-
+      id is concatenated into the SQL and the statement is echoed in the H2
+      error. Under a browser Accept header the response is text/html and
+      `<img src=x onerror=alert(1)>` comes back raw.
+  - id: errorbasedsqlinjectionvulnerability-level_2:reflected_xss
+    class: xss-reflected
+    scope: black-box
+    where:
+      path: /VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_2
+      method: GET
+      param: id
+      in: query
+    confirm: >-
+      as level 1, with the value quoted. The quotes do not escape the tag.
+  - id: errorbasedsqlinjectionvulnerability-level_3:reflected_xss
+    class: xss-reflected
+    scope: black-box
+    where:
+      path: /VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_3
+      method: GET
+      param: id
+      in: query
+    confirm: >-
+      the single quote is stripped, which is why this level is not injectable
+      for SQL, but the angle brackets are not, so the XSS stands.
+  - id: errorbasedsqlinjectionvulnerability-level_4:reflected_xss
+    class: xss-reflected
+    scope: black-box
+    where:
+      path: /VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_4
+      method: GET
+      param: id
+      in: query
+    confirm: >-
+      as level 3, prepared statement, same data-conversion error and the same
+      raw reflection of the tag.
+
 negative: []

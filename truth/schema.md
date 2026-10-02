@@ -63,12 +63,21 @@ Two kinds, and the difference decides who scores:
 | `crawl-maze` | yes | 91 paths, flat list, resolves from the committed copy |
 | `xssmaze-map` | yes | 1064 endpoints; `exploitable:false` becomes a negative, `reach: client` and a measured `reach.json` are scoped out, `solutions` fills `confirm` |
 | `crawlground` | no | self scored, needs the POST /set-tool handshake |
-| `vulnerableapp-dast` | no | the app serves its own list and a grader |
+| `vulnerableapp-dast` | yes | 155 rows over 38 types; `variant: SECURE` becomes a negative, and the grader at /scanner/benchmark is for a submit-and-compare rather than resolution |
 | `owasp-benchmark-csv` | no | no target uses it yet |
 | `wavsep-paths` | no | no target uses it yet |
 
 A declared format with no adapter is reported as unresolved on the scorecard,
 never as a target with nothing to find.
+
+An `expected` or `negative` entry written into a truth.yml that also declares
+`external` is kept, and wins on id. Upstream's key is upstream's: a real
+vulnerability it does not document cannot be added to it, and a truth.yml is
+the only place that finding can live. Four reflected XSS on VulnerableApp's
+ErrorBasedSQLInjection levels are there for that reason. Resolution used to
+hand back only what the adapter built, and every caller assigned it straight
+over `expected`, so a hand-written entry beside an external block vanished
+without saying so.
 
 ## reach.json
 

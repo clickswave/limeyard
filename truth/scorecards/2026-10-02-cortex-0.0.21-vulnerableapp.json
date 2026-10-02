@@ -1,21 +1,21 @@
 {
   "tool": "cortex-0.0.21",
-  "generated": "2026-10-01T22:41:50Z",
+  "generated": "2026-10-02T00:12:35Z",
   "totals": {
-    "expected": 117,
-    "detected": 8,
+    "expected": 121,
+    "detected": 12,
     "missed": 109,
     "false_positive": 0,
-    "unmatched": 32,
+    "unmatched": 28,
     "out_of_scope": 37,
     "unresolved_external": 0,
     "precision": 1.0,
-    "recall": 0.0684,
-    "f1": 0.128,
-    "seconds": 16.6,
+    "recall": 0.0992,
+    "f1": 0.1805,
+    "seconds": 15.8,
     "requests": 0,
     "slowest_target": "vulnerableapp",
-    "slowest_seconds": 16.6
+    "slowest_seconds": 15.8
   },
   "by_class": {
     "bola": {
@@ -84,9 +84,9 @@
       "recall": 0.0
     },
     "xss-reflected": {
-      "expected": 18,
-      "detected": 4,
-      "recall": 0.2222
+      "expected": 22,
+      "detected": 8,
+      "recall": 0.3636
     },
     "xss-stored": {
       "expected": 13,
@@ -101,8 +101,12 @@
   },
   "by_target": {
     "vulnerableapp": {
-      "expected_in_scope": 117,
+      "expected_in_scope": 121,
       "detected": [
+        "errorbasedsqlinjectionvulnerability-level_1:reflected_xss",
+        "errorbasedsqlinjectionvulnerability-level_2:reflected_xss",
+        "errorbasedsqlinjectionvulnerability-level_3:reflected_xss",
+        "errorbasedsqlinjectionvulnerability-level_4:reflected_xss",
         "blindsqlinjectionvulnerability-level_1:blind_sql_injection",
         "errorbasedsqlinjectionvulnerability-level_1:error_based_sql_injection",
         "errorbasedsqlinjectionvulnerability-level_2:error_based_sql_injection",
@@ -227,13 +231,7 @@
       "unmatched": [
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_3",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_6",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_8",
           "param": null,
           "severity": null
         },
@@ -251,19 +249,7 @@
         },
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_8",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "no-rate-limit",
           "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_4",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_2",
           "param": null,
           "severity": null
         },
@@ -275,7 +261,19 @@
         },
         {
           "class": "no-rate-limit",
-          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_9",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_2",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_3",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_6",
           "param": null,
           "severity": null
         },
@@ -287,6 +285,12 @@
         },
         {
           "class": "no-rate-limit",
+          "path": "/VulnerableApp/AuthenticationVulnerability/LEVEL_9",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_1",
           "param": null,
           "severity": null
@@ -317,7 +321,7 @@
         },
         {
           "class": "excessive-exposure",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_2",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_4",
           "param": null,
           "severity": null
         },
@@ -329,7 +333,13 @@
         },
         {
           "class": "excessive-exposure",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_4",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_2",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "no-rate-limit",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_6",
           "param": null,
           "severity": null
         },
@@ -340,7 +350,13 @@
           "severity": null
         },
         {
-          "class": "no-rate-limit",
+          "class": "excessive-exposure",
+          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_5",
+          "param": null,
+          "severity": null
+        },
+        {
+          "class": "excessive-exposure",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_6",
           "param": null,
           "severity": null
@@ -348,18 +364,6 @@
         {
           "class": "no-rate-limit",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_7",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "excessive-exposure",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_5",
-          "param": null,
-          "severity": null
-        },
-        {
-          "class": "excessive-exposure",
-          "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_6",
           "param": null,
           "severity": null
         },
@@ -391,30 +395,6 @@
           "class": "excessive-exposure",
           "path": "/VulnerableApp/PasswordResetVulnerability/LEVEL_9",
           "param": null,
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_1",
-          "param": "id",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_2",
-          "param": "id",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_3",
-          "param": "id",
-          "severity": null
-        },
-        {
-          "class": "xss-reflected",
-          "path": "/VulnerableApp/ErrorBasedSQLInjectionVulnerability/LEVEL_4",
-          "param": "id",
           "severity": null
         }
       ],
@@ -459,20 +439,17 @@
       ],
       "location_flags": [],
       "precision": 1.0,
-      "recall": 0.0684,
-      "f1": 0.128,
-      "seconds": 16.6,
+      "recall": 0.0992,
+      "f1": 0.1805,
+      "external": {
+        "resolved": true,
+        "format": "vulnerableapp-dast",
+        "via": "http://127.0.0.1:7101/VulnerableApp/scanner/dast",
+        "count": 176,
+        "expected_local": 4
+      },
+      "seconds": 15.8,
       "requests": 0
     }
-  },
-  "run": {
-    "engine": "cortex 0.0.21, debug build at cd8534f",
-    "op": "inject, parameters from the engine's own discover pass",
-    "verdict": "8 of 117, and every miss is attributed below. Only a minority is the oracle.",
-    "progress": "0 with no parameters, 3 once discovery found some, 4 with the boolean oracle fixed, 7 once echo-anything endpoints reported an injection point, 8 with the mixed-case XSS payload.",
-    "sqli": "4 of 9. ErrorBased 3 and 4 are not injectable (quote stripped inside a quoted value), 2 paths yielded no parameter, Blind 2 answers 500 to any value with a space.",
-    "xss": "4 of 18 reflected, 0 of 13 stored. 14 of the misses are UnrestrictedFileUpload, which is multipart POST and a capability cortex does not have; 6 are stored XSS, which needs a store-then-read flow it also does not have; 3 are CachePoisoning. Of the rest, XSSInImgTagAttribute 3 is genuinely exploitable through an UNQUOTED src attribute and is a known trade: the payload that catches it also matches any raw reflection.",
-    "op_mismatch": "38 of the 117 are classes `inject` is not the op for: jwt 19, bola 4, session 4, cache-poisoning 4, misconfig 5, info-disclosure 2. The authz op scores bola 2/2 on crAPI.",
-    "reachability": "31 injection points on 120 paths, 20 by name and 11 because the endpoint takes a value under any name."
   }
 }

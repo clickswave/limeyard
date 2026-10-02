@@ -372,6 +372,8 @@ def score(findings, truth, tool="unknown", only=None, scopes=("black-box", "auth
                     ("count", ext.get("count")),
                     ("reach_scoped_out", ext.get("reach_scoped_out")),
                     ("reach_measured", ext.get("reach_measured")),
+                    ("expected_local", ext.get("expected_local")),
+                    ("negative_local", ext.get("negative_local")),
                 ) if v is not None
             }
         totals["expected"] += len(in_scope)
@@ -543,6 +545,8 @@ def render(card):
         if ext.get("reach_scoped_out"):
             extra.append(f"{ext['reach_scoped_out']} unreachable, measured "
                          f"{ext.get('reach_measured') or 'date unknown'}")
+        if ext.get("expected_local"):
+            extra.append(f"{ext['expected_local']} promoted locally")
         if r["missed"]:
             extra.append("missed " + _ids(r["missed"]))
         if r["false_positives"]:
