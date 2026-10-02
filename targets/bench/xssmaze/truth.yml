@@ -69,6 +69,25 @@ note: >-
   fullwidth lookalike characters, a javascript: URL, a template literal, and
   one payload with no alphanumerics in it.
 
+  Measured end to end on 2026-10-02, mach crawl into cortex inject rather than
+  handing cortex this map's endpoint list. The crawl returns 2328 endpoints and
+  reaches 918 of the 918 paths this key expects a finding on, so discovery is
+  not the limit on this target: it links everything from its index, which a
+  real application does not. End-to-end recall is 830 of 921 against 845 when
+  cortex is handed the key's own list, and all 15 of the difference are channel
+  fidelity rather than discovery. 6 are path-segment injections, which a crawl
+  cannot infer without a spec; 5 are the querymethod family, which only answer
+  HTTP QUERY; 3 need a JSON body where the crawl reports a form; 1 is JSONP.
+
+  Do not read wall-clock scan time off this target. A 300-endpoint pass sends
+  about 22,000 requests, and the engine's own pass log attributes 65 of its 95
+  seconds to pacing back-off with 0 seconds spent waiting on the target. The
+  same 300 endpoints also completed three times in a row in under a second on
+  a fresh daemon, so the figure swings by around 100x between passes with no
+  change to the work. Something in the pacer decides differently on identical
+  input and that is worth chasing, but until it is, any timing measured here is
+  a measurement of the pacer.
+
   27 endpoints are marked exploitable:false. Those are the precision controls,
   and reporting one is a false positive. They resolve into `negative` with no
   class, so reporting anything at all on one counts against precision.
