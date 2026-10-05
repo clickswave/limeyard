@@ -15,15 +15,24 @@ BOLAs that had been hand-verified minutes earlier.
 Written down because the first run of this was done by hand and the score it
 produced could not be reproduced by anyone, including by me a day later.
 """
-import json, socket, sys, time, urllib.error, urllib.request
+import json, os, socket, sys, time, urllib.error, urllib.request
 from urllib.parse import urlparse
-sys.path.insert(0, "/home/kew/projects/clickswave/projects/limeyard/control/limed")
+
+# This file lives in targets/api/crapi/, so the repo is three levels up. Derived
+# rather than written down: an absolute path here is somebody else's machine,
+# and the first version of this carried mine.
+TDIR = os.path.dirname(os.path.abspath(__file__))
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(TDIR)))
+sys.path.insert(0, os.path.join(REPO, "control", "limed"))
 import yaml, scorer
 
 H = "http://127.0.0.1:7010"
 CORTEX = ("127.0.0.1", int(sys.argv[1]) if len(sys.argv) > 1 else 4488)
-TDIR = "/home/kew/projects/clickswave/projects/limeyard/targets/api/crapi"
-S = "/tmp/claude-1000/-home-kew-projects-clickswave/913b853d-11fa-42b3-a6bd-6b6c1de6ebb1/scratchpad"
+# Where the run's JSON artefacts land. Override with LIMEYARD_OUT; otherwise a
+# gitignored directory in the repo, so a run leaves its evidence somewhere a
+# reader can find it rather than in a scratch directory only one machine has.
+S = os.environ.get("LIMEYARD_OUT", os.path.join(REPO, "out"))
+os.makedirs(S, exist_ok=True)
 # Two identities with no relationship to each other and no objects of their own.
 # A pair that owns nothing is what makes a 200 unambiguous: there is nothing
 # either of them is entitled to see.

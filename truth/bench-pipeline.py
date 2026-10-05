@@ -13,19 +13,28 @@ halves, because a low score has two possible causes and they need different
 work: endpoints the crawl never found, and endpoints it found where nothing
 was detected.
 """
-import json, socket, sys, time
+import json, os, socket, sys, time
 from urllib.parse import urlparse, urlsplit
-sys.path.insert(0, "/home/kew/projects/clickswave/projects/limeyard/control/limed")
+
+# This file lives in truth/, so the repo is one level up. Derived rather than
+# written down: an absolute path here is somebody else's machine, and the first
+# version of this carried mine.
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(REPO, "control", "limed"))
 import yaml, external, scorer
 
 TARGETS = {
     "xssmaze": {"seed": "http://127.0.0.1:7102",
-                "dir": "/home/kew/projects/clickswave/projects/limeyard/targets/bench/xssmaze",
+                "dir": os.path.join(REPO, "targets", "bench", "xssmaze"),
                 "classes": ["xss", "ssti", "proto_pollution"]},
 }
 MACH = ("127.0.0.1", int(sys.argv[2]) if len(sys.argv) > 2 else 4441)
 CORTEX = ("127.0.0.1", int(sys.argv[1]) if len(sys.argv) > 1 else 4495)
-S = "/tmp/claude-1000/-home-kew-projects-clickswave/913b853d-11fa-42b3-a6bd-6b6c1de6ebb1/scratchpad"
+# Where the run's JSON artefacts land. Override with LIMEYARD_OUT; otherwise a
+# gitignored directory in the repo, so a run leaves its evidence somewhere a
+# reader can find it rather than in a scratch directory only one machine has.
+S = os.environ.get("LIMEYARD_OUT", os.path.join(REPO, "out"))
+os.makedirs(S, exist_ok=True)
 BATCH = 300
 
 

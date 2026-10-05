@@ -24,3 +24,6 @@ control/ui/.svelte-kit/
 # python bytecode (from local checks)
 __pycache__/
 *.pyc
+
+# Where a benchmark run writes its JSON artefacts. Override with LIMEYARD_OUT.
+out/
